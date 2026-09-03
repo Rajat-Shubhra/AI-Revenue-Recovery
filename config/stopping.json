@@ -1,0 +1,7 @@
+{
+  "max_attempts_per_case": 3,
+  "hold_if_late_auth_pending_hours": 72,
+  "drop_if_expected_value_below_inr": 20,
+  "systemic_alert_if_same_cause_share_exceeds": 0.4,
+  "stop_on": ["mandate_cancelled", "customer_opted_out", "recovered", "halted"]
+}

@@ -85,10 +85,10 @@ Blueprint section references in brackets.
 | **M3** | Rules table + diagnose [§4.3] | Rules resolve every reason except the ambiguous slice; unmatched cases fall through cleanly; rules-vs-LLM counts reported. LLM path stubbed here — no live calls yet | **done** | 12 rules, 90% of the batch deterministic (72/80). The 8 unresolved are exactly the ambiguous slice. State-of-the-world rules (R1–R4) run before error-code rules so a mislabelled error can't smuggle a terminal case into the recoverable pile. |
 | **M4** | Decide [§4.4] | Every rule-resolved case gets a bucket and tool with no model call; STOP and HOLD decided before the classifier is reachable | **done** | AUTO 23 · CUSTOMER_ACTION 15 · ESCALATE 13 · STOP 7 · HOLD 3. Insufficient funds routes to the next salary-cycle date (1st/3rd/7th), never an immediate retry. Every decision carries a populated `rejected` array. |
 | **M5** | Compliance gate [§4.5] | All six checks deterministic and logged **when they pass as well as when they fire** — a gate that only logs failures can't prove it ran. Invariant tests 1 and 2 green | **done** | C1–C6 recorded on every case either way. Invariants 1 and 2 green, including a rogue-decision test proving the gate blocks an action the decide stage wrongly proposed. |
-| **M6** | Stopping rules [§4.6] | Read from `config/stopping.json`, not hardcoded; systemic alert fires on a rigged single-cause batch and raises exactly one escalation | not started | |
-| **M7** | Ports + outcome simulator [§4.7–4.8] | `TOOLS` registry filled with the five tools; `MockRazorpayPort` runs against the simulator; deterministic under seed; probability table in one readable file | not started | |
-| **M8** | Measurement + holdout [§4.10] | `npm run batch` runs 80 cases end to end and prints treated vs holdout, net lift, action cost, and recovery rate by cause and bucket. Invariant test 3 green | not started | **Substance finish line.** First live LLM run happens at or before this point — announce quota spend first. |
-| **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | not started | |
+| **M6** | Stopping rules [§4.6] | Read from `config/stopping.json`, not hardcoded; systemic alert fires on a rigged single-cause batch and raises exactly one escalation | **done** | Config is zod-validated on load — a threshold that silently became `undefined` would disable a stopping rule. Escalations are exempt from the value floor: a small misconfiguration still needs fixing. |
+| **M7** | Ports + outcome simulator [§4.7–4.8] | `TOOLS` registry filled with the five tools; `MockRazorpayPort` runs against the simulator; deterministic under seed; probability table in one readable file | **done** | Draw is seeded from case id + action, so an outcome doesn't depend on processing order. `retryNow` is the one tool requiring confirmation — it debits with no notice period. `TestModeRazorpayPort` deliberately NOT stubbed: a stub returning success is indistinguishable from a real integration in the ledger. |
+| **M8** | Measurement + holdout [§4.10] | `npm run batch` runs 80 cases end to end and prints treated vs holdout, net lift, action cost, and recovery rate by cause and bucket. Invariant test 3 green | **done** | **Substance finish line reached.** Treated 46.1% vs holdout 3.5% by value, net lift ₹47,337. Rates reported by value *and* by count after the holdout showed 3.5%/12.5% — a 16-case arm is noisy. Table-implied cross-check printed alongside. **No LLM calls yet.** |
+| **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | partly done | Full-pipeline idempotency **verified**: run 1 executes 51 actions, run 2 executes 0 and logs 51 skipped duplicates. Still to do: live LLM wiring, its quota-failure path, and committing a sample ledger. |
 | **M10** | Dashboard [§4.11] | One page reading the JSONL: top strip, priority table, per-case audit timeline drawer, Run batch button | not started | Cut this before cutting anything in M1–M9. |
 
 ### Deferred — revisit only if the clock allows
@@ -109,7 +109,7 @@ They land **with their milestone**, not in a batch at the end.
 |---|---|---|
 | 1 | No action is ever taken on a cancelled mandate | **done** (M5) |
 | 2 | No contact is ever made to a DND or opted-out customer | **done** (M5) |
-| 3 | Holdout cases are never touched | M8 |
+| 3 | Holdout cases are never touched | **done** (M8) |
 | 4 | Re-running the same batch produces zero new actions | **done** (M0), extended in M9 |
 
 ---
@@ -144,6 +144,29 @@ surprising. This is the part to read when picking up a cold session.
   on Windows) were blocked anywhere under `Documents\` by Trend Micro Apex One.
   Single root cause behind WHAT_BROKE §3, §5 and §6, previously logged as three
   separate Vite problems.
+- **M6–M8** — The loop closes. `npm run batch` runs ingest → prioritise →
+  diagnose → decide → compliance → stop → act → measure on 80 cases and prints
+  the scoreboard. 92 tests green.
+  - **The isolation test earned its keep.** The batch runner read
+    `_will_self_heal` directly to score cases it decided not to act on, and the
+    test failed the build. Fixed by adding `MockRazorpayPort.noAction()`, which
+    scores restraint through the same `none` column the holdout takes — so
+    choosing to HOLD and being in the control arm are measured identically
+    rather than differing by an RNG draw.
+  - **The first honest number was misleading and got fixed.** Holdout recovery
+    read 3.5% by value but 12.5% by count: with 16 cases, one large case
+    landing either way swings the value-weighted rate hard, and net lift
+    inherits that noise. Both rates are now reported, plus a table-implied
+    cross-check that puts lift at ₹43,003 against the holdout's ₹47,337. The
+    holdout stays the headline; the gap is stated as the uncertainty it is.
+  - Same distortion appears per-cause — `bank_blocked_card` reads 94.6% by
+    value on 6 cases — so that table now shows recovered/total counts too, with
+    a note that per-cause lift is indicative rather than a claim.
+  - **Full-pipeline idempotency verified early**: run 1 executes 51 actions,
+    run 2 executes 0 and logs 51 skipped duplicates. That is invariant 4 at
+    pipeline level, which was M9's job.
+  - `escalate` never counts as a recovery. A handoff is not money returned, and
+    scoring it as one would inflate the headline with work nobody has done yet.
 - **M3–M5** — The reasoning core. Landed as one commit because they are not
   separable: decide is meaningless without a cause, and the gate is meaningless
   without a decision to veto. 66 tests green.
