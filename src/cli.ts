@@ -10,7 +10,8 @@ import type { AgentAction } from './engine/schema'
 import { BATCH_NOW } from './pipeline/generate'
 import { ingest } from './pipeline/ingest'
 import { prioritise, BATCH_TICK_SIZE, type Scored } from './pipeline/prioritise'
-import { diagnose } from './pipeline/diagnose'
+import { diagnose, noLlm } from './pipeline/diagnose'
+import { liveLlmDiagnoser, emptyLlmStats } from './pipeline/llm-diagnose'
 import { decide, type Outcome } from './pipeline/decide'
 import { complianceGate } from './pipeline/compliance'
 import { loadStoppingConfig, stopCheck, systemicCheck } from './pipeline/stopping'
@@ -75,13 +76,34 @@ async function main(): Promise<void> {
   printQueue(queue.take(BATCH_TICK_SIZE))
 
   // ─── DIAGNOSE ───────────────────────────────────────────────────────────
-  const { results, tally } = await diagnose(scored.map((s) => s.kase), audit, clock)
+  // The model runs only on what the rules could not settle. `--no-llm` keeps a
+  // run fully deterministic and free, which is the default for development.
+  const useLlm = !process.argv.includes('--no-llm')
+  const llmStats = emptyLlmStats()
+  const { results, tally } = await diagnose(
+    scored.map((s) => s.kase),
+    audit,
+    clock,
+    useLlm ? liveLlmDiagnoser(llmStats) : noLlm,
+  )
 
   console.log('\nDiagnosis\n')
   console.log(
     `  ${tally.total} cases · ${tally.by_rules} by rules · ${tally.by_llm} by the model · ${tally.escalated_uncertain} uncertain → escalated`,
   )
   console.log(`  ${pct(tally.by_rules / tally.total)} deterministic — the model is reserved for the ambiguous tail.`)
+  if (useLlm) {
+    console.log(
+      `  model: ${llmStats.calls} call(s) · ${llmStats.ok} usable · ${llmStats.rejected} rejected by the schema or floor` +
+        ` · ${llmStats.failed} failed · ${llmStats.retries} transport retr${llmStats.retries === 1 ? 'y' : 'ies'}`,
+    )
+    if (llmStats.quotaExhausted) {
+      console.log(`  ⚠ QUOTA EXHAUSTED mid-run — remaining cases escalated rather than guessed.`)
+    }
+    if (llmStats.lastError) console.log(`  last model issue: ${llmStats.lastError}`)
+  } else {
+    console.log('  model: skipped (--no-llm)')
+  }
 
   // ─── SYSTEMIC CHECK, before any per-case action ────────────────────────
   const treatedScored = scored.filter((s) => !s.holdout && !s.halted)

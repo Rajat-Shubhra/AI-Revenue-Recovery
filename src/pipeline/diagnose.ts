@@ -73,6 +73,25 @@ export async function diagnoseCase(kase: Case, llm: LlmDiagnoser): Promise<Diagn
     }
   }
 
+  // A confident "unknown" is still not a diagnosis.
+  //
+  // The model can legitimately return `unknown` with high confidence — it is
+  // sure the evidence supports nothing more specific, and that is the honest
+  // answer we asked for. But counting it as "resolved by the model" would
+  // inflate the AI-judgment number with cases the model explicitly declined to
+  // call. It escalates, and it is counted as an escalation.
+  if (answer.cause === 'unknown') {
+    return {
+      cause: 'unknown',
+      confidence: answer.confidence,
+      via: 'llm',
+      rules_fired: [],
+      evidence: answer.evidence,
+      escalate: true,
+      because: `model examined the case and could not narrow the cause (confidence ${answer.confidence.toFixed(2)} in "unknown")`,
+    }
+  }
+
   // Validation lives in schema.parseDiagnosis; by the time it reaches here the
   // shape is already known good. What is checked here is whether we trust it.
   if (answer.confidence < DIAGNOSIS_CONFIDENCE_FLOOR) {
