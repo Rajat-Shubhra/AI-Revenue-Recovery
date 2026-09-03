@@ -13,7 +13,33 @@ this repo is organised around.
 
 > **Status: in progress.** The engine and the idempotency guard are built and
 > tested. The pipeline is being built milestone by milestone — see
-> [BLUEPRINT.md](BLUEPRINT.md) §6 for where it is.
+> [MILESTONES.md](MILESTONES.md) for exactly where it is.
+
+---
+
+## The bar, clause by clause
+
+Track 3's brief sets five requirements. Here is where each one is satisfied, and
+which are not satisfied yet. These markers are kept honest as milestones land —
+if something says pending, it is genuinely not built.
+
+> *"Don't just identify the problem. Show measured money recovered across a
+> batch, with compliant escalation, stopping rules, and an audit trail."*
+
+| Clause | Where | State |
+|---|---|---|
+| **Measured money recovered** | 20% holdout the agent never touches; the headline figure is net lift between arms, not raw recoveries | pending M8 |
+| **Across a batch** | 80 seeded synthetic cases, reproducible from the seed; prioritised queue works the top N per tick | pending M1–M2 |
+| **Compliant escalation** | Six deterministic compliance checks before every action; ESCALATE bucket for merchant-config problems and anything the agent can't confidently place | pending M5 |
+| **Stopping rules** | `config/stopping.json` — attempt caps, expected-value floor, terminal states, and a systemic rule that raises one escalation instead of N when a single cause exceeds 40% of the batch | pending M6 |
+| **Audit trail** | Append-only `audit.jsonl`, one line per stage per case, including a `rejected` array recording alternatives the agent declined and why | **built** — writer in `src/engine/audit.ts` |
+
+Plus the judged criterion that sits underneath all of them:
+
+| Criterion | Where | State |
+|---|---|---|
+| **AI Judgment** — deterministic where AI is unnecessary | ~12 diagnose + 3–5 decide model calls per 80-case batch; everything else is lookup tables. The ratio is printed on the dashboard | pending M3–M4 |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — eight failures, each with symptom, root cause, dead ends, fix, time cost and lesson; unverified items marked as such | **built** |
 
 ---
 
@@ -71,15 +97,21 @@ because some of those payments would have succeeded on their own.
 
 ## What came from Quark, and what didn't
 
-[Quark](https://github.com/) was a previous project — a capability-aware task
-agent for a notes and kanban workspace. It shares one idea with this project:
-an agent that honestly classifies what it can and cannot do, and a server-side
-gate that decides what needs human approval rather than trusting the model to
-decide.
+Quark was a previous personal project — a capability-aware task agent for a
+notes and kanban workspace. It shares one idea with this project: an agent that
+honestly classifies what it can and cannot do, and a server-side gate that
+decides what needs human approval rather than trusting the model to decide.
 
 **Only the parts that carried that idea were taken.** Everything else — the
 kanban board, the BlockNote editor, the notes and pages UI, Supabase, auth, the
 five workspace tools — was deliberately left behind.
+
+Roughly **a third of the starting-line code is traceable to Quark**, concentrated
+in the two places where reuse is legitimate: LLM plumbing already debugged
+against a live key, and Windows build workarounds that cost real hours to find
+the first time. No domain code was borrowed, because none existed.
+[PROVENANCE.md](PROVENANCE.md) has the file-by-file accounting, marked verbatim /
+adapted / extracted / new.
 
 | Taken | Why | State here |
 |---|---|---|

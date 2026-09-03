@@ -292,24 +292,26 @@ These are the compliance and stopping rules stated as executable claims:
 
 ## 6. Milestones
 
-One commit each, verified end to end before the next starts.
-**M0 is done.** Nothing in a later milestone starts until the earlier one runs.
+**[MILESTONES.md](MILESTONES.md) is the working state file** — it holds Status,
+Notes, the running log, the STOP triggers and the batch seams, and it is what a
+fresh session reads to resume. This table is the summary; that file is the truth.
 
-| # | Milestone | Done when |
+| # | Milestone | Blueprint |
 |---|---|---|
-| **M0** | **Engine carried from Quark + idempotency guard** | ✅ `00145a5` — typecheck, test, batch, dev all green |
-| M1 | Case model + seeded synthetic generator | `npm run generate` writes 80 cases; slice counts match §3; re-running the seed is byte-identical |
-| M2 | Ingest + batch runner skeleton + audit writer | Loads cases, assigns holdout, writes one audit line per case, prints a table |
-| M3 | Prioritiser + priority queue | Top-20 printed with the priority number and the reason it ranked there |
-| M4 | `rules.ts` — deterministic diagnosis | ~90% of the batch resolved by rules; the ambiguous slice falls through cleanly |
-| M5 | Decide table + STOP/HOLD in code | Every rule-resolved case gets a bucket and tool with no LLM call |
-| M6 | Compliance gate | Tests 1 and 2 pass; every fired rule appears in the audit line |
-| M7 | Stopping rules + `config/stopping.json` | Systemic alert fires on a rigged single-cause batch |
-| M8 | `RazorpayPort` + `MockRazorpayPort` + outcome simulator | Deterministic under seed; the probability table is one readable file |
-| M9 | Act stage wired through the gate | `TOOLS` filled; test 4 passes against real tools; `rejected` carries real reasons |
-| M10 | LLM tail — diagnose + decide (**first quota spend**) | Rules-vs-LLM split reported; low confidence escalates; quota failure degrades to ESCALATE |
-| M11 | Holdout + measurement report | Net lift printed; test 3 passes; one sample `audit.jsonl` committed |
-| M12 | Dashboard + README + final pass | Dashboard reads the JSONL; WHAT_BROKE.md updated; submission ready |
+| **M0** | Starting line — engine, provenance, README | ✅ done |
+| M1 | Synthetic generator | §3 |
+| M2 | Ingest + prioritiser | §4.1–4.2 |
+| M3 | Rules table + diagnose | §4.3 |
+| M4 | Decide | §4.4 |
+| M5 | Compliance gate | §4.5 |
+| M6 | Stopping rules | §4.6 |
+| M7 | Ports + outcome simulator | §4.7–4.8 |
+| M8 | Measurement + holdout — **substance finish line** | §4.10 |
+| M9 | End-to-end hardening | §4.9 |
+| M10 | Dashboard | §4.11 |
+
+Batches: **M0–M2**, **M3–M5**, **M6–M8**, **M9–M10** — separate sessions, with a
+look at the running log between each.
 
 ---
 
