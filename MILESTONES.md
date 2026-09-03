@@ -1,5 +1,9 @@
 # Milestones — working state
 
+**Deadline: Saturday 5 September 2026 — verified on the application form.**
+No longer an assumption.
+
+
 **This file is the state of the build.** It is written to be resumable: a fresh
 session reads [BLUEPRINT.md](BLUEPRINT.md) then this file, finds the first
 milestone not marked `done`, and continues from there without needing anything
