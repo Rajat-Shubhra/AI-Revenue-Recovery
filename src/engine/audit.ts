@@ -10,9 +10,9 @@
 // the CLI twice, replays every action. In a payments agent a replay is a second
 // charge against a real customer. That is the worst thing this system can do,
 // so the guard is written to fail toward *not* charging.
-import { appendFile, readFile, mkdir } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
-import path from 'node:path'
+import { appendLineSafe } from './fs-safe'
 import type { Classification, ToolName } from './schema'
 
 /**
@@ -116,9 +116,14 @@ export class AuditLog {
     }
   }
 
+  /**
+   * Append one line. Goes through `appendLineSafe` because the antivirus on
+   * this machine makes plain appends throw spuriously (WHAT_BROKE §11) — and a
+   * dropped or duplicated audit line would misreport what the agent did with
+   * someone's money, which is the one thing this file exists to prevent.
+   */
   async append(entry: AuditEntry): Promise<void> {
-    await mkdir(path.dirname(this.file), { recursive: true })
-    await appendFile(this.file, `${JSON.stringify(entry)}\n`, 'utf8')
+    appendLineSafe(this.file, JSON.stringify(entry))
   }
 
   /** True once an action has been claimed — executed or merely attempted. */

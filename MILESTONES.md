@@ -75,7 +75,7 @@ Blueprint section references in brackets.
 | # | Milestone | Done when | Status | Notes |
 |---|---|---|---|---|
 | **M0** | Starting line — engine, provenance, README | Engine typechecks and tests green; PROVENANCE.md records the Quark boundary; README answers the Track 3 bar clause by clause | **done** | Engine committed `00145a5`; blueprint + README `81e2f76`. Decisions taken: STOP/HOLD in code not in the enum; live LLM calls, no cache; Gemini SDK not added (provider is hand-rolled fetch); env key lazy so tests run without one; `web/package-lock.json` deleted — workspaces make the root lock authoritative. |
-| **M1** | Synthetic generator [§3] | `npm run generate` writes 80 cases; slice counts match the §3 table; same seed → byte-identical file; a test asserts nothing outside `/src/sim/` reads `_true_cause` or `_will_self_heal` | not started | Recovery-probability table is a STOP trigger — it feeds both the prioritiser and the simulator. |
+| **M1** | Synthetic generator [§3] | 80 cases written; slice counts match §3; same seed → byte-identical file; a test asserts nothing outside `/src/sim/` reads `_true_cause` or `_will_self_heal` | **done** | Probability tables approved before building (two tables, deliberately separate — prior vs ground truth). 23 tests green, seed file SHA256-identical across runs. **Run it as `node --import tsx src/pipeline/generate.ts`, NOT `npm run generate`** — see WHAT_BROKE §11. Double-charge modelling deferred by decision. |
 | **M2** | Ingest + prioritiser [§4.1–4.2] | Batch loads cases, assigns the 20% holdout by seed, writes one audit line per case; top-20 printed with expected_value, urgency, cost, final priority, and the reason it ranked there | not started | |
 | **M3** | Rules table + diagnose [§4.3] | Rules resolve every reason except the ambiguous slice; unmatched cases fall through cleanly; rules-vs-LLM counts reported. LLM path stubbed here — no live calls yet | not started | |
 | **M4** | Decide [§4.4] | Every rule-resolved case gets a bucket and tool with no model call; STOP and HOLD decided before the classifier is reachable | not started | Enum stays three values. See §4.4. |
@@ -129,3 +129,17 @@ surprising. This is the part to read when picking up a cold session.
   not just Vite — vitest hit it identically.
 - **M0** — Still unverified: `web/build.mjs` has never been run, and `provider.ts`
   has never talked to a live key. Neither blocks M1.
+- **M1** — Generator built: 80 cases, seeded, byte-identical across runs
+  (SHA256 verified). 23 tests green. Two probability tables kept deliberately
+  separate — the prioritiser's prior is keyed on the *observed* error reason, the
+  simulator's on `_true_cause`, and a test enforces that no pipeline file reads
+  the ground-truth fields.
+- **M1** — **Environment finding, and it is the big one.** Any node process
+  spawned through `cmd.exe` — which is how every `npm run` script starts on
+  Windows — cannot create files anywhere in this repo. Trend Micro Apex One's
+  behaviour monitoring blocks it. This is the single root cause behind
+  WHAT_BROKE §3, §5 and §6, which were previously logged as three separate Vite
+  problems. Consequence for every later milestone: **anything that writes must
+  be run directly, not via `npm run`.** `npm test` and `npm run typecheck` are
+  fine because neither writes into the repo. `npm run batch` will need the same
+  treatment once it starts writing `audit.jsonl`.

@@ -346,3 +346,95 @@ the crash-in-the-gap case.
 **Lesson.** When extracting a component, the risky part is not what you copy — it
 is the thing next to it that made it safe. Ask what the original was protecting
 against, not just what it did.
+
+---
+
+## 11. The one behind the others: endpoint protection blocks writes from cmd-spawned processes
+
+**Status:** reproduced, minimally, many times.
+
+This is the root cause of §3, §5 and §6, found while building the case
+generator. Those three were each treated as a separate Vite quirk. They were one
+environmental fault, and it has cost more than any other entry here.
+
+**Symptom.** `npm run generate` never produced a file. The error changed almost
+every run, which is what made it hard to see:
+
+- `EBADF: bad file descriptor, write` — raised *after* the bytes had already
+  landed, the file on disk at exactly the right length
+- `ENOENT: no such file or directory, open` into a directory that demonstrably
+  existed and was writable a second earlier
+- `EPERM: operation not permitted, unlink` on a file created moments before
+- and sometimes no output at all, the process alive and doing nothing
+
+Running the identical script as `node --import tsx src/pipeline/generate.ts`
+worked every single time.
+
+**Root cause.** A node process spawned through `cmd.exe` cannot create files
+anywhere in this repository. `npm run <script>` on Windows always goes through
+`cmd.exe`, so every npm script that writes fails — and `cmd /d /s /c node
+script.js` fails identically with no npm involved, which is what proved npm was
+innocent.
+
+The machine runs **Trend Micro Apex One** alongside Defender — a centrally
+managed endpoint agent. "`cmd.exe` spawns a process that writes files into a
+user document folder" is ransomware-shaped, and its behaviour monitoring blocks
+it. Direct execution from PowerShell is not matched by that rule.
+
+The final probe — one script, three ways of running it:
+
+| Target | `node script.js` | `npm run` | `cmd /c node` |
+|---|---|---|---|
+| repo root | ok | ENOENT | ENOENT |
+| `data/` | ok | ENOENT | ENOENT |
+| fresh dir | ok | *hung* | *hung* |
+| `tests/` | ok | — | — |
+| OS temp dir | ok | — | — |
+
+It also explains the previously confusing fact that `npm test` and
+`npm run typecheck` work fine: neither writes anything into the repo. `vitest`
+reports to stdout, and `tsc --noEmit` says so in the name.
+
+**What we tried that didn't work.**
+
+- A retry loop with backoff. All five attempts failed identically.
+- Temp-file-and-rename, the standard way to make a write atomic. Blocked
+  *harder* — a name like `cases.seed.json.<pid>.<n>.tmp` is a double extension
+  ending in `.tmp`, which is even more ransomware-shaped. It never got as far as
+  creating the temp file.
+- Suspecting the filename, since `cases.seed.json` has two dots. Probed eight
+  names including `plain.txt`: all eight failed under `cmd`, all eight succeeded
+  directly. The filename was irrelevant.
+- Blaming npm for about forty minutes. It was `cmd.exe` the whole time.
+- Worst of all, the first retry wrapper **deleted its output on error** — and
+  because `EBADF` is raised *after* a successful write, it was destroying a
+  perfectly good file every run. The error was lying and the code believed it.
+
+**Fix.** Two parts.
+
+1. **Nothing that writes runs through an npm script.** The generator is invoked
+   directly as `node --import tsx src/pipeline/generate.ts`. This is a
+   workaround for a hostile environment rather than a design choice, and it is
+   written down here so nobody "fixes" it later.
+2. **`src/engine/fs-safe.ts` verifies instead of trusting.** After any write
+   error it re-reads the file and accepts the write when the bytes are exactly
+   right, because on this machine a thrown error is not evidence of failure.
+   `appendLineSafe` additionally checks whether the line already landed before
+   retrying, so a spurious error can never duplicate an audit entry — a
+   duplicated line would misreport what the agent did with someone's money.
+
+**Time cost.** ~75 minutes, on top of the ~45 previously spent on §3, §5 and §6
+treating symptoms of the same cause.
+
+**Lesson.** Three, and the middle one is the expensive one.
+
+When an error message changes every run, stop debugging the error and start
+looking for what is *outside* the program.
+
+When a fix doesn't take, check whether the failure you are fixing is the failure
+you actually have. That retry wrapper was correct code defeated by a false
+premise — that a thrown error means the write failed.
+
+And reproduce it minimally before theorising. Eight filenames in one script
+answered in ten seconds a question that guessing had not answered in forty
+minutes.
