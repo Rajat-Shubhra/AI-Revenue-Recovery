@@ -49,8 +49,12 @@ export type AuditEntry = {
   why?: string
   rules_fired?: string[]
   llm?: { used: boolean; model?: string; confidence?: number }
+  /** Diagnose stage: the cause established, from rules or the model (§4.3). */
+  cause?: string
   decision?: Classification | 'STOP' | 'HOLD'
   tool?: ToolName | string
+  /** Why a case was stopped, held, or escalated. */
+  because?: string
   rejected?: RejectedAlternative[]
   compliance?: { passed: boolean; checks: string[] }
   stop_check?: { stopped: boolean; because?: string }

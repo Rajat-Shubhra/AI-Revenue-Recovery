@@ -82,9 +82,9 @@ Blueprint section references in brackets.
 | **M0** | Starting line — engine, provenance, README | Engine typechecks and tests green; PROVENANCE.md records the Quark boundary; README answers the Track 3 bar clause by clause | **done** | Engine committed `00145a5`; blueprint + README `81e2f76`. Decisions taken: STOP/HOLD in code not in the enum; live LLM calls, no cache; Gemini SDK not added (provider is hand-rolled fetch); env key lazy so tests run without one; `web/package-lock.json` deleted — workspaces make the root lock authoritative. |
 | **M1** | Synthetic generator [§3] | `npm run generate` writes 80 cases; slice counts match §3; same seed → byte-identical file; a test asserts nothing outside `/src/sim/` reads `_true_cause` or `_will_self_heal` | **done** | Probability tables approved before building (two tables, deliberately separate — prior vs ground truth). 23 tests green, seed file SHA256-identical across runs. Cost a long detour into WHAT_BROKE §11 before the repo was moved out of `Documents`. Double-charge modelling deferred by decision. |
 | **M2** | Ingest + prioritiser [§4.1–4.2] | Batch loads cases, assigns the 20% holdout by seed, writes one audit line per case; top-20 printed with expected_value, urgency, cost, final priority, and the reason it ranked there | **done** | 41 tests green. Holdout is a seeded Fisher–Yates shuffle, not a stride, so the control arm isn't correlated with slice order. Urgency clamped at 1h. Queue ties break on case id so runs are reproducible. 3 cases arrive already halted and are excluded at the door. |
-| **M3** | Rules table + diagnose [§4.3] | Rules resolve every reason except the ambiguous slice; unmatched cases fall through cleanly; rules-vs-LLM counts reported. LLM path stubbed here — no live calls yet | not started | |
-| **M4** | Decide [§4.4] | Every rule-resolved case gets a bucket and tool with no model call; STOP and HOLD decided before the classifier is reachable | not started | Enum stays three values. See §4.4. |
-| **M5** | Compliance gate [§4.5] | All six checks deterministic and logged **when they pass as well as when they fire** — a gate that only logs failures can't prove it ran. Invariant tests 1 and 2 green | not started | |
+| **M3** | Rules table + diagnose [§4.3] | Rules resolve every reason except the ambiguous slice; unmatched cases fall through cleanly; rules-vs-LLM counts reported. LLM path stubbed here — no live calls yet | **done** | 12 rules, 90% of the batch deterministic (72/80). The 8 unresolved are exactly the ambiguous slice. State-of-the-world rules (R1–R4) run before error-code rules so a mislabelled error can't smuggle a terminal case into the recoverable pile. |
+| **M4** | Decide [§4.4] | Every rule-resolved case gets a bucket and tool with no model call; STOP and HOLD decided before the classifier is reachable | **done** | AUTO 23 · CUSTOMER_ACTION 15 · ESCALATE 13 · STOP 7 · HOLD 3. Insufficient funds routes to the next salary-cycle date (1st/3rd/7th), never an immediate retry. Every decision carries a populated `rejected` array. |
+| **M5** | Compliance gate [§4.5] | All six checks deterministic and logged **when they pass as well as when they fire** — a gate that only logs failures can't prove it ran. Invariant tests 1 and 2 green | **done** | C1–C6 recorded on every case either way. Invariants 1 and 2 green, including a rogue-decision test proving the gate blocks an action the decide stage wrongly proposed. |
 | **M6** | Stopping rules [§4.6] | Read from `config/stopping.json`, not hardcoded; systemic alert fires on a rigged single-cause batch and raises exactly one escalation | not started | |
 | **M7** | Ports + outcome simulator [§4.7–4.8] | `TOOLS` registry filled with the five tools; `MockRazorpayPort` runs against the simulator; deterministic under seed; probability table in one readable file | not started | |
 | **M8** | Measurement + holdout [§4.10] | `npm run batch` runs 80 cases end to end and prints treated vs holdout, net lift, action cost, and recovery rate by cause and bucket. Invariant test 3 green | not started | **Substance finish line.** First live LLM run happens at or before this point — announce quota spend first. |
@@ -107,8 +107,8 @@ They land **with their milestone**, not in a batch at the end.
 
 | # | Claim | Lands in |
 |---|---|---|
-| 1 | No action is ever taken on a cancelled mandate | M5 |
-| 2 | No contact is ever made to a DND or opted-out customer | M5 |
+| 1 | No action is ever taken on a cancelled mandate | **done** (M5) |
+| 2 | No contact is ever made to a DND or opted-out customer | **done** (M5) |
 | 3 | Holdout cases are never touched | M8 |
 | 4 | Re-running the same batch produces zero new actions | **done** (M0), extended in M9 |
 
@@ -144,6 +144,25 @@ surprising. This is the part to read when picking up a cold session.
   on Windows) were blocked anywhere under `Documents\` by Trend Micro Apex One.
   Single root cause behind WHAT_BROKE §3, §5 and §6, previously logged as three
   separate Vite problems.
+- **M3–M5** — The reasoning core. Landed as one commit because they are not
+  separable: decide is meaningless without a cause, and the gate is meaningless
+  without a decision to veto. 66 tests green.
+  - Rules resolve **72/80 deterministically**; the 8 that fall through are
+    exactly the ambiguous slice, so the model's share is by design, not
+    by accident.
+  - Rules are ordered **state-of-the-world before error-code**. A cancelled
+    mandate diagnoses as cancelled even when the error string claims something
+    recoverable — there's a test that mislabels one to prove it.
+  - **Layering worked as intended**: C1 and C5 never fire in a normal run,
+    because decide already stops cancelled mandates and already reroutes
+    domestic cards. They are the backstop, and there is a rogue-decision test
+    that feeds the gate a deliberately wrong `retryNow` to prove the backstop
+    holds.
+  - C2 fires 3 times on the DND/opted-out slice, escalating rather than
+    silently dropping — and a debit is still permitted for those customers,
+    because consent to be contacted is not authorisation to charge.
+  - Every decision carries a populated `rejected` array. A test asserts every
+    reason is a real sentence, not a placeholder.
 - **M2** — Ingest and prioritiser done; `npm run batch` prints the ranked queue.
   61 treated / 16 holdout / 3 already halted before the batch ran. Three
   decisions worth knowing: the holdout is a **seeded Fisher–Yates shuffle**
