@@ -59,9 +59,11 @@ function isQuotaError(message: string): boolean {
   return /\b429\b|quota|rate.?limit|RESOURCE_EXHAUSTED/i.test(message)
 }
 
-/** Gemini overload. Transient, worth one retry. */
+/** Gemini overload, or a request that never came back. Worth one retry. */
 function isTransient(message: string): boolean {
-  return /\b(503|500|502|504)\b|UNAVAILABLE|overloaded/i.test(message)
+  return /\b(503|500|502|504)\b|UNAVAILABLE|overloaded|timeout|timed out|aborted|fetch failed|ECONN/i.test(
+    message,
+  )
 }
 
 /**
@@ -70,6 +72,9 @@ function isTransient(message: string): boolean {
  * 13s leaves a little headroom over the 12s the limit implies.
  */
 export const MIN_CALL_INTERVAL_MS = 13_000
+
+/** Give up on the model for this run after this many hard failures. */
+export const CONSECUTIVE_FAILURE_LIMIT = 3
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -130,6 +135,12 @@ export function liveLlmDiagnoser(
 
         stats.failed += 1
         if (isQuotaError(message)) stats.quotaExhausted = true
+
+        // Repeated non-quota failures mean the provider is unwell, not that
+        // this particular case is hard. Stop calling rather than spending a
+        // minute of wall clock per remaining case discovering the same thing.
+        if (stats.failed >= CONSECUTIVE_FAILURE_LIMIT) stats.quotaExhausted = true
+
         // The case escalates. The batch continues.
         return null
       }

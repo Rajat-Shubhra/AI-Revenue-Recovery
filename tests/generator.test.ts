@@ -84,7 +84,7 @@ describe('slice shapes hold', () => {
     expect(cases.filter((c) => c.customer.dnd || c.customer.opted_out)).toHaveLength(4)
   })
 
-  it('the ambiguous tail is genuinely uninformative', () => {
+  it('the ambiguous tail has a reason code that gives nothing away', () => {
     const vague = ['payment_failed', 'transaction_declined', 'processing_error']
     const tail = cases.filter((c) => vague.includes(c.error.reason))
     expect(tail).toHaveLength(8)
@@ -93,6 +93,33 @@ describe('slice shapes hold', () => {
     for (const c of tail) {
       expect(c.error.reason).not.toContain(c._true_cause)
     }
+  })
+
+  it('no ambiguous description names a canonical cause', () => {
+    // The descriptions carry real signal in prose — that is the point, it is
+    // what a model can read and a lookup table cannot. But if one literally
+    // contained "insufficient_funds", the whole exercise would collapse into
+    // string matching and the model would be proving nothing.
+    const vague = ['payment_failed', 'transaction_declined', 'processing_error']
+    const tail = cases.filter((c) => vague.includes(c.error.reason))
+    for (const c of tail) {
+      const text = c.error.description.toLowerCase()
+      for (const cause of TRUE_CAUSES) {
+        expect(text).not.toContain(cause)
+        // Also catch the spaced-out form, e.g. "insufficient funds".
+        expect(text).not.toContain(cause.replace(/_/g, ' '))
+      }
+    }
+  })
+
+  it('keeps two of the tail genuinely undeterminable', () => {
+    // These exercise the escalation path against real model output. If every
+    // ambiguous case were solvable, the confidence floor would never fire and
+    // would be an untested claim.
+    const undeterminable = cases.filter(
+      (c) => c._true_cause === 'unknown' && c.error.description.length > 0,
+    )
+    expect(undeterminable).toHaveLength(2)
   })
 
   it('never marks a non-card method as a domestic card', () => {

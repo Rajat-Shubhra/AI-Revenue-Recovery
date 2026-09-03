@@ -19,7 +19,7 @@ import { registerTools } from './pipeline/tools'
 import { MockRazorpayPort } from './ports/mock'
 import { ACTION_COST_INR, type ActionName } from './pipeline/recovery-priors'
 import { measure, scoreHoldout, type CaseResult } from './pipeline/measure'
-import { expectedNoActionRate } from './sim/simulator'
+import { expectedNoActionRate, checkDiagnoses } from './sim/simulator'
 import type { SimAction } from './sim/outcomes'
 
 const AUDIT_FILE = fileURLToPath(new URL('../data/audit.jsonl', import.meta.url))
@@ -101,6 +101,26 @@ async function main(): Promise<void> {
       console.log(`  ⚠ QUOTA EXHAUSTED mid-run — remaining cases escalated rather than guessed.`)
     }
     if (llmStats.lastError) console.log(`  last model issue: ${llmStats.lastError}`)
+
+    // Was it right? "Resolved by the model" is not the same claim as "correct",
+    // and reporting only the first would overstate what the model contributed.
+    const modelClaims = new Map(
+      [...results]
+        .filter(([, d]) => d.via === 'llm' && !d.escalate)
+        .map(([id, d]) => [id, d.cause as string]),
+    )
+    const checks = checkDiagnoses(scored.map((s) => s.kase), modelClaims)
+    if (checks.length > 0) {
+      const right = checks.filter((c) => c.correct)
+      console.log(
+        `  accuracy: ${right.length}/${checks.length} of the model's diagnoses matched the true cause`,
+      )
+      for (const wrong of checks.filter((c) => !c.correct)) {
+        console.log(
+          `    ✗ ${wrong.case_id} — model said ${wrong.claimed}, actually ${wrong.actual} (₹${wrong.amount_inr})`,
+        )
+      }
+    }
   } else {
     console.log('  model: skipped (--no-llm)')
   }

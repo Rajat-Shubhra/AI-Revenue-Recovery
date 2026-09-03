@@ -7,7 +7,7 @@ import { loadCases, assignHoldout } from '../src/pipeline/ingest'
 import { loadStoppingConfig, stopCheck, systemicCheck } from '../src/pipeline/stopping'
 import { score } from '../src/pipeline/prioritise'
 import { decideFromCause } from '../src/pipeline/decide'
-import { simulate, expectedNoActionRate } from '../src/sim/simulator'
+import { simulate, expectedNoActionRate, checkDiagnoses } from '../src/sim/simulator'
 import { MockRazorpayPort } from '../src/ports/mock'
 import { measure, scoreHoldout, type CaseResult } from '../src/pipeline/measure'
 import { OUTCOME_TABLE } from '../src/sim/outcomes'
@@ -246,6 +246,20 @@ describe('measurement', () => {
     const m = measure([], [])
     expect(m.net_lift_inr).toBe(0)
     expect(m.holdout.rate).toBe(0)
+  })
+
+  it('checkDiagnoses scores a claim against the true cause', () => {
+    const kase = cases.find((c) => c._true_cause === 'insufficient_funds')!
+    const right = checkDiagnoses(cases, new Map([[kase.id, 'insufficient_funds']]))
+    expect(right[0]!.correct).toBe(true)
+
+    const wrong = checkDiagnoses(cases, new Map([[kase.id, 'card_expired']]))
+    expect(wrong[0]!.correct).toBe(false)
+    expect(wrong[0]!.actual).toBe('insufficient_funds')
+  })
+
+  it('checkDiagnoses ignores cases it was given no claim for', () => {
+    expect(checkDiagnoses(cases, new Map())).toEqual([])
   })
 
   it('expectedNoActionRate agrees with the table', () => {

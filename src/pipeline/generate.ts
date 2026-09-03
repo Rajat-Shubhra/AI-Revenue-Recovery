@@ -233,46 +233,84 @@ const SLICES: { name: string; count: number; draft: (rng: Rng, n: number) => Dra
     }),
   },
   {
-    // 10% — the LLM tail. The observed reason is genuinely uninformative; the
-    // true cause is knowable for six of these and honestly not for two, so the
-    // confidence floor gets exercised rather than just asserted.
+    // 10% — the LLM tail, and the only place a model earns its keep.
+    //
+    // The `reason` CODE is generic and matches no rule, exactly as a real
+    // gateway often reports. The `description` is free text from the issuer,
+    // and for six of the eight it does carry the signal — which is the real
+    // shape of this problem: the code is useless, the prose is not.
+    //
+    // The last two are genuinely undeterminable, so the confidence floor gets
+    // exercised against real model output rather than asserted. And none of
+    // these descriptions name a canonical cause string; a test enforces that,
+    // because a description containing "insufficient_funds" would make this a
+    // string-matching exercise rather than a judgement.
     name: 'unknown / ambiguous',
     count: 8,
     draft: (_rng, n) => {
-      const hidden: TrueCause[] = [
-        'insufficient_funds',
-        'insufficient_funds',
-        'insufficient_funds',
-        'bank_blocked_card',
-        'bank_blocked_card',
-        'issuer_downtime',
-        'unknown',
-        'unknown',
-      ]
-      const vague = [
+      const tail: { source: Draft['source']; reason: string; description: string; cause: TrueCause }[] = [
         {
+          source: 'internal',
           reason: 'payment_failed',
-          description: 'The payment could not be completed.',
-          source: 'internal' as const,
+          description:
+            'Issuer response: the balance in the linked account was below the debit amount at the time of presentment.',
+          cause: 'insufficient_funds',
         },
         {
+          source: 'issuer_bank',
           reason: 'transaction_declined',
-          description: 'The transaction was declined. No further detail was provided.',
-          source: 'issuer_bank' as const,
+          description:
+            "Declined by the customer's bank. The advice code indicates the account could not cover the amount presented.",
+          cause: 'insufficient_funds',
         },
         {
+          source: 'gateway',
           reason: 'processing_error',
-          description: 'An error occurred while processing the debit.',
-          source: 'gateway' as const,
+          description:
+            'The debit was returned unpaid by the sponsor bank; cleared funds were not available on the presentment date.',
+          cause: 'insufficient_funds',
+        },
+        {
+          source: 'internal',
+          reason: 'payment_failed',
+          description:
+            'The issuer refused the credential. The instrument has been restricted by the bank and is not permitted for online debits.',
+          cause: 'bank_blocked_card',
+        },
+        {
+          source: 'issuer_bank',
+          reason: 'transaction_declined',
+          description:
+            "Declined by the customer's bank with a restriction on the instrument itself. The account is otherwise in good standing.",
+          cause: 'bank_blocked_card',
+        },
+        {
+          source: 'gateway',
+          reason: 'processing_error',
+          description:
+            "No response was received from the customer's bank inside the timeout window; the authorisation host was unreachable.",
+          cause: 'issuer_downtime',
+        },
+        {
+          source: 'internal',
+          reason: 'payment_failed',
+          description: 'The payment could not be completed. No additional detail was provided upstream.',
+          cause: 'unknown',
+        },
+        {
+          source: 'issuer_bank',
+          reason: 'transaction_declined',
+          description: 'The transaction was declined. The issuer returned no advice code.',
+          cause: 'unknown',
         },
       ]
-      const v = vague[n % vague.length]!
+      const t = tail[n]!
       return {
-        source: v.source,
+        source: t.source,
         step: 'payment_authorization',
-        reason: v.reason,
-        description: v.description,
-        cause: hidden[n]!,
+        reason: t.reason,
+        description: t.description,
+        cause: t.cause,
       }
     },
   },

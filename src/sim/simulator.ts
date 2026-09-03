@@ -59,6 +59,54 @@ export function expectedNoActionRate(cases: Case[]): number {
   return expected / pool
 }
 
+export type DiagnosisCheck = {
+  case_id: string
+  claimed: string
+  actual: string
+  correct: boolean
+  amount_inr: number
+}
+
+/**
+ * Was the model right?
+ *
+ * "Resolved by the model" and "correct" are different claims, and reporting the
+ * first as though it were the second is the easiest way to overstate what the
+ * AI contributed. The confidence floor stops low-confidence guesses; it does
+ * nothing about a confident wrong answer, so that has to be measured.
+ *
+ * Scoring only, and read-only: it lives here because it reads ground truth, it
+ * runs after every decision has already been made, and nothing upstream can see
+ * it. The agent cannot game a number it is never shown.
+ *
+ * Note that a wrong diagnosis is already punished implicitly — the agent acts on
+ * its mistaken theory and the simulator scores that action against the TRUE
+ * cause, so a payment link sent for what was really insufficient funds pays 0.30
+ * instead of the 0.52 a scheduled retry would have earned. This just makes the
+ * cost visible instead of leaving it buried in the total.
+ */
+export function checkDiagnoses(
+  cases: Case[],
+  claimed: Map<string, string>,
+): DiagnosisCheck[] {
+  const byId = new Map(cases.map((c) => [c.id, c]))
+  const out: DiagnosisCheck[] = []
+
+  for (const [case_id, claim] of claimed) {
+    const kase = byId.get(case_id)
+    if (!kase) continue
+    out.push({
+      case_id,
+      claimed: claim,
+      actual: kase._true_cause,
+      correct: claim === kase._true_cause,
+      amount_inr: kase.amount_inr,
+    })
+  }
+
+  return out.sort((a, b) => a.case_id.localeCompare(b.case_id))
+}
+
 export type SimResult = {
   action: SimAction
   probability: number

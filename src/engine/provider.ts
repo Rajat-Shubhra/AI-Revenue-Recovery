@@ -20,6 +20,16 @@ export type AgentProvider = {
 
 const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models'
 
+/**
+ * How long to wait for the model before giving up on a call.
+ *
+ * Carried from Quark without one, which was fine for a single interactive run
+ * and is not fine here: an unanswered request with no timeout blocks the whole
+ * batch forever. Observed exactly that — a run sat for ten minutes having
+ * completed two of eight calls. A payments batch must never hang on a model.
+ */
+export const REQUEST_TIMEOUT_MS = 30_000
+
 export function geminiProvider(model = env.GEMINI_MODEL): AgentProvider {
   return {
     name: 'gemini',
@@ -29,6 +39,7 @@ export function geminiProvider(model = env.GEMINI_MODEL): AgentProvider {
         `${GEMINI_ENDPOINT}/${model}:generateContent?key=${env.GEMINI_API_KEY}`,
         {
           method: 'POST',
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemPrompt }] },

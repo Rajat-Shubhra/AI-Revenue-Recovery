@@ -2180,7 +2180,7 @@
       "source": "internal",
       "step": "payment_authorization",
       "reason": "payment_failed",
-      "description": "The payment could not be completed."
+      "description": "Issuer response: the balance in the linked account was below the debit amount at the time of presentment."
     },
     "failed_at": "2026-09-03T06:00:00.000Z",
     "attempts": 2,
@@ -2210,7 +2210,7 @@
       "source": "issuer_bank",
       "step": "payment_authorization",
       "reason": "transaction_declined",
-      "description": "The transaction was declined. No further detail was provided."
+      "description": "Declined by the customer's bank. The advice code indicates the account could not cover the amount presented."
     },
     "failed_at": "2026-09-03T16:00:00.000Z",
     "attempts": 1,
@@ -2240,7 +2240,7 @@
       "source": "gateway",
       "step": "payment_authorization",
       "reason": "processing_error",
-      "description": "An error occurred while processing the debit."
+      "description": "The debit was returned unpaid by the sponsor bank; cleared funds were not available on the presentment date."
     },
     "failed_at": "2026-09-03T09:00:00.000Z",
     "attempts": 1,
@@ -2270,7 +2270,7 @@
       "source": "internal",
       "step": "payment_authorization",
       "reason": "payment_failed",
-      "description": "The payment could not be completed."
+      "description": "The issuer refused the credential. The instrument has been restricted by the bank and is not permitted for online debits."
     },
     "failed_at": "2026-09-05T00:00:00.000Z",
     "attempts": 1,
@@ -2300,7 +2300,7 @@
       "source": "issuer_bank",
       "step": "payment_authorization",
       "reason": "transaction_declined",
-      "description": "The transaction was declined. No further detail was provided."
+      "description": "Declined by the customer's bank with a restriction on the instrument itself. The account is otherwise in good standing."
     },
     "failed_at": "2026-09-05T06:00:00.000Z",
     "attempts": 2,
@@ -2330,7 +2330,7 @@
       "source": "gateway",
       "step": "payment_authorization",
       "reason": "processing_error",
-      "description": "An error occurred while processing the debit."
+      "description": "No response was received from the customer's bank inside the timeout window; the authorisation host was unreachable."
     },
     "failed_at": "2026-09-02T20:00:00.000Z",
     "attempts": 2,
@@ -2360,7 +2360,7 @@
       "source": "internal",
       "step": "payment_authorization",
       "reason": "payment_failed",
-      "description": "The payment could not be completed."
+      "description": "The payment could not be completed. No additional detail was provided upstream."
     },
     "failed_at": "2026-09-02T23:00:00.000Z",
     "attempts": 2,
@@ -2390,7 +2390,7 @@
       "source": "issuer_bank",
       "step": "payment_authorization",
       "reason": "transaction_declined",
-      "description": "The transaction was declined. No further detail was provided."
+      "description": "The transaction was declined. The issuer returned no advice code."
     },
     "failed_at": "2026-09-03T15:00:00.000Z",
     "attempts": 1,
