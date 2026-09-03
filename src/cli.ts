@@ -12,6 +12,7 @@ import { ingest } from './pipeline/ingest'
 import { prioritise, BATCH_TICK_SIZE, type Scored } from './pipeline/prioritise'
 import { diagnose, noLlm } from './pipeline/diagnose'
 import { liveLlmDiagnoser, emptyLlmStats } from './pipeline/llm-diagnose'
+import { defaultProvider } from './engine/provider'
 import { decide, type Outcome } from './pipeline/decide'
 import { complianceGate } from './pipeline/compliance'
 import { loadStoppingConfig, stopCheck, systemicCheck } from './pipeline/stopping'
@@ -80,11 +81,12 @@ async function main(): Promise<void> {
   // run fully deterministic and free, which is the default for development.
   const useLlm = !process.argv.includes('--no-llm')
   const llmStats = emptyLlmStats()
+  const provider = useLlm ? defaultProvider() : null
   const { results, tally } = await diagnose(
     scored.map((s) => s.kase),
     audit,
     clock,
-    useLlm ? liveLlmDiagnoser(llmStats) : noLlm,
+    provider ? liveLlmDiagnoser(llmStats, provider) : noLlm,
   )
 
   console.log('\nDiagnosis\n')
@@ -92,7 +94,8 @@ async function main(): Promise<void> {
     `  ${tally.total} cases · ${tally.by_rules} by rules · ${tally.by_llm} by the model · ${tally.escalated_uncertain} uncertain → escalated`,
   )
   console.log(`  ${pct(tally.by_rules / tally.total)} deterministic — the model is reserved for the ambiguous tail.`)
-  if (useLlm) {
+  if (provider) {
+    console.log(`  provider: ${provider.name} (${provider.model})`)
     console.log(
       `  model: ${llmStats.calls} call(s) · ${llmStats.ok} usable · ${llmStats.rejected} rejected by the schema or floor` +
         ` · ${llmStats.failed} failed · ${llmStats.retries} transport retr${llmStats.retries === 1 ? 'y' : 'ies'}`,

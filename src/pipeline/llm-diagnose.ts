@@ -16,7 +16,7 @@
 //     influence a money action** — `parseDiagnosis` in engine/schema.ts.
 import type { Case } from '../engine/case'
 import type { AgentProvider } from '../engine/provider'
-import { geminiProvider } from '../engine/provider'
+import { defaultProvider } from '../engine/provider'
 import { parseDiagnosis } from '../engine/schema'
 import { ALLOWED_CAUSES, buildUserMessage } from '../engine/prompt'
 import type { LlmDiagnoser } from './diagnose'
@@ -67,11 +67,25 @@ function isTransient(message: string): boolean {
 }
 
 /**
- * The free tier allows 5 requests per minute — a rate limit, not a daily cap,
- * which is a much better problem to have: it needs pacing, not a new key.
- * 13s leaves a little headroom over the 12s the limit implies.
+ * How hard we may push each provider, from their published free-tier limits.
+ *
+ * Gemini: 5 requests/minute — 13s leaves headroom over the 12s that implies.
+ * (Its 20/day cap is the real constraint, and no pacing helps with that.)
+ *
+ * Groq: 30 requests/minute and 6,000 tokens/minute. At ~600 tokens a call the
+ * token limit binds first, around 10 calls/minute, so 3s rather than the 2s the
+ * request limit alone would allow.
  */
-export const MIN_CALL_INTERVAL_MS = 13_000
+export const PACING_MS: Record<string, number> = {
+  gemini: 13_000,
+  groq: 3_000,
+}
+
+export const DEFAULT_PACING_MS = 13_000
+
+export function pacingFor(providerName: string): number {
+  return PACING_MS[providerName] ?? DEFAULT_PACING_MS
+}
 
 /** Give up on the model for this run after this many hard failures. */
 export const CONSECUTIVE_FAILURE_LIMIT = 3
@@ -90,8 +104,8 @@ function retryAfterMs(message: string): number {
  */
 export function liveLlmDiagnoser(
   stats: LlmStats,
-  provider: AgentProvider = geminiProvider(),
-  minIntervalMs: number = MIN_CALL_INTERVAL_MS,
+  provider: AgentProvider = defaultProvider(),
+  minIntervalMs: number = pacingFor(provider.name),
 ): LlmDiagnoser {
   let lastCallAt = 0
 

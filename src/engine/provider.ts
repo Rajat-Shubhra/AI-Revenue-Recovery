@@ -76,3 +76,70 @@ export function geminiProvider(model = env.GEMINI_MODEL): AgentProvider {
     },
   }
 }
+
+const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions'
+
+/**
+ * Groq — OpenAI-compatible, and the provider this project runs on.
+ *
+ * Added because Gemini's free tier is 20 requests a day and ran out mid-build.
+ * Groq's is 14,400 at 30/minute, which turns "one batch per day if nothing goes
+ * wrong" into "run it as often as you like". Note that Groq enforces limits at
+ * the organisation level, so a second key does not raise them.
+ *
+ * The models are open-weight rather than frontier, which is the right trade
+ * here: the task is to read one sentence of issuer prose and pick one of ten
+ * causes with a confidence. `checkDiagnoses` measures whether it actually gets
+ * them right, so if the trade turns out badly it shows up as a number rather
+ * than as a surprise.
+ */
+export function groqProvider(model = env.GROQ_MODEL): AgentProvider {
+  return {
+    name: 'groq',
+    model,
+    async complete(systemPrompt, userMessage) {
+      const response = await fetch(GROQ_ENDPOINT, {
+        method: 'POST',
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage },
+          ],
+          // Same contract as the Gemini path: bare JSON, no fences.
+          response_format: { type: 'json_object' },
+          // Classification should be stable, not creative.
+          temperature: 0.2,
+        }),
+      })
+
+      if (!response.ok) {
+        // Never surface the body verbatim — it can echo the key.
+        const detail = await response.text()
+        console.error(`[agent] groq ${response.status}: ${detail.slice(0, 500)}`)
+        throw new Error(`Model request failed (${response.status})`)
+      }
+
+      const body = (await response.json()) as {
+        choices?: { message?: { content?: string }; finish_reason?: string }[]
+      }
+
+      const text = body.choices?.[0]?.message?.content ?? ''
+      if (!text.trim()) throw new Error('Model returned an empty response')
+      return text
+    },
+  }
+}
+
+/**
+ * The provider the pipeline uses, chosen by `LLM_PROVIDER`. Nothing downstream
+ * knows or cares which one answered.
+ */
+export function defaultProvider(): AgentProvider {
+  return env.LLM_PROVIDER === 'gemini' ? geminiProvider() : groqProvider()
+}

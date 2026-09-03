@@ -16,10 +16,32 @@ function required(name: string): string {
   return value
 }
 
+/** Which provider the diagnose step talks to. See provider.ts. */
+export type ProviderName = 'gemini' | 'groq'
+
 export const env = {
+  /**
+   * Both providers are kept wired. Gemini's free tier is 20 requests/day, which
+   * ran out mid-build; Groq's is 14,400. Switching is one line here rather than
+   * a code change, and keeping both means a batch can be re-run against the
+   * other to show the result is not an artefact of one model.
+   */
+  get LLM_PROVIDER(): ProviderName {
+    const value = (process.env.LLM_PROVIDER ?? 'groq').toLowerCase()
+    if (value !== 'gemini' && value !== 'groq') {
+      throw new Error(`LLM_PROVIDER must be "gemini" or "groq", got "${value}"`)
+    }
+    return value
+  },
+
   get GEMINI_API_KEY(): string {
     return required('GEMINI_API_KEY')
   },
   // gemini-2.5-flash is no longer offered to new API keys.
   GEMINI_MODEL: process.env.GEMINI_MODEL ?? 'gemini-3.6-flash',
+
+  get GROQ_API_KEY(): string {
+    return required('GROQ_API_KEY')
+  },
+  GROQ_MODEL: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
 }
