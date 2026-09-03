@@ -113,8 +113,12 @@ export function groqProvider(model = env.GROQ_MODEL): AgentProvider {
           ],
           // Same contract as the Gemini path: bare JSON, no fences.
           response_format: { type: 'json_object' },
-          // Classification should be stable, not creative.
-          temperature: 0.2,
+          // Classification should be stable, not creative. Zero rather than a
+          // low value because the batch is re-run on camera and every varying
+          // answer is a number that moves between takes. It does not make the
+          // provider bit-deterministic — nothing does — but it is as close as
+          // the API allows, and the README says so plainly.
+          temperature: 0,
         }),
       })
 

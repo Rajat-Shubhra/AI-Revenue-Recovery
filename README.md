@@ -181,6 +181,19 @@ Vite through its JS API instead and works fine. This is documented in
 - **No real contact channels.** "Sending" a payment link writes to the audit log.
   Nothing reaches a real customer.
 - **The batch is synthetic**, generated from a seed so it is reproducible.
+- **The model is not deterministic, even at temperature 0.** Across repeated
+  runs it will occasionally change its mind about a genuinely borderline case —
+  in testing, one case in eighty flipped between `issuer_downtime`,
+  `gateway_downtime` and `unknown`. Temperature is set to 0 to minimise this,
+  but no hosted provider is bit-reproducible.
+
+  The deterministic 90% of the pipeline is unaffected, and in practice the
+  headline number does not move: adjacent causes collapse to the same action in
+  the decide table, so the agent does the same thing either way and the
+  simulator scores it against the true cause regardless. Two runs that disagreed
+  about that case reported an identical ₹47,736 net lift. That is the
+  architecture doing its job rather than luck, but it is worth stating that the
+  model itself is the one component that will not reproduce exactly.
 
 These are written down rather than hidden because a single cherry-picked result
 proves nothing, and the failure-recovery criterion rewards saying what didn't

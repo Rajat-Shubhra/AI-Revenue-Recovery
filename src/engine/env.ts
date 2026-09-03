@@ -43,5 +43,8 @@ export const env = {
   get GROQ_API_KEY(): string {
     return required('GROQ_API_KEY')
   },
-  GROQ_MODEL: process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile',
+  // Groq's catalogue moves — llama-3.3-70b-versatile 404s as of Sept 2026.
+  // Check what a key can actually reach with:
+  //   GET https://api.groq.com/openai/v1/models
+  GROQ_MODEL: process.env.GROQ_MODEL ?? 'openai/gpt-oss-120b',
 }

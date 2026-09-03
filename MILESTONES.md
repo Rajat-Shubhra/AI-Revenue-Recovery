@@ -144,6 +144,28 @@ surprising. This is the part to read when picking up a cold session.
   on Windows) were blocked anywhere under `Documents\` by Trend Micro Apex One.
   Single root cause behind WHAT_BROKE §3, §5 and §6, previously logged as three
   separate Vite problems.
+- **M9 (LLM tail)** — Live model path working, on **Groq** rather than Gemini.
+  Gemini's free tier turned out to be **20 requests/day** as well as 5/minute;
+  it ran dry mid-build. Groq gives 14,400/day at 30/min, and the `AgentProvider`
+  interface carried from Quark meant adding it touched one file. Both stay
+  wired; `LLM_PROVIDER` picks.
+  - `llama-3.3-70b-versatile` 404s — Groq's catalogue has moved. Now on
+    `openai/gpt-oss-120b`. Query `GET /openai/v1/models` rather than trusting a
+    model name from documentation.
+  - Full batch: **8 calls, 8 usable, 0 failed, 25 seconds.** Typically 5–6 of
+    the 8 resolved, the rest escalated. Accuracy against ground truth ranges
+    4/5 to 6/6 across runs.
+  - **The model is not deterministic even at temperature 0.** `case_078` flips
+    between `issuer_downtime`, `gateway_downtime` and `unknown` across runs.
+    Documented in the README as an honest limitation.
+  - **The headline number does not move anyway** — ₹47,736 in both runs that
+    disagreed. Adjacent causes collapse to the same action in the decide table,
+    so the agent does the same thing and the simulator scores against the true
+    cause regardless. Worth saying out loud in the video: the architecture
+    absorbs model variance.
+  - Gemini's quota running out mid-run was the first real test of the
+    degradation path, and it held: 8 cases escalated with "the model was not
+    available" and the batch completed. Better evidence than a test.
 - **M6–M8** — The loop closes. `npm run batch` runs ingest → prioritise →
   diagnose → decide → compliance → stop → act → measure on 80 cases and prints
   the scoreboard. 92 tests green.
