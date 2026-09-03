@@ -42,6 +42,11 @@ export type AuditEntry = {
   case_id: string
   stage: 'ingest' | 'prioritise' | 'diagnose' | 'decide' | 'compliance' | 'stop' | 'act'
   input_hash?: string
+  /** Which arm of the measurement this case is in (§4.10). */
+  arm?: 'treated' | 'holdout'
+  /** Prioritise stage: the score and the arithmetic behind it (§4.2). */
+  priority?: number
+  why?: string
   rules_fired?: string[]
   llm?: { used: boolean; model?: string; confidence?: number }
   decision?: Classification | 'STOP' | 'HOLD'

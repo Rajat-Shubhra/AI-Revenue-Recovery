@@ -81,7 +81,7 @@ Blueprint section references in brackets.
 |---|---|---|---|---|
 | **M0** | Starting line — engine, provenance, README | Engine typechecks and tests green; PROVENANCE.md records the Quark boundary; README answers the Track 3 bar clause by clause | **done** | Engine committed `00145a5`; blueprint + README `81e2f76`. Decisions taken: STOP/HOLD in code not in the enum; live LLM calls, no cache; Gemini SDK not added (provider is hand-rolled fetch); env key lazy so tests run without one; `web/package-lock.json` deleted — workspaces make the root lock authoritative. |
 | **M1** | Synthetic generator [§3] | `npm run generate` writes 80 cases; slice counts match §3; same seed → byte-identical file; a test asserts nothing outside `/src/sim/` reads `_true_cause` or `_will_self_heal` | **done** | Probability tables approved before building (two tables, deliberately separate — prior vs ground truth). 23 tests green, seed file SHA256-identical across runs. Cost a long detour into WHAT_BROKE §11 before the repo was moved out of `Documents`. Double-charge modelling deferred by decision. |
-| **M2** | Ingest + prioritiser [§4.1–4.2] | Batch loads cases, assigns the 20% holdout by seed, writes one audit line per case; top-20 printed with expected_value, urgency, cost, final priority, and the reason it ranked there | not started | |
+| **M2** | Ingest + prioritiser [§4.1–4.2] | Batch loads cases, assigns the 20% holdout by seed, writes one audit line per case; top-20 printed with expected_value, urgency, cost, final priority, and the reason it ranked there | **done** | 41 tests green. Holdout is a seeded Fisher–Yates shuffle, not a stride, so the control arm isn't correlated with slice order. Urgency clamped at 1h. Queue ties break on case id so runs are reproducible. 3 cases arrive already halted and are excluded at the door. |
 | **M3** | Rules table + diagnose [§4.3] | Rules resolve every reason except the ambiguous slice; unmatched cases fall through cleanly; rules-vs-LLM counts reported. LLM path stubbed here — no live calls yet | not started | |
 | **M4** | Decide [§4.4] | Every rule-resolved case gets a bucket and tool with no model call; STOP and HOLD decided before the classifier is reachable | not started | Enum stays three values. See §4.4. |
 | **M5** | Compliance gate [§4.5] | All six checks deterministic and logged **when they pass as well as when they fire** — a gate that only logs failures can't prove it ran. Invariant tests 1 and 2 green | not started | |
@@ -144,6 +144,16 @@ surprising. This is the part to read when picking up a cold session.
   on Windows) were blocked anywhere under `Documents\` by Trend Micro Apex One.
   Single root cause behind WHAT_BROKE §3, §5 and §6, previously logged as three
   separate Vite problems.
+- **M2** — Ingest and prioritiser done; `npm run batch` prints the ranked queue.
+  61 treated / 16 holdout / 3 already halted before the batch ran. Three
+  decisions worth knowing: the holdout is a **seeded Fisher–Yates shuffle**
+  rather than every-Nth, because a stride would correlate the control arm with
+  the generator's slice order and quietly bias the measurement; **urgency is
+  clamped at one hour**, or a case with 20 minutes left would outrank everything
+  regardless of value; and the **queue breaks ties on case id**, without which
+  equal-priority cases reorder between runs and the demo stops being
+  reproducible. Halted subscriptions are dropped at ingest rather than after
+  work is done on them.
 - **M1** — **The repo moved to `C:\dev\razorpay-recovery`.** The block was
   scoped to the protected `Documents` folder, not to `cmd`; a probe package in
   `C:\dev` wrote fine by every route. Copied with `robocopy` (the old directory
