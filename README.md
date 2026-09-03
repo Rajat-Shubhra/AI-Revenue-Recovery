@@ -11,9 +11,11 @@ the problem" but **show measured money recovered across a batch, with compliant
 escalation, stopping rules, and an audit trail** — so those four things are what
 this repo is organised around.
 
-> **Status: in progress.** The engine and the idempotency guard are built and
-> tested. The pipeline is being built milestone by milestone — see
-> [MILESTONES.md](MILESTONES.md) for exactly where it is.
+> **Status: complete.** All ten milestones done, 96 tests green. `npm run batch`
+> runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
+> dashboard. A sample audit ledger and report are committed, so the trail can be
+> read straight from the diff. See [MILESTONES.md](MILESTONES.md) for how it was
+> built and what broke.
 
 ---
 
@@ -28,18 +30,18 @@ if something says pending, it is genuinely not built.
 
 | Clause | Where | State |
 |---|---|---|
-| **Measured money recovered** | 20% holdout the agent never touches; the headline figure is net lift between arms, not raw recoveries | pending M8 |
-| **Across a batch** | 80 seeded synthetic cases, reproducible from the seed; prioritised queue works the top N per tick | pending M1–M2 |
-| **Compliant escalation** | Six deterministic compliance checks before every action; ESCALATE bucket for merchant-config problems and anything the agent can't confidently place | pending M5 |
-| **Stopping rules** | `config/stopping.json` — attempt caps, expected-value floor, terminal states, and a systemic rule that raises one escalation instead of N when a single cause exceeds 40% of the batch | pending M6 |
-| **Audit trail** | Append-only `audit.jsonl`, one line per stage per case, including a `rejected` array recording alternatives the agent declined and why | **built** — writer in `src/engine/audit.ts` |
+| **Measured money recovered** | 20% holdout the agent never touches. Latest run: **₹51,671 recovered treated vs ₹848 holdout, ₹47,736 net lift, ₹47,198 after action cost** | ✅ |
+| **Across a batch** | 80 seeded synthetic cases, byte-identical between runs; max-heap priority queue works the top 20 per tick, each with the arithmetic that ranked it | ✅ |
+| **Compliant escalation** | Six deterministic checks before every action, logged whether they pass or fire. DND/opted-out customers escalate rather than being silently dropped | ✅ |
+| **Stopping rules** | `config/stopping.json` — attempt caps, expected-value floor, terminal states, and a systemic rule raising one escalation instead of N when a single cause exceeds 40% of a batch | ✅ |
+| **Audit trail** | Append-only `audit.jsonl`, one line per stage per case, including the `rejected` array of alternatives declined and why. A sample run is committed — readable in the diff without running anything | ✅ |
 
 Plus the judged criterion that sits underneath all of them:
 
 | Criterion | Where | State |
 |---|---|---|
-| **AI Judgment** — deterministic where AI is unnecessary | ~12 diagnose + 3–5 decide model calls per 80-case batch; everything else is lookup tables. The ratio is printed on the dashboard | pending M3–M4 |
-| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — eight failures, each with symptom, root cause, dead ends, fix, time cost and lesson; unverified items marked as such | **built** |
+| **AI Judgment** — deterministic where AI is unnecessary | **72 of 80 cases resolved by rules, 8 model calls, 6 resolved, 2 escalated as undeterminable.** 90% deterministic, and the model's diagnoses are scored against ground truth so "resolved" is never reported as "correct" | ✅ |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — eleven failures with symptom, root cause, dead ends, fix, time cost and lesson. Unverified items marked as such | ✅ |
 
 ---
 

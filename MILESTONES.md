@@ -88,8 +88,8 @@ Blueprint section references in brackets.
 | **M6** | Stopping rules [§4.6] | Read from `config/stopping.json`, not hardcoded; systemic alert fires on a rigged single-cause batch and raises exactly one escalation | **done** | Config is zod-validated on load — a threshold that silently became `undefined` would disable a stopping rule. Escalations are exempt from the value floor: a small misconfiguration still needs fixing. |
 | **M7** | Ports + outcome simulator [§4.7–4.8] | `TOOLS` registry filled with the five tools; `MockRazorpayPort` runs against the simulator; deterministic under seed; probability table in one readable file | **done** | Draw is seeded from case id + action, so an outcome doesn't depend on processing order. `retryNow` is the one tool requiring confirmation — it debits with no notice period. `TestModeRazorpayPort` deliberately NOT stubbed: a stub returning success is indistinguishable from a real integration in the ledger. |
 | **M8** | Measurement + holdout [§4.10] | `npm run batch` runs 80 cases end to end and prints treated vs holdout, net lift, action cost, and recovery rate by cause and bucket. Invariant test 3 green | **done** | **Substance finish line reached.** Treated 46.1% vs holdout 3.5% by value, net lift ₹47,337. Rates reported by value *and* by count after the holdout showed 3.5%/12.5% — a 16-case arm is noisy. Table-implied cross-check printed alongside. **No LLM calls yet.** |
-| **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | partly done | Full-pipeline idempotency **verified**: run 1 executes 51 actions, run 2 executes 0 and logs 51 skipped duplicates. Still to do: live LLM wiring, its quota-failure path, and committing a sample ledger. |
-| **M10** | Dashboard [§4.11] | One page reading the JSONL: top strip, priority table, per-case audit timeline drawer, Run batch button | not started | Cut this before cutting anything in M1–M9. |
+| **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | **done** | Idempotency verified at pipeline level (51 actions, then 0). Quota-failure path proved itself for real when Gemini ran dry mid-run. Sample `audit.jsonl` + `report.json` committed. |
+| **M10** | Dashboard [§4.11] | One page reading the JSONL: top strip, priority table, per-case audit timeline drawer, Run batch button | **done** | Reads `report.json` + the ledger; derives no numbers of its own so the page and console cannot disagree. Drawer renders the full per-case timeline including the `rejected` array and every compliance check. Buttons run the same `npm run batch` a human would type. |
 
 ### Deferred — revisit only if the clock allows
 
@@ -144,6 +144,22 @@ surprising. This is the part to read when picking up a cold session.
   on Windows) were blocked anywhere under `Documents\` by Trend Micro Apex One.
   Single root cause behind WHAT_BROKE §3, §5 and §6, previously logged as three
   separate Vite problems.
+- **M9–M10** — Hardening and the dashboard. **All ten milestones done.**
+  - `data/report.json` is written by the CLI and rendered by the page, which
+    derives no numbers of its own. If the dashboard recomputed the measurement
+    it could drift from the console and one of them would be wrong silently.
+  - Two bugs the dashboard exposed that the console had hidden. **Halted cases
+    sorted to the top of the priority table** — a passed deadline clamps the
+    `1/hours` urgency term to 1, inflating their score — so priority is now null
+    for cases that never entered the queue. And **`act` was being written to the
+    ledger before `decide`**, which reads as a trail reconstructed after the
+    fact; the decision is now recorded before it is acted on.
+  - Running the batch twice is a *feature* of the demo: every action is refused
+    as a duplicate. "Reset & run" exists for when you want a clean sheet, and
+    the page says which is which.
+  - A sample `audit.jsonl` and `report.json` are committed, so a reviewer can
+    read the audit trail and the scoreboard in the GitHub diff without running
+    anything.
 - **M9 (LLM tail)** — Live model path working, on **Groq** rather than Gemini.
   Gemini's free tier turned out to be **20 requests/day** as well as 5/minute;
   it ran dry mid-build. Groq gives 14,400/day at 30/min, and the `AgentProvider`

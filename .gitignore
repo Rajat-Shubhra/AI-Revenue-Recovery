@@ -1,5 +1,9 @@
 node_modules/
 web/.vite-cache/
 web/dist/
-data/audit.jsonl
 .env
+
+# data/audit.jsonl and data/report.json ARE committed — one sample run, so the
+# audit trail and the scoreboard are readable in the GitHub diff without
+# cloning or running anything. That is worth more to a reviewer than a hosted
+# demo (BLUEPRINT §2, Storage).

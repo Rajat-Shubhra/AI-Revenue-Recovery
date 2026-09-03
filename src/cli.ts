@@ -7,7 +7,8 @@ import { AuditLog } from './engine/audit'
 import { fixedClock } from './engine/clock'
 import { executeActions } from './engine/gate'
 import type { AgentAction } from './engine/schema'
-import { BATCH_NOW } from './pipeline/generate'
+import { BATCH_NOW, SEED } from './pipeline/generate'
+import { writeReport, type ReportCase } from './pipeline/report'
 import { ingest } from './pipeline/ingest'
 import { prioritise, BATCH_TICK_SIZE, type Scored } from './pipeline/prioritise'
 import { diagnose, noLlm } from './pipeline/diagnose'
@@ -20,10 +21,11 @@ import { registerTools } from './pipeline/tools'
 import { MockRazorpayPort } from './ports/mock'
 import { ACTION_COST_INR, type ActionName } from './pipeline/recovery-priors'
 import { measure, scoreHoldout, type CaseResult } from './pipeline/measure'
-import { expectedNoActionRate, checkDiagnoses } from './sim/simulator'
+import { expectedNoActionRate, checkDiagnoses, type DiagnosisCheck } from './sim/simulator'
 import type { SimAction } from './sim/outcomes'
 
 const AUDIT_FILE = fileURLToPath(new URL('../data/audit.jsonl', import.meta.url))
+const REPORT_FILE = fileURLToPath(new URL('../data/report.json', import.meta.url))
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString('en-IN')}`
 const pct = (n: number) => `${(n * 100).toFixed(1)}%`
@@ -89,6 +91,8 @@ async function main(): Promise<void> {
     provider ? liveLlmDiagnoser(llmStats, provider) : noLlm,
   )
 
+  let accuracyChecks: DiagnosisCheck[] = []
+
   console.log('\nDiagnosis\n')
   console.log(
     `  ${tally.total} cases · ${tally.by_rules} by rules · ${tally.by_llm} by the model · ${tally.escalated_uncertain} uncertain → escalated`,
@@ -112,13 +116,13 @@ async function main(): Promise<void> {
         .filter(([, d]) => d.via === 'llm' && !d.escalate)
         .map(([id, d]) => [id, d.cause as string]),
     )
-    const checks = checkDiagnoses(scored.map((s) => s.kase), modelClaims)
-    if (checks.length > 0) {
-      const right = checks.filter((c) => c.correct)
+    accuracyChecks = checkDiagnoses(scored.map((s) => s.kase), modelClaims)
+    if (accuracyChecks.length > 0) {
+      const right = accuracyChecks.filter((c) => c.correct)
       console.log(
-        `  accuracy: ${right.length}/${checks.length} of the model's diagnoses matched the true cause`,
+        `  accuracy: ${right.length}/${accuracyChecks.length} of the model's diagnoses matched the true cause`,
       )
-      for (const wrong of checks.filter((c) => !c.correct)) {
+      for (const wrong of accuracyChecks.filter((c) => !c.correct)) {
         console.log(
           `    ✗ ${wrong.case_id} — model said ${wrong.claimed}, actually ${wrong.actual} (₹${wrong.amount_inr})`,
         )
@@ -152,6 +156,7 @@ async function main(): Promise<void> {
   // ─── DECIDE → COMPLIANCE → STOP → ACT ──────────────────────────────────
   const buckets = new Map<Outcome, number>()
   const stops: string[] = []
+  const stopReasons = new Map<string, string>()
   const treatedResults: CaseResult[] = []
   let gateOverrides = 0
 
@@ -168,12 +173,35 @@ async function main(): Promise<void> {
     const final = gate.decision
     const outcome: Outcome = stop.stopped && final.outcome !== 'STOP' && final.outcome !== 'HOLD' ? 'STOP' : final.outcome
     buckets.set(outcome, (buckets.get(outcome) ?? 0) + 1)
-    if (stop.stopped) stops.push(`${s.kase.id} · ${stop.rule} · ${stop.because}`)
+    if (stop.stopped) {
+      stops.push(`${s.kase.id} · ${stop.rule} · ${stop.because}`)
+      stopReasons.set(s.kase.id, `${stop.rule}: ${stop.because}`)
+    }
 
     // Only cases that survive compliance AND stopping reach a rail.
     const willAct = !stop.stopped && final.tool !== null
     let cost = 0
     let simAction: SimAction = 'none'
+
+    // Record the decision BEFORE acting on it. The ledger is read as a
+    // chronology, and an `act` line preceding the `decide` line that authorised
+    // it makes the whole trail look reconstructed after the fact — which is
+    // exactly the doubt an audit log exists to remove.
+    await audit.append({
+      ts: now.toISOString(),
+      case_id: s.kase.id,
+      stage: 'decide',
+      arm: 'treated',
+      rules_fired: d.rules_fired,
+      llm: { used: d.via !== 'rules', confidence: d.confidence },
+      cause: d.cause,
+      decision: outcome,
+      tool: willAct ? (final.tool ?? undefined) : undefined,
+      because: stop.stopped ? stop.because : final.because,
+      rejected: final.rejected,
+      compliance: { passed: gate.passed, checks: gate.checks.map((c) => `${c.id}:${c.passed ? 'ok' : c.action}`) },
+      stop_check: { stopped: stop.stopped, because: stop.because },
+    })
 
     if (willAct) {
       const action: AgentAction = { tool: final.tool!, input: final.params, result: '' }
@@ -192,22 +220,6 @@ async function main(): Promise<void> {
     // column — the same column the holdout takes — so restraint and inaction
     // are measured identically.
     if (simAction === 'none') port.noAction(s.kase.id)
-
-    await audit.append({
-      ts: now.toISOString(),
-      case_id: s.kase.id,
-      stage: 'decide',
-      arm: 'treated',
-      rules_fired: d.rules_fired,
-      llm: { used: d.via !== 'rules', confidence: d.confidence },
-      cause: d.cause,
-      decision: outcome,
-      tool: willAct ? (final.tool ?? undefined) : undefined,
-      because: stop.stopped ? stop.because : final.because,
-      rejected: final.rejected,
-      compliance: { passed: gate.passed, checks: gate.checks.map((c) => `${c.id}:${c.passed ? 'ok' : c.action}`) },
-      stop_check: { stopped: stop.stopped, because: stop.because },
-    })
 
     treatedResults.push({
       kase: s.kase,
@@ -289,6 +301,76 @@ async function main(): Promise<void> {
   console.log('\n  Outcomes are simulated from the single table in src/sim/outcomes.ts.')
   console.log('  The number that counts is the difference between arms, not raw recoveries.')
   console.log(`\n  Audit ledger: ${audit.file}`)
+
+  // ─── REPORT, for the dashboard ─────────────────────────────────────────
+  const treatedById = new Map(treatedResults.map((r) => [r.kase.id, r]))
+  const holdoutById = new Map(holdoutResults.map((r) => [r.kase.id, r]))
+
+  const reportCases: ReportCase[] = scored.map((s) => {
+    const t = treatedById.get(s.kase.id)
+    const h = holdoutById.get(s.kase.id)
+    const d = results.get(s.kase.id)
+    const row = t ?? h
+    return {
+      id: s.kase.id,
+      amount_inr: s.kase.amount_inr,
+      method: s.kase.method,
+      reason: s.kase.error.reason,
+      cause: d?.cause ?? 'unknown',
+      arm: s.holdout ? 'holdout' : 'treated',
+      decision: s.holdout ? 'HOLDOUT' : s.halted ? 'HALTED' : (t?.outcome ?? null),
+      tool: t && t.action !== 'none' ? t.action : null,
+      // Priority is only meaningful for cases that actually entered the queue.
+      // A halted case scores absurdly high — its deadline has passed, so the
+      // 1/hours urgency term clamps to 1 — and showing that would sort dead
+      // cases to the top of a table about what to work on next.
+      priority: s.holdout || s.halted ? null : Number(s.priority.toFixed(2)),
+      why: s.holdout || s.halted ? null : s.why,
+      recovered: row?.recovered ?? false,
+      cost_inr: t?.cost_inr ?? 0,
+      halted: s.halted,
+      stopped_because: stopReasons.get(s.kase.id) ?? null,
+    }
+  })
+
+  writeReport(REPORT_FILE, {
+    generated_at: new Date().toISOString(),
+    clock: now.toISOString(),
+    seed: SEED,
+    counts: {
+      total: scored.length,
+      treated: treatedScored.length,
+      holdout: holdoutCases.length,
+      halted: halted.length,
+    },
+    diagnosis: {
+      total: tally.total,
+      by_rules: tally.by_rules,
+      by_llm: tally.by_llm,
+      escalated_uncertain: tally.escalated_uncertain,
+      provider: provider ? { name: provider.name, model: provider.model } : null,
+      calls: llmStats.calls,
+      usable: llmStats.ok,
+      failed: llmStats.failed,
+      quota_exhausted: llmStats.quotaExhausted,
+      accuracy: accuracyChecks.map((c) => ({
+        case_id: c.case_id,
+        claimed: c.claimed,
+        actual: c.actual,
+        correct: c.correct,
+      })),
+    },
+    systemic: {
+      fired: systemic.fired,
+      cause: systemic.cause,
+      share: systemic.share,
+      because: systemic.because,
+    },
+    measurement: m,
+    cases: reportCases,
+  })
+
+  console.log(`  Batch report:  ${REPORT_FILE}`)
 }
 
 await main()
