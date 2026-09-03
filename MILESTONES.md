@@ -86,6 +86,16 @@ Blueprint section references in brackets.
 | **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | not started | |
 | **M10** | Dashboard [§4.11] | One page reading the JSONL: top strip, priority table, per-case audit timeline drawer, Run batch button | not started | Cut this before cutting anything in M1–M9. |
 
+### Deferred — revisit only if the clock allows
+
+| Item | Why it was deferred | Value if it lands |
+|---|---|---|
+| **Double-charge modelling** | Extra code and extra room for a bug, on the eve of a deadline. Deferred at M1 by explicit decision. | The simulator would count a debit against a `late_auth_pending` case as a second charge rather than a weak recovery, letting the scoreboard say *"N double-charges avoided by holding"* — a concrete demonstration of restraint for the video. Wiring point already stubbed: `DOUBLE_CHARGE_RISK` in `src/sim/outcomes.ts`. |
+| `TestModeRazorpayPort.sendPaymentLink` | Stretch goal from the start | Wire only `sendPaymentLink` to the real test-mode Payment Links API, and say so. Do not fake it. |
+| `web/build.mjs` verification | Never run in this repo | A broken build with a working dev server is a nasty surprise at recording time. |
+
+**Raise these with Rajat near the end if there is time left.**
+
 ### Invariant tests
 Not optional — the compliance and stopping rules stated as executable claims.
 They land **with their milestone**, not in a batch at the end.
