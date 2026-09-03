@@ -1,0 +1,24 @@
+{
+  "name": "failed-subscription-recovery-agent",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "web"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node node_modules/vitest/vitest.mjs run --dir tests",
+    "dev": "npm run dev -w web",
+    "batch": "node --import tsx src/cli.ts"
+  },
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.19.2",
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
+  }
+}

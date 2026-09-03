@@ -1,0 +1,5 @@
+node_modules/
+web/.vite-cache/
+web/dist/
+data/audit.jsonl
+.env
