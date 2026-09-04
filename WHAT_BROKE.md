@@ -691,3 +691,62 @@ More usefully: **do not build a safety mechanism on a number the thing you are
 guarding against gets to choose.** Self-reported confidence is model output, not
 measurement. The guards that held here are the ones that never ask the model
 anything.
+
+---
+
+## 16. The confirmation gate that was implemented, declared, and never called
+
+**Status:** found by reading the code on submission eve, after 121 tests were
+green. No test could have caught it, because the thing that was missing was a
+call.
+
+**Symptom.** None. Nothing failed, nothing was mis-scored, and the batch had
+been producing correct numbers for days.
+
+`retryNow` debits an account immediately with no pre-debit notice and cannot be
+undone. It is the one irreversible action this agent has, and it is declared as
+always requiring a human — `requiresConfirmation()` returns `true`
+unconditionally, with a comment reading *"if anything ever proposes it, it stops
+here for a person."*
+
+It would not have. `executeActions` took the tool out of the registry and went
+straight to `executeOnce` and the rail. Nothing in the codebase ever called
+`requiresConfirmation`. `needsConfirmation`, `partitionActions` and
+`describeActions` — the whole gate carried over from Quark — were exported and
+consumed by nobody. There was even a branch in `cli.ts` handling a confirmation
+refusal, and it could never fire.
+
+**Root cause.** The gate came across from Quark at M0, when the plan was for a
+classifier to propose actions. At M4 the decide stage became a lookup table, and
+the table never proposes `retryNow` — it appears only in `rejected` arrays, and
+compliance check C5 reroutes around it independently. So the gate lost its only
+caller and nothing noticed, because nothing was worse off.
+
+That is the actual lesson, and it is the same one as §12: **a safety mechanism
+with no caller is indistinguishable from a safety mechanism, right up until it
+matters.** The queue in §12 ranked correctly and was ignored. This gated
+correctly and was never asked. Both had tests. Both tests passed. Both tested
+the component rather than its wiring.
+
+**Why it was worth fixing at all, given nothing could reach it.** Because
+"unreachable" and "gated" are different properties, and only one of them
+survives the next branch someone adds to the decide table. And because the
+comment claiming a human would be asked was, as written, false — which in a
+repo whose whole argument is that it says true things about itself is the more
+expensive half of the bug.
+
+**Fix.** `executeActions` consults the tool before the rail. The check runs
+**before** the idempotency key is claimed, which is the part worth getting
+right: claiming the key for an action nobody has approved would mean that when
+a human does approve it, the replay guard refuses the very action they
+authorised. Three tests, including one asserting no key is claimed for a held
+action.
+
+**Time cost.** Twenty minutes, most of it grepping to be sure it really had no
+caller.
+
+**Lesson.** Test the wiring, not just the component. Every safety mechanism in
+this repo now has a test that exercises it *through the path production
+uses* — the queue through the batch loop, the ledger through `executeActions`,
+the gate through the same function `cli.ts` calls. A unit test of a guard
+proves the guard works. It says nothing about whether anyone asks it.

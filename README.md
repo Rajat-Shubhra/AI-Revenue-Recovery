@@ -43,7 +43,7 @@ Plus the judged criterion that sits underneath all of them:
 | Criterion | Where | State |
 |---|---|---|
 | **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth and the scoring is published, right or wrong — last run **21 of 24 correct, 3 wrong, and the confidence floor caught none of the three** | ✅ |
-| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fifteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last four are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next, and a confirmation gate that was implemented, declared in a comment, and never actually called | ✅ |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — sixteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last five are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next, and a confirmation gate that was implemented, declared in a comment, and never actually called | ✅ |
 
 ---
 
