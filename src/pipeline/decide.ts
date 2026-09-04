@@ -80,6 +80,51 @@ export function earliestCompliantRetry(now: Date, haltsAt: string): Date | null 
 const NO_WINDOW = 'no retry window before the subscription halts that still leaves 24h for the RBI pre-debit notice'
 
 /**
+ * The subscription halts before a compliant retry can be scheduled.
+ *
+ * Escalating here was the first instinct and it is too cautious. The 24h
+ * pre-debit notice constrains *debits*; it says nothing about asking the
+ * customer to pay. A payment link needs no notice period, so on a case that is
+ * about to expire it is very often the only move left — and the simulator
+ * agrees, rating it above an escalation on every cause that reaches this path.
+ *
+ * The exception is a customer who cannot be contacted. The compliance gate would
+ * catch that a moment later anyway, but proposing contact we already know is
+ * barred would put a misleading line in the audit trail: the ledger should say
+ * the agent chose the right thing and was refused, not that it chose a thing it
+ * knew was impossible.
+ */
+function noRetryWindow(kase: Case): Decision {
+  const contactable = !kase.customer.dnd && !kase.customer.opted_out && !kase.mandate.cancelled_by_customer
+
+  if (contactable) {
+    return {
+      outcome: 'CUSTOMER_ACTION',
+      tool: 'sendPaymentLink',
+      params: { channel: 'sms' },
+      because: `${NO_WINDOW} — but a payment link needs no notice period, so the customer can still settle this before it halts`,
+      rejected: [
+        { tool: 'retryScheduled', because: NO_WINDOW },
+        { tool: 'retryNow', because: 'an immediate debit would skip the pre-debit notice RBI requires' },
+      ],
+      via: 'table',
+    }
+  }
+
+  return {
+    outcome: 'ESCALATE',
+    tool: 'escalate',
+    params: { reason: `${NO_WINDOW}, and this customer cannot be contacted` },
+    because: `${NO_WINDOW}, and the one remaining route — asking the customer — is barred for this customer`,
+    rejected: [
+      { tool: 'retryScheduled', because: NO_WINDOW },
+      { tool: 'sendPaymentLink', because: 'the customer is on DND, opted out, or has revoked the mandate' },
+    ],
+    via: 'table',
+  }
+}
+
+/**
  * The decision table. `cause` in, outcome and tool out.
  *
  * Reads top to bottom: terminal states first, then the cases only the customer
@@ -233,14 +278,7 @@ export function decideFromCause(kase: Case, cause: Cause, now: Date): Decision {
 
       const at = earliestCompliantRetry(now, kase.halts_at)
       if (!at) {
-        return {
-          outcome: 'ESCALATE',
-          tool: 'escalate',
-          params: { reason: NO_WINDOW },
-          because: NO_WINDOW,
-          rejected: [{ tool: 'retryScheduled', because: NO_WINDOW }],
-          via: 'table',
-        }
+        return noRetryWindow(kase)
       }
       return {
         outcome: 'AUTO',
@@ -276,14 +314,7 @@ export function decideFromCause(kase: Case, cause: Cause, now: Date): Decision {
       if (!at) {
         const fallback = earliestCompliantRetry(now, kase.halts_at)
         if (!fallback) {
-          return {
-            outcome: 'ESCALATE',
-            tool: 'escalate',
-            params: { reason: NO_WINDOW },
-            because: NO_WINDOW,
-            rejected: [{ tool: 'retryScheduled', because: NO_WINDOW }],
-            via: 'table',
-          }
+          return noRetryWindow(kase)
         }
         return {
           outcome: 'AUTO',

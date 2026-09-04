@@ -219,11 +219,37 @@ describe('decide', () => {
     expect((at.getTime() - now.getTime()) / 3_600_000).toBeGreaterThanOrEqual(PRE_DEBIT_NOTICE_HOURS)
   })
 
-  it('escalates when no compliant retry window fits before the halt', () => {
-    const tight = { ...cases[0]!, is_domestic_card: false, halts_at: new Date(now.getTime() + 6 * 3_600_000).toISOString() }
+  it('asks the customer when no compliant retry window fits before the halt', () => {
+    // The 24h pre-debit notice constrains debits, not requests to pay. On a
+    // case about to halt, a payment link is the only move left — escalating
+    // here was needlessly cautious and left recoverable money on the table.
+    const tight = {
+      ...cases[0]!,
+      is_domestic_card: false,
+      customer: { ...cases[0]!.customer, dnd: false, opted_out: false },
+      mandate: { ...cases[0]!.mandate, cancelled_by_customer: false },
+      halts_at: new Date(now.getTime() + 6 * 3_600_000).toISOString(),
+    }
+    const d = decideFromCause(tight, 'insufficient_funds', now)
+    expect(d.outcome).toBe('CUSTOMER_ACTION')
+    expect(d.tool).toBe('sendPaymentLink')
+    expect(d.because).toContain('no notice period')
+    expect(d.rejected.some((r) => r.tool === 'retryScheduled')).toBe(true)
+  })
+
+  it('escalates instead when that customer cannot be contacted', () => {
+    // The gate would refuse the link a moment later anyway, but proposing
+    // contact we already know is barred would put a misleading line in the
+    // audit trail.
+    const tight = {
+      ...cases[0]!,
+      is_domestic_card: false,
+      customer: { ...cases[0]!.customer, dnd: true, opted_out: false },
+      halts_at: new Date(now.getTime() + 6 * 3_600_000).toISOString(),
+    }
     const d = decideFromCause(tight, 'insufficient_funds', now)
     expect(d.outcome).toBe('ESCALATE')
-    expect(d.because).toContain('pre-debit notice')
+    expect(d.because).toContain('barred')
   })
 
   it('never proposes a retry for an expired card', () => {

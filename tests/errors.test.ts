@@ -142,10 +142,12 @@ describe('the confidence floor', () => {
     expect(applyRules(kase)).toBeNull()
   })
 
-  it('sits at 0.80, derived from where the model actually goes wrong', async () => {
-    // Not an arbitrary constant. Over 24 live diagnoses every wrong answer came
-    // back at 0.78 and every answer at 0.80 or above was correct. The spec's
-    // original 0.7 caught none of them.
+  it('sits at 0.80 — a cheap net, not a load-bearing guard', async () => {
+    // Raised from 0.7 on one run where every wrong answer arrived at 0.78. The
+    // next run returned the same three errors at 0.86–0.92, so no fixed floor
+    // separates this model's right answers from its wrong ones. Kept because it
+    // is free and sometimes helps; the real containment is the decide table,
+    // the compliance gate and the stopping rules. See WHAT_BROKE.md §15.
     expect(DIAGNOSIS_CONFIDENCE_FLOOR).toBe(0.8)
   })
 

@@ -615,4 +615,79 @@ material than a perfect score: twice, on a genuinely uninformative decline, the
 model answered `insufficient_funds` where the honest answer was `unknown`.
 Confidently wrong on empty input, at a confidence the 0.7 floor did not catch.
 That is exactly why the compliance gate and the stopping rules sit downstream of
-the model rather than trusting it.
+the model rather than trusting it — and see §15, where trying to fix that with a
+higher floor failed in an instructive way.
+
+---
+
+## 15. The confidence floor that fitted one run and broke on the next
+
+**Status:** reproduced. This one is a correction to a fix made an hour earlier.
+
+**Symptom.** None, initially — it looked like a clean win.
+
+The 0.7 confidence floor from the spec had never fired: across 24 live diagnoses
+the model returned nothing below it, while three answers were wrong anyway. So
+the failures were measured against confidence, and the result was about as tidy
+as data gets:
+
+| band | n | correct |
+|---|---|---|
+| 0.78 | 3 | **0/3** |
+| 0.80 – 0.90 | 5 | 5/5 |
+| 0.90 – 1.00 | 16 | 16/16 |
+
+Every wrong answer at exactly 0.78; everything at 0.80 or above correct. The
+floor was raised to 0.80, which escalated all three errors, cost no correct
+answers, and left net lift unchanged. Committed, with a note that it was fitted
+to a small sample.
+
+**Root cause.** The very next live run returned the *same three cases, still
+wrong*, at **0.86, 0.86 and 0.92**.
+
+| run | min confidence | the three errors | floor catches |
+|---|---|---|---|
+| A | 0.78 | 0.78 · 0.78 · 0.78 | 3/3 |
+| B | 0.86 | 0.86 · 0.86 · 0.92 | 0/3 |
+
+Same batch, same prompt, same model, temperature 0. The model's stated
+confidence for an identical case moved eight points between runs. The beautiful
+calibration in run A was an artefact of a single sample, and **no fixed
+threshold separates this model's right answers from its wrong ones.**
+
+**What we tried that didn't work.** Raising the floor at all — that was the
+attempted fix, and it is the thing that failed. Raising it further does not
+help either: run B has a wrong answer at 0.92, so a floor high enough to catch
+it would reject most of the correct answers too.
+
+The deeper mistake was treating a self-reported confidence as a measurement. It
+is another token the model generates, subject to the same variance as the
+diagnosis, and asking a system how sure it is does not make the answer reliable.
+
+**Fix.** The floor stays at 0.80 — it is free and occasionally helps — but it is
+documented as a cheap net rather than a guard, and nothing in the design leans
+on it. What actually contains a wrong diagnosis is structural, and holds
+regardless of what the model claims:
+
+- adjacent causes collapse to the same branch of the decide table, so most
+  misdiagnoses produce the same action anyway;
+- the compliance gate re-checks the facts and can veto the decision;
+- the stopping rules run after that;
+- the simulator scores the action against the **true** cause, so a wrong theory
+  is paid for honestly rather than credited.
+
+The evidence that this is not a rationalisation: two runs scoring 14/24 and
+21/24 on diagnosis accuracy reported an *identical* net lift.
+
+**Time cost.** ~30 minutes, and it would have been zero if the first result had
+been re-run before being believed.
+
+**Lesson.** A clean threshold in one sample is a hypothesis, not a finding.
+Three points falling on exactly 0.78 should have read as suspicious rather than
+convenient — real distributions are rarely that obliging, and the tidiness was
+itself the warning.
+
+More usefully: **do not build a safety mechanism on a number the thing you are
+guarding against gets to choose.** Self-reported confidence is model output, not
+measurement. The guards that held here are the ones that never ask the model
+anything.

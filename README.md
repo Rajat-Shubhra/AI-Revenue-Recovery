@@ -41,7 +41,7 @@ Plus the judged criterion that sits underneath all of them:
 | Criterion | Where | State |
 |---|---|---|
 | **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model, 21 resolved and 3 escalated.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth so "resolved" is never reported as "correct" — last run **21 resolved, 21/21 correct, 3 escalated by the confidence floor** | ✅ |
-| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fourteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last three are things that worked, passed their tests, and were wrong anyway | ✅ |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fifteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last four are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next | ✅ |
 
 ---
 
@@ -210,7 +210,16 @@ Vite through its JS API instead and works fine. This is documented in
   to 0 to minimise it, but no hosted provider is bit-reproducible, and the model
   is the one component of this pipeline that will not reproduce exactly.
 
-  **The headline number is insulated from that, and there is direct evidence.**
+  **A confidence floor does not fix this.** The obvious guard — reject anything
+  the model is unsure about — was tried and measured. On one run every wrong
+  answer arrived at 0.78 and a floor at 0.80 caught all three; on the next the
+  same three came back at 0.86–0.92 and it caught none. Self-reported confidence
+  is another token the model generates, with the same variance as the diagnosis.
+  The floor is kept because it is free, but nothing leans on it. See
+  [WHAT_BROKE.md](WHAT_BROKE.md) §15.
+
+  **What insulates the headline number is structural, and there is direct
+  evidence for it.**
   Two runs of the same batch scored **14/24 and 21/24** on diagnosis accuracy —
   a swing of seven cases — and both reported an identical **₹19,361 net lift**.
   Adjacent causes collapse to the same branch of the decide table, so the agent

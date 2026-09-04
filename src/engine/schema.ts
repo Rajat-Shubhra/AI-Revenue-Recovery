@@ -75,26 +75,36 @@ export type Diagnosis = z.infer<typeof diagnosisSchema>
 /**
  * Reject and escalate below this confidence.
  *
- * The spec said 0.7. Measured against a live run it caught nothing — the model
- * never returned anything below it — while three answers were wrong anyway.
- * The distribution over 24 diagnoses was unambiguous:
+ * The spec said 0.7, which measured against a live run caught nothing — the
+ * model never returned anything below it, while three answers were wrong anyway.
+ * Raised to 0.80 on one run's evidence, where every wrong answer had arrived at
+ * exactly 0.78 and everything at 0.80+ was correct.
  *
- *   0.78          n=3    correct 0/3
- *   0.80 – 0.90   n=5    correct 5/5
- *   0.90 – 1.00   n=16   correct 16/16
+ * **Then the next run disproved that.** The same three cases came back at 0.86,
+ * 0.86 and 0.92 — still wrong, now comfortably above the floor:
  *
- * Every wrong answer arrived at exactly 0.78 and every answer at 0.80 or above
- * was right. The model's confidence is well calibrated; the floor was simply
- * set below the band where it goes wrong. Raised to 0.80, which on that run
- * escalates all three errors and costs no correct answers.
+ *   run A   min 0.78   the 3 errors at 0.78, 0.78, 0.78   floor catches 3/3
+ *   run B   min 0.86   the 3 errors at 0.86, 0.86, 0.92   floor catches 0/3
  *
- * Honest caveat: n=24, from one run, and the three failures sharing an exact
- * value suggests the model emits discrete confidence levels rather than a
- * smooth distribution. This threshold is fitted to a small sample and should be
- * re-derived if the prompt, model or catalogue changes. It errs toward
- * escalation, which is the correct direction to be wrong in for a payments
- * agent — an escalation costs ten minutes of a human's time, acting on a
- * diagnosis you cannot trust costs someone else's money.
+ * Same batch, same prompt, same model, temperature 0. The model's stated
+ * confidence for an identical case moved eight points between runs, so no fixed
+ * threshold separates its right answers from its wrong ones. **A confidence
+ * floor is not a reliable guard against this model being wrong**, and the
+ * calibration that looked so clean in run A was an artefact of a single sample.
+ *
+ * It is kept at 0.80 because it is free and occasionally helps, but it is not
+ * load-bearing and must not be described as though it were. The things that
+ * actually contain a wrong diagnosis are structural, and they hold regardless
+ * of what the model says:
+ *
+ *   - adjacent causes collapse to the same branch of the decide table, so most
+ *     misdiagnoses produce the same action anyway;
+ *   - the compliance gate re-checks the facts and can veto;
+ *   - the stopping rules run after that;
+ *   - and the simulator scores the action against the TRUE cause, so a wrong
+ *     theory is paid for honestly rather than credited.
+ *
+ * See WHAT_BROKE.md §15.
  */
 export const DIAGNOSIS_CONFIDENCE_FLOOR = 0.8
 
