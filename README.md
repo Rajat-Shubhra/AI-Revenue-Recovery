@@ -1,4 +1,6 @@
-# Failed-Subscription Recovery Agent
+# AI Revenue Recovery
+
+**A failed-subscription recovery agent.** Razorpay Buildathon, Track 3.
 
 An agent that works a batch of failed subscription payments the way an
 operations team would: rank them by what's actually recoverable, work out why
@@ -6,13 +8,13 @@ each one failed, decide who can fix it, refuse the ones nobody should touch, and
 report how much money it recovered against a control group that it never
 touched.
 
-Built for Razorpay Buildathon Track 3. The bar set by the brief was not "identify
-the problem" but **show measured money recovered across a batch, with compliant
-escalation, stopping rules, and an audit trail** — so those four things are what
-this repo is organised around.
+The bar set by the brief was not "identify the problem" but **show measured
+money recovered across a batch, with compliant escalation, stopping rules, and
+an audit trail** — so those four things are what this repo is organised around.
 
-> **Status: complete.** All ten milestones done, 120 tests green. `npm run batch`
-> runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
+> **Status: complete.** Fourteen milestones done — the ten that were planned, plus
+> four that came out of auditing a loop that was already finished and green.
+> 121 tests passing. `npm run batch` runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
 > dashboard. A sample audit ledger and report are committed, so the trail can be
 > read straight from the diff. See [MILESTONES.md](MILESTONES.md) for how it was
 > built and what broke.
@@ -30,7 +32,7 @@ if something says pending, it is genuinely not built.
 
 | Clause | Where | State |
 |---|---|---|
-| **Measured money recovered** | 20% holdout the agent never touches, stratified by amount so both arms see the same value range. Latest run: **₹20,781 recovered treated vs ₹499 holdout · ₹19,361 net lift · ₹18,633 after ₹728 of action cost** | ✅ |
+| **Measured money recovered** | 20% holdout the agent never touches, stratified by amount so both arms see the same value range. Latest run: **₹21,779 recovered treated (32.2% of a ₹67,544 pool) vs ₹499 holdout (2.1% of ₹23,734) · ₹20,359 net lift · ₹19,775 after ₹584 of action cost** | ✅ |
 | **Across a batch** | 80 seeded cases, byte-identical between runs. A max-heap works the top 20 per tick and each case carries the arithmetic that ranked it into the audit trail | ✅ |
 | **Compliant escalation** | Six deterministic checks before every action, logged whether they pass or fire. DND and opted-out customers escalate rather than being silently dropped — and a debit is still permitted, because consent to be contacted is not authorisation to charge | ✅ |
 | **Stopping rules** | `config/stopping.json` — attempt caps, expected-value floor, terminal states, and a systemic rule raising one escalation instead of N when a single cause exceeds 40% of a batch | ✅ |
@@ -40,7 +42,7 @@ Plus the judged criterion that sits underneath all of them:
 
 | Criterion | Where | State |
 |---|---|---|
-| **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model, 21 resolved and 3 escalated.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth so "resolved" is never reported as "correct" — last run **21 resolved, 21/21 correct, 3 escalated by the confidence floor** | ✅ |
+| **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth and the scoring is published, right or wrong — last run **21 of 24 correct, 3 wrong, and the confidence floor caught none of the three** | ✅ |
 | **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fifteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last four are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next | ✅ |
 
 ---
@@ -172,8 +174,9 @@ npm run batch         # run a batch, print the report
 npm run dev           # dashboard at http://127.0.0.1:5173
 ```
 
-For the LLM tail, copy `.env.example` to `.env` and add a Gemini API key. The
-deterministic path runs without one.
+For the LLM tail, copy `.env.example` to `.env` and add a key. `LLM_PROVIDER`
+picks between `groq` (default — 14,400 requests/day) and `gemini` (20/day, kept
+wired as a cross-check). The deterministic path runs without either.
 
 **Note on `npm run dev`:** `npx vite` does not work on the development machine —
 npm's `.bin` shim fails silently for ESM binaries there. `npm run dev` starts
@@ -221,7 +224,9 @@ Vite through its JS API instead and works fine. This is documented in
   **What insulates the headline number is structural, and there is direct
   evidence for it.**
   Two runs of the same batch scored **14/24 and 21/24** on diagnosis accuracy —
-  a swing of seven cases — and both reported an identical **₹19,361 net lift**.
+  a swing of seven cases — and both reported an **identical net lift** (₹19,361, on
+  the build those two runs shared; the headline has since moved to ₹20,359 for
+  reasons that have nothing to do with the model).
   Adjacent causes collapse to the same branch of the decide table, so the agent
   takes the same action either way, and the simulator scores that action against
   the *true* cause rather than the diagnosed one. The 70% of the batch the rules

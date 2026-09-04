@@ -63,6 +63,7 @@ Run these as separate sessions, with a look at the running log in between.
 | 2 | M3 – M5 | Rules, diagnose, decide, compliance. The reasoning core — everything downstream inherits the rules table, so it's worth a look before continuing. |
 | 3 | M6 – M8 | Stopping, ports, simulator, measurement. **Ends at the substance finish line.** |
 | 4 | M9 – M10 | Hardening and the dashboard, if the clock allows. |
+| 5 | M11 – M14 | **Unplanned.** Four defects found in a finished loop that was passing all its tests. See *After M10* below. |
 
 **Resume prompt for any later session** — reusable verbatim:
 
@@ -91,13 +92,27 @@ Blueprint section references in brackets.
 | **M9** | End-to-end hardening | Re-running the whole batch produces zero new actions (idempotency test extended from the unit to the full pipeline); quota failure degrades affected cases to ESCALATE without crashing; one sample `audit.jsonl` committed | **done** | Idempotency verified at pipeline level (51 actions, then 0). Quota-failure path proved itself for real when Gemini ran dry mid-run. Sample `audit.jsonl` + `report.json` committed. |
 | **M10** | Dashboard [§4.11] | One page reading the JSONL: top strip, priority table, per-case audit timeline drawer, Run batch button | **done** | Reads `report.json` + the ledger; derives no numbers of its own so the page and console cannot disagree. Drawer renders the full per-case timeline including the `rejected` array and every compliance check. Buttons run the same `npm run batch` a human would type. |
 
+### After M10 — the milestones nobody planned
+
+M0–M10 were the plan. These four were not: they came out of looking hard at a
+loop that was already finished and passing its tests. Numbered so the running
+log has something to point at.
+
+| # | Milestone | Done when | Status | Notes |
+|---|---|---|---|---|
+| **M11** | The priority queue actually decides what gets worked | The order the queue produces is the order cases are processed, and a test proves the work loop consumes it | **done** | It was decorative. A real max-heap with four passing tests, popped once to print the top-20 table — and `take()` drains — after which the work loop iterated the *unsorted* array in generator order. Every test passed. Found only because Rajat asked directly whether the queue was being used. The queue now drains into ticks and the ticks drive the loop. Commit `5dfb3f3`. |
+| **M12** | Error taxonomy rebuilt on Razorpay's published docs, and the holdout made comparable | `razorpay-errors.ts` carries the real catalogue; the ambiguous set is *derived* from it; both arms of the experiment hold a comparable share of the money | **done** | The redirect that changed the project. Rules solving 90% showcased a lookup table Razorpay already has — so the model's share had to be justified rather than invented. 41 catalogue entries, 32 codes, 18 causes, and **five `(source, code)` pairs that Razorpay's own docs publish with more than one meaning**. `AMBIGUOUS_KEYS` is computed by grouping the catalogue, not hand-flagged, so it cannot drift from the data. Split moved 90/10 → 70/30. Rebuilding the batch exposed a second bug: the random holdout had drawn **42% of the money into 16 cases**, and net lift read ₹2,227 against a modelled ₹11,886. Holdout assignment is now **stratified by amount** — sort, cut into strata of 5, draw one control from each. Commits `dfb8b75`, `d252fe2`. |
+| **M13** | The production build works, and so does its API | `npm run build` produces a bundle that loads real data, not just a bundle | **done** | Deferred item from the M10 list, closed. The batch API was registered on `configureServer` only, so the built app asked `/api/report` and got `index.html` back. Also on `configurePreviewServer` now. A working dev server had been hiding a broken build — exactly the nasty surprise the deferred-items table predicted at recording time. Commit `5dcf0f4`. |
+| **M14** | The confidence floor measured, and HOLD grounded in the docs | The floor's value is defended by evidence, and the HOLD reasoning cites Razorpay's documented behaviour rather than caution | **done** | The floor was raised 0.70 → 0.80 because all three wrong diagnoses on one run sat at 0.78. **The next run returned the same three wrong at 0.86, 0.86 and 0.92** and the floor caught none. It was over-fitted to a single sample. Kept at 0.80 because it costs nothing, but nothing leans on it, and the record was corrected in code, tests, README and WHAT_BROKE §15. Separately, HOLD now cites the real rule: Razorpay polls the bank for **3 days** after a timeout, so re-presenting inside that window risks a duplicate debit that gets refunded rather than a recovery. A test asserts the citation survives. Commits `fafb2e8`, `3a131d2`, `aa86418`. |
+
+
 ### Deferred — revisit only if the clock allows
 
 | Item | Why it was deferred | Value if it lands |
 |---|---|---|
-| **Double-charge modelling** | Extra code and extra room for a bug, on the eve of a deadline. Deferred at M1 by explicit decision. | The simulator would count a debit against a `late_auth_pending` case as a second charge rather than a weak recovery, letting the scoreboard say *"N double-charges avoided by holding"* — a concrete demonstration of restraint for the video. Wiring point already stubbed: `DOUBLE_CHARGE_RISK` in `src/sim/outcomes.ts`. |
+| **Double-charge modelling** — ~~deferred~~ **dropped, on evidence** | Deferred at M1; revisited on 4 Sept against the docs and abandoned. Razorpay **auto-refunds** a duplicate created by late authorisation, and auto-refunds an uncaptured authorised payment within five days. A permanent double charge is not a documented outcome, so a scoreboard line counting them would have invented a harm the platform actively prevents. | The simulator would count a debit against a `late_auth_pending` case as a second charge rather than a weak recovery, The real cost of acting early is a refund and a support contact, not lost revenue — which is what the HOLD reasoning says now (M14). `DOUBLE_CHARGE_RISK` stays stubbed in `src/sim/outcomes.ts` and unused. |
 | `TestModeRazorpayPort.sendPaymentLink` | Stretch goal from the start | Wire only `sendPaymentLink` to the real test-mode Payment Links API, and say so. Do not fake it. |
-| `web/build.mjs` verification | Never run in this repo | A broken build with a working dev server is a nasty surprise at recording time. |
+| ~~`web/build.mjs` verification~~ | Never run in this repo | **Closed in M13 — and it *was* broken.** |
 
 **Raise these with Rajat near the end if there is time left.**
 
@@ -242,3 +257,63 @@ surprising. This is the part to read when picking up a cold session.
   `npm run typecheck`, `npm run batch` all green at the new location. No more
   "run it directly" workaround needed. `src/engine/fs-safe.ts` is kept as belt
   and braces for the audit ledger.
+- **M11** — **The priority queue was decorative.** A real max-heap, four passing
+  tests, correct arithmetic — popped once to print the top-20 table, and `take()`
+  drains it, after which the work loop iterated the unsorted array in generator
+  order. Nothing failed. No test could have caught it, because every test tested
+  the heap and the heap was fine. It surfaced because Rajat asked whether the
+  queue was actually being used. The queue now drains into ticks and the ticks
+  drive the loop, so ranking changes what gets worked and not just what gets
+  printed.
+- **M12** — **The redirect, and the best decision in the project.** Rajat's
+  observation: rules solving 90% of the batch showcases a lookup table Razorpay
+  almost certainly already runs, so the thing worth showing is what the model
+  does on what the rules *can't* settle — which makes the diagnosis the centre of
+  the project, not a stage in it.
+  - Razorpay's published error pages were read properly and transcribed into
+    `src/pipeline/razorpay-errors.ts`: **41 entries, 32 codes, 18 causes**, with
+    `source` restricted to the four values Razorpay actually uses
+    (`customer | business | gateway | razorpay`).
+  - The finding that carries the whole argument: **the error code is not the
+    cause.** `gateway/credit_failed` is documented as both *"customer selected a
+    different bank account"* and *"partner bank downtime"* — opposite remedies,
+    one code. Five `(source, code)` pairs collide this way.
+  - `AMBIGUOUS_KEYS` is **derived** by grouping the catalogue, never
+    hand-maintained. Ambiguity the model has to resolve is therefore a property
+    of Razorpay's documentation, not of our storytelling — which is the
+    difference between a defensible claim and a convenient one.
+  - Rules/model split moved 90/10 → **70/30** without loosening a single rule.
+  - **A second bug fell out of the rebuild.** With the new case mix the random
+    holdout had captured **42% of the money in 16 of 80 cases**. Net lift read
+    ₹2,227 while the table-implied cross-check said ₹11,886 — a 5× disagreement
+    that would have been indefensible on camera. Holdout assignment is now
+    **stratified by amount**: sort, cut into strata of five, draw one control from
+    each. The two arms now see the same value range, and the two estimates agree
+    to within the noise a 16-case arm carries.
+- **M13** — `web/build.mjs` verified at last, and it was broken. The batch API
+  existed only on `configureServer`, so the built app requested `/api/report` and
+  received `index.html`. Registered on `configurePreviewServer` too. A working
+  dev server had been concealing a broken production build for a week.
+- **M14** — **Two safety mechanisms, examined honestly.**
+  - The confidence floor was raised 0.70 → 0.80 because every wrong diagnosis on
+    that run arrived at 0.78. **The next run returned the same three wrong
+    diagnoses at 0.86, 0.86 and 0.92.** The floor was fitted to one sample and
+    the sample moved. It stays at 0.80 because it is free, but the README no
+    longer claims it protects anything, and WHAT_BROKE §15 records the sequence
+    including the part where the fix looked like evidence.
+  - HOLD stopped sounding like caution and started citing a rule. Razorpay polls
+    the bank for **three days** after a timeout and fires `payment.authorized` if
+    it lands, which is where the 72h hold window came from — a threshold picked
+    without a source that turned out to match documented behaviour. Every
+    threshold in `config/stopping.json` now carries a one-line `_doc` rationale,
+    and a test asserts the citation stays in the reasoning.
+  - **Double-charge modelling is dropped, not deferred.** Razorpay auto-refunds
+    duplicates. Counting "double charges avoided" would have credited the agent
+    with preventing something the platform prevents anyway. The rejected-action
+    text says *"duplicate debit that has to be refunded"* instead — smaller, and
+    true.
+- **Where it finished.** 80 cases · **56 by rules, 24 to the model, 21 of 24
+  correct** · treated ₹67,544 → **₹21,779 (32.2%)** · holdout ₹23,734 → **₹499
+  (2.1%)** · **net lift ₹20,359**, ₹19,775 after ₹584 of action cost · modelled
+  cross-check ₹14,210 · AUTO 16 · CUSTOMER_ACTION 15 · ESCALATE 11 · STOP 12 ·
+  HOLD 2 · **121 tests green.**
