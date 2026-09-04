@@ -35,24 +35,38 @@ export function loadCases(file: string = CASES_FILE): Case[] {
 }
 
 /**
- * Assign the holdout by seed.
+ * Assign the holdout, stratified by amount.
  *
- * Uses its own PRNG stream seeded off the batch seed, so the split is
- * reproducible but independent of the order the generator happened to emit
- * cases in — assigning "every fifth case" would have correlated the control arm
- * with the slice layout and quietly biased the measurement.
+ * A plain random 20% is the obvious thing and it was wrong here. Subscription
+ * amounts are heavy-tailed — ₹149 to ₹9,999 in this batch — so with only 16
+ * control cases a simple shuffle can hand the holdout most of the large ones.
+ * It did exactly that: the control arm ended up holding ₹41,884 against the
+ * treated arm's ₹57,792, which is 42% of the money in 20% of the cases. Every
+ * per-rupee rate computed off that is noise, and the net lift built on it was
+ * meaningless.
+ *
+ * So: sort by amount, cut into strata of 1/HOLDOUT_SHARE cases, and draw one
+ * control at random from each stratum. Still randomised, still reproducible
+ * under the seed, but both arms now get a proportional slice of every value
+ * band — which is the whole point of a control group.
  */
 export function assignHoldout(cases: Case[], seed: number = SEED): Set<string> {
   const rng = mulberry32(seed ^ 0x5eed)
-  const shuffled = cases.map((c) => c.id)
+  const stratumSize = Math.round(1 / HOLDOUT_SHARE)
 
-  // Fisher–Yates, so every case has an equal chance of being a control.
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(rng() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!]
+  // Sort by amount, tie-broken on id so the strata are deterministic.
+  const byAmount = [...cases].sort(
+    (a, b) => b.amount_inr - a.amount_inr || a.id.localeCompare(b.id),
+  )
+
+  const holdout = new Set<string>()
+  for (let i = 0; i < byAmount.length; i += stratumSize) {
+    const stratum = byAmount.slice(i, i + stratumSize)
+    const chosen = stratum[Math.floor(rng() * stratum.length)]
+    if (chosen) holdout.add(chosen.id)
   }
 
-  return new Set(shuffled.slice(0, Math.round(cases.length * HOLDOUT_SHARE)))
+  return holdout
 }
 
 export async function ingest(

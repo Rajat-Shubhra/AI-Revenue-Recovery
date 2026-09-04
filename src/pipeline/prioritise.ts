@@ -24,12 +24,18 @@ export const BATCH_TICK_SIZE = 20
  * ₹999 case needing a free retry.
  */
 export function likelyAction(kase: Case): ActionName {
-  const reason = kase.error.reason
+  // State first — these are certain regardless of what the code said.
+  if (kase.mandate.cancelled_by_customer) return 'escalate'
+  if (kase.amount_inr > kase.mandate.max_amount_inr) return 'escalate'
+  if (kase.mandate.paused_by_customer) return 'sendPaymentLink'
 
-  if (reason === 'mandate_revoked') return 'escalate'
-  if (reason === 'amount_limit_exceeded') return 'escalate'
-  if (reason === 'card_expired' || reason === 'bank_blocked_card') return 'sendPaymentLink'
-  if (reason === 'mandate_paused') return 'sendPaymentLink'
+  // Then the codes whose remedy is obvious enough to price accurately.
+  const code = kase.error.code
+  if (code === 'recurring_payment_not_enabled' || code === 'mcc_amount_limit_exceeded') return 'escalate'
+  if (code === 'payment_risk_check_failed') return 'escalate'
+  if (code === 'card_expired' || code.startsWith('debit_instrument_')) return 'sendPaymentLink'
+  if (code.includes('limit_exceeded')) return 'sendPaymentLink'
+
   // A domestic card cannot be manually charged, so any retry-shaped fix on one
   // becomes a payment link (§4.5). Pricing it as a retry would understate it.
   if (kase.is_domestic_card) return 'sendPaymentLink'
@@ -50,7 +56,7 @@ const inr = (n: number) => `₹${n.toFixed(2)}`
 
 export function score(entry: IngestedCase): Scored {
   const { kase } = entry
-  const prior = recoveryPrior(kase.error.reason, kase.method)
+  const prior = recoveryPrior(kase.error.source, kase.error.code, kase.method)
   const expected_value = kase.amount_inr * prior
 
   // Clamped at one hour: below that the reciprocal explodes and urgency would
@@ -63,7 +69,7 @@ export function score(entry: IngestedCase): Scored {
   const priority = (expected_value - cost) * urgency
 
   const why =
-    `₹${kase.amount_inr} × ${prior.toFixed(2)} recover-prior (${kase.error.reason}/${kase.method})` +
+    `₹${kase.amount_inr} × ${prior.toFixed(2)} recover-prior (${kase.error.source}/${kase.error.code} on ${kase.method})` +
     ` = ${inr(expected_value)} EV,` +
     ` less ${inr(cost)} for ${likely_action},` +
     ` × ${urgency.toFixed(4)} urgency (${entry.hours_to_halt.toFixed(1)}h to halt)` +

@@ -1,23 +1,40 @@
-// M1 — the synthetic batch generator (BLUEPRINT §3).
+// The synthetic batch generator (BLUEPRINT §3), built from the real Razorpay
+// error catalogue rather than a hand-invented one.
 //
-// Reproducibility is the whole requirement: the same seed must produce a
+// Reproducibility is the requirement: the same seed must produce a
 // byte-identical file every time, because the batch is re-run on camera. That
 // means NO `Date.now()`, no `Math.random()`, no iteration over an object whose
-// key order isn't fixed. Every value below derives from the seeded PRNG or from
-// BATCH_NOW.
+// key order isn't fixed. Every value derives from the seeded PRNG or BATCH_NOW.
 //
 // This file is one of only three places allowed to touch `_true_cause` and
-// `_will_self_heal` — it writes them. Nothing downstream outside /src/sim/ may
-// read them; `tests/ground-truth-isolation.test.ts` enforces that.
+// `_will_self_heal` — it writes them. `tests/ground-truth-isolation.test.ts`
+// enforces that nothing else outside /src/sim/ reads them.
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { writeFileSafe } from '../engine/fs-safe'
 import type { Case } from '../engine/case'
-import { OUTCOME_TABLE, type TrueCause } from '../sim/outcomes'
+import { OUTCOME_TABLE } from '../sim/outcomes'
+import {
+  ERROR_CATALOGUE,
+  AMBIGUOUS_ENTRIES,
+  DETERMINISTIC_ENTRIES,
+  isAmbiguous,
+  type Cause,
+  type ErrorDef,
+} from './razorpay-errors'
 
 export const SEED = 20260905
 /** Fixed reference time. Every timestamp is relative to this so reruns match. */
 export const BATCH_NOW = Date.parse('2026-09-05T09:00:00.000Z')
+
+export const BATCH_SIZE = 80
+/**
+ * Roughly a third of the batch carries an error code a lookup table cannot
+ * resolve. That is the share the model works, and unlike the previous version
+ * it is justified by Razorpay's own documentation: these are codes their docs
+ * publish against more than one meaning.
+ */
+export const AMBIGUOUS_SHARE = 0.3
 
 /** mulberry32 — small, fast, and deterministic across Node versions. */
 export function mulberry32(seed: number): () => number {
@@ -42,292 +59,161 @@ const iso = (ms: number) => new Date(ms).toISOString()
  *  prioritiser has something meaningful to rank by. */
 const AMOUNTS = [149, 199, 249, 299, 399, 499, 599, 799, 999, 1499, 1999, 2999, 4999, 9999] as const
 
-const METHODS = ['card', 'upi', 'emandate'] as const
-
-function customer(rng: Rng, opts: { dnd?: boolean; opted_out?: boolean } = {}) {
-  return {
-    id: `cust_${int(rng, 100000, 999999)}`,
-    phone_masked: `+91XXXXXX${int(rng, 1000, 9999)}`,
-    dnd: opts.dnd ?? false,
-    opted_out: opts.opted_out ?? false,
-  }
-}
-
 /**
  * `_will_self_heal` is sampled from the simulator's own `none` column, so the
- * flag and the outcome table can never drift apart. For late_auth_pending that
- * is 0.70, matching LATE_AUTH_SELF_HEAL_RATE.
+ * flag and the outcome table can never drift apart.
  */
-function willSelfHeal(rng: Rng, cause: TrueCause): boolean {
+function willSelfHeal(rng: Rng, cause: Cause): boolean {
   return chance(rng, OUTCOME_TABLE[cause].none)
 }
 
-type Draft = {
-  amount?: number
-  method?: Case['method']
-  is_domestic_card?: boolean
-  maxAmountMultiplier?: number
-  cancelled?: boolean
-  paused?: boolean
-  dnd?: boolean
-  opted_out?: boolean
-  late_auth?: boolean
-  attempts?: number
-  source: Case['error']['source']
-  step: string
-  reason: string
-  description: string
-  cause: TrueCause
-}
-
-function build(rng: Rng, index: number, d: Draft): Case {
-  const amount = d.amount ?? pick(rng, AMOUNTS)
-  const method = d.method ?? pick(rng, METHODS)
+function build(rng: Rng, index: number, def: ErrorDef): Case {
+  const method = pick(rng, def.methods)
+  const amount = pick(rng, AMOUNTS)
   const failedAt = BATCH_NOW - hours(int(rng, 2, 72))
-  // How long until Razorpay halts the subscription. Wide spread so urgency
-  // actually differentiates cases in the priority queue.
+  // Wide spread so urgency actually differentiates cases in the queue. A few
+  // land in the past — those subscriptions already halted.
   const haltsAt = failedAt + hours(int(rng, 18, 264))
+
+  const cancelled = def.cause === 'mandate_cancelled_by_customer'
+  const paused = def.cause === 'mandate_paused_by_customer'
+  const overLimit = def.cause === 'amount_exceeds_mandate_max'
+
+  // Contact consent is independent of the failure, so it is sampled rather than
+  // tied to a cause — which is what makes the compliance gate bite on cases
+  // that would otherwise be straightforward customer contact.
+  const dnd = chance(rng, 0.06)
+  const optedOut = !dnd && chance(rng, 0.05)
 
   return {
     id: `case_${String(index + 1).padStart(3, '0')}`,
     subscription_id: `sub_${int(rng, 10000000, 99999999)}`,
-    customer: customer(rng, { dnd: d.dnd, opted_out: d.opted_out }),
+    customer: {
+      id: `cust_${int(rng, 100000, 999999)}`,
+      phone_masked: `+91XXXXXX${int(rng, 1000, 9999)}`,
+      dnd,
+      opted_out: optedOut,
+    },
     amount_inr: amount,
     method,
-    is_domestic_card: method === 'card' ? (d.is_domestic_card ?? chance(rng, 0.7)) : false,
+    is_domestic_card: method === 'card' ? chance(rng, 0.7) : false,
     mandate: {
-      max_amount_inr: Math.round(amount * (d.maxAmountMultiplier ?? pick(rng, [1.5, 2, 3, 5]))),
-      cancelled_by_customer: d.cancelled ?? false,
-      paused_by_customer: d.paused ?? false,
+      // For the over-limit slice the ceiling sits below the debit; that is the
+      // whole point of the case.
+      max_amount_inr: overLimit
+        ? Math.round(amount * 0.6)
+        : Math.round(amount * pick(rng, [1.5, 2, 3, 5])),
+      cancelled_by_customer: cancelled,
+      paused_by_customer: paused,
     },
     error: {
-      source: d.source,
-      step: d.step,
-      reason: d.reason,
-      description: d.description,
+      source: def.source,
+      step: def.step,
+      code: def.code,
+      description: def.description,
     },
     failed_at: iso(failedAt),
-    attempts: d.attempts ?? int(rng, 0, 2),
+    attempts: def.cause === 'late_auth_pending' ? 0 : int(rng, 0, 3),
     halts_at: iso(haltsAt),
-    late_auth_pending: d.late_auth ?? false,
-    _true_cause: d.cause,
-    _will_self_heal: willSelfHeal(rng, d.cause),
+    late_auth_pending: def.cause === 'late_auth_pending',
+    _true_cause: def.cause,
+    _will_self_heal: willSelfHeal(rng, def.cause),
   }
 }
 
-/** One entry per §3 slice. Order is fixed, so case ids are stable. */
-const SLICES: { name: string; count: number; draft: (rng: Rng, n: number) => Draft }[] = [
-  {
-    // 30% — the sequencer slice. Retrying into the same empty account fails;
-    // aiming at the next salary cycle works.
-    name: 'insufficient_funds',
-    count: 24,
-    draft: () => ({
-      source: 'customer',
-      step: 'payment_authorization',
-      reason: 'insufficient_funds',
-      description: 'Payment failed because the account had insufficient balance.',
-      cause: 'insufficient_funds',
-    }),
-  },
-  {
-    // 20% — broken instrument. Only the customer can fix it.
-    name: 'card_expired / bank_blocked_card',
-    count: 16,
-    draft: (_rng, n) =>
-      n % 2 === 0
-        ? {
-            method: 'card',
-            source: 'customer',
-            step: 'payment_authentication',
-            reason: 'card_expired',
-            description: 'The card used for this mandate has expired.',
-            cause: 'card_expired',
-          }
-        : {
-            method: 'card',
-            source: 'issuer_bank',
-            step: 'payment_authorization',
-            reason: 'bank_blocked_card',
-            description: 'The issuing bank has blocked this card for online debits.',
-            cause: 'bank_blocked_card',
-          },
-  },
-  {
-    // 15% — transient. Recovers well even untouched, which the holdout exposes.
-    name: 'issuer / gateway downtime',
-    count: 12,
-    draft: (_rng, n) =>
-      n % 2 === 0
-        ? {
-            source: 'issuer_bank',
-            step: 'payment_authorization',
-            reason: 'issuer_unavailable',
-            description: 'The issuing bank was unavailable when the debit was attempted.',
-            cause: 'issuer_downtime',
-          }
-        : {
-            source: 'gateway',
-            step: 'payment_initiation',
-            reason: 'gateway_error',
-            description: 'The payment gateway returned a transient processing error.',
-            cause: 'gateway_downtime',
-          },
-  },
-  {
-    // 10% — terminal. Any contact is a compliance violation.
-    name: 'mandate cancelled by customer',
-    count: 8,
-    draft: () => ({
-      cancelled: true,
-      source: 'customer',
-      step: 'mandate_debit',
-      reason: 'mandate_revoked',
-      description: 'The customer cancelled this mandate with their bank.',
-      cause: 'mandate_cancelled_by_customer',
-    }),
-  },
-  {
-    // 5% — acting here risks a second charge. Doing nothing is the right move.
-    name: 'late auth pending',
-    count: 4,
-    draft: () => ({
-      late_auth: true,
-      source: 'internal',
-      step: 'payment_authorization',
-      reason: 'authorization_pending',
-      description: 'Authorisation has not yet been confirmed by the bank.',
-      cause: 'late_auth_pending',
-    }),
-  },
-  {
-    // 5% — merchant config problem, not the customer's fault. A retry can
-    // never succeed, so this must escalate.
-    name: 'amount exceeds mandate max',
-    count: 4,
-    draft: (rng) => ({
-      amount: pick(rng, [1999, 2999, 4999, 9999]),
-      maxAmountMultiplier: 0.6, // max_amount below the debit — the whole point
-      source: 'business',
-      step: 'mandate_debit',
-      reason: 'amount_limit_exceeded',
-      description: 'Debit amount exceeds the maximum authorised by the mandate.',
-      cause: 'amount_exceeds_mandate_max',
-    }),
-  },
-  {
-    // 5% — the underlying fix needs contact, and contact is blocked. Retry is
-    // still allowed where the bucket is AUTO, which is the distinction the
-    // compliance gate has to get right.
-    name: 'dnd / opted out',
-    count: 4,
-    draft: (_rng, n) => ({
-      method: 'card',
-      dnd: n < 2,
-      opted_out: n >= 2,
-      source: 'customer',
-      step: 'payment_authentication',
-      reason: 'card_expired',
-      description: 'The card used for this mandate has expired.',
-      cause: 'card_expired',
-    }),
-  },
-  {
-    // 10% — the LLM tail, and the only place a model earns its keep.
-    //
-    // The `reason` CODE is generic and matches no rule, exactly as a real
-    // gateway often reports. The `description` is free text from the issuer,
-    // and for six of the eight it does carry the signal — which is the real
-    // shape of this problem: the code is useless, the prose is not.
-    //
-    // The last two are genuinely undeterminable, so the confidence floor gets
-    // exercised against real model output rather than asserted. And none of
-    // these descriptions name a canonical cause string; a test enforces that,
-    // because a description containing "insufficient_funds" would make this a
-    // string-matching exercise rather than a judgement.
-    name: 'unknown / ambiguous',
-    count: 8,
-    draft: (_rng, n) => {
-      const tail: { source: Draft['source']; reason: string; description: string; cause: TrueCause }[] = [
-        {
-          source: 'internal',
-          reason: 'payment_failed',
-          description:
-            'Issuer response: the balance in the linked account was below the debit amount at the time of presentment.',
-          cause: 'insufficient_funds',
-        },
-        {
-          source: 'issuer_bank',
-          reason: 'transaction_declined',
-          description:
-            "Declined by the customer's bank. The advice code indicates the account could not cover the amount presented.",
-          cause: 'insufficient_funds',
-        },
-        {
-          source: 'gateway',
-          reason: 'processing_error',
-          description:
-            'The debit was returned unpaid by the sponsor bank; cleared funds were not available on the presentment date.',
-          cause: 'insufficient_funds',
-        },
-        {
-          source: 'internal',
-          reason: 'payment_failed',
-          description:
-            'The issuer refused the credential. The instrument has been restricted by the bank and is not permitted for online debits.',
-          cause: 'bank_blocked_card',
-        },
-        {
-          source: 'issuer_bank',
-          reason: 'transaction_declined',
-          description:
-            "Declined by the customer's bank with a restriction on the instrument itself. The account is otherwise in good standing.",
-          cause: 'bank_blocked_card',
-        },
-        {
-          source: 'gateway',
-          reason: 'processing_error',
-          description:
-            "No response was received from the customer's bank inside the timeout window; the authorisation host was unreachable.",
-          cause: 'issuer_downtime',
-        },
-        {
-          source: 'internal',
-          reason: 'payment_failed',
-          description: 'The payment could not be completed. No additional detail was provided upstream.',
-          cause: 'unknown',
-        },
-        {
-          source: 'issuer_bank',
-          reason: 'transaction_declined',
-          description: 'The transaction was declined. The issuer returned no advice code.',
-          cause: 'unknown',
-        },
-      ]
-      const t = tail[n]!
-      return {
-        source: t.source,
-        step: 'payment_authorization',
-        reason: t.reason,
-        description: t.description,
-        cause: t.cause,
-      }
-    },
-  },
-]
+/**
+ * Roughly how often each cause shows up in a real book of failed subscription
+ * payments. Hand-authored — nobody measured it — but shaped by what actually
+ * dominates recurring-payment failure: not enough money in the account, then
+ * dead cards, then upstream outages.
+ *
+ * Weighting by CAUSE rather than by code matters. A uniform draw over the
+ * catalogue gave 15 downtime cases against 3 insufficient-funds, purely because
+ * downtime happens to have four documented codes and insufficient funds has
+ * one. That is an artefact of how Razorpay names things, not of how payments
+ * fail, and it would have quietly wrecked the measurement: downtime self-heals
+ * far more than a dead card, so the holdout arm would have recovered most of
+ * the batch on its own.
+ */
+const CAUSE_WEIGHT: Record<Cause, number> = {
+  insufficient_funds: 26,
+  card_expired: 12,
+  instrument_blocked: 8,
+  limit_exceeded: 5,
+  issuer_downtime: 8,
+  gateway_downtime: 5,
+  psp_downtime: 4,
+  mandate_cancelled_by_customer: 8,
+  mandate_paused_by_customer: 3,
+  mandate_not_authorised: 4,
+  amount_exceeds_mandate_max: 3,
+  wrong_account_selected: 3,
+  customer_abandoned: 4,
+  instrument_inactive: 3,
+  merchant_config_error: 2,
+  risk_declined: 2,
+  late_auth_pending: 5,
+  unknown: 6,
+}
 
-export function generateCases(seed: number = SEED): Case[] {
+/**
+ * Weighted draw. An entry's weight is its cause's weight divided across every
+ * catalogue entry carrying that cause, so a cause with four codes is no more
+ * likely than one with a single code — the codes share the cause's share.
+ */
+function weightedPick(rng: Rng, entries: ErrorDef[]): ErrorDef {
+  const shareOf = (e: ErrorDef) =>
+    CAUSE_WEIGHT[e.cause] / entries.filter((x) => x.cause === e.cause).length
+  const total = entries.reduce((s, e) => s + shareOf(e), 0)
+  let roll = rng() * total
+  for (const e of entries) {
+    roll -= shareOf(e)
+    if (roll <= 0) return e
+  }
+  return entries[entries.length - 1]!
+}
+
+/**
+ * Build the batch.
+ *
+ * The mix is drawn from the catalogue rather than a hand-written distribution
+ * table: roughly 30% from entries whose `(source, code)` is genuinely
+ * ambiguous, the rest from entries a rules table can resolve. Within each group
+ * the draw is weighted by how often the underlying cause really occurs, so the
+ * batch looks like a book of failed payments rather than a tour of the error
+ * documentation.
+ */
+export function generateCases(seed: number = SEED, size: number = BATCH_SIZE): Case[] {
   const rng = mulberry32(seed)
-  const cases: Case[] = []
-  for (const slice of SLICES) {
-    for (let n = 0; n < slice.count; n += 1) {
-      cases.push(build(rng, cases.length, slice.draft(rng, n)))
-    }
+  const ambiguousCount = Math.round(size * AMBIGUOUS_SHARE)
+
+  const defs: ErrorDef[] = []
+  for (let i = 0; i < ambiguousCount; i += 1) defs.push(weightedPick(rng, AMBIGUOUS_ENTRIES))
+  for (let i = ambiguousCount; i < size; i += 1) defs.push(weightedPick(rng, DETERMINISTIC_ENTRIES))
+
+  // Deal the two groups together so the ambiguous cases are not all at the end
+  // — otherwise they would cluster at one end of the priority queue and the
+  // model's work would look artificially batched.
+  for (let i = defs.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(rng() * (i + 1))
+    ;[defs[i], defs[j]] = [defs[j]!, defs[i]!]
   }
-  return cases
+
+  return defs.map((def, i) => build(rng, i, def))
 }
 
-export const SLICE_COUNTS = Object.fromEntries(SLICES.map((s) => [s.name, s.count]))
+export function batchStats(cases: Case[]) {
+  const ambiguous = cases.filter((c) => isAmbiguous(c.error.source, c.error.code))
+  const byCause = new Map<string, number>()
+  for (const c of cases) byCause.set(c._true_cause, (byCause.get(c._true_cause) ?? 0) + 1)
+  return {
+    total: cases.length,
+    ambiguous: ambiguous.length,
+    deterministic: cases.length - ambiguous.length,
+    distinctCodes: new Set(cases.map((c) => c.error.code)).size,
+    byCause: [...byCause].sort((a, b) => b[1] - a[1]),
+  }
+}
 
 const OUT = fileURLToPath(new URL('../../data/cases.seed.json', import.meta.url))
 
@@ -339,9 +225,14 @@ export function writeCases(seed: number = SEED): { file: string; count: number }
 
 // Only run when invoked directly, so importing this for a test writes nothing.
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
+  const cases = generateCases()
   const { file, count } = writeCases()
-  console.log(`Wrote ${count} cases (seed ${SEED}) → ${file}`)
-  for (const [name, n] of Object.entries(SLICE_COUNTS)) {
-    console.log(`  ${String(n).padStart(3)}  ${name}`)
+  const stats = batchStats(cases)
+
+  console.log(`Wrote ${count} cases (seed ${SEED}) → ${file}\n`)
+  console.log(`  ${stats.distinctCodes} distinct error codes drawn from ${ERROR_CATALOGUE.length} catalogue entries`)
+  console.log(`  ${stats.deterministic} resolvable by (source, code) · ${stats.ambiguous} genuinely ambiguous\n`)
+  for (const [cause, n] of stats.byCause) {
+    console.log(`  ${String(n).padStart(3)}  ${cause}`)
   }
 }

@@ -53,8 +53,8 @@ export async function diagnoseCase(kase: Case, llm: LlmDiagnoser): Promise<Diagn
       cause: hit.cause,
       confidence: 1,
       via: 'rules',
-      rules_fired: [hit.rule.id],
-      evidence: [hit.rule.describes],
+      rules_fired: [hit.id],
+      evidence: [hit.describes],
       escalate: false,
     }
   }

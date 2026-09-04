@@ -1,81 +1,80 @@
-// TABLE A — the agent's prior: P(recover | observed error reason, method)
+// TABLE A — the agent's prior: P(recover | error code, method).
 //
 // Used by the prioritiser only (BLUEPRINT §4.2):
-//   expected_value = amount_inr × P(recover | error.reason, method)
+//   expected_value = amount_inr × P(recover | error, method)
 //
-// This is what the agent BELIEVES before it acts, keyed on the error reason it
-// can actually see on the case. It is deliberately NOT the same table the
-// simulator scores outcomes with (src/sim/outcomes.ts, keyed on _true_cause).
-// If the two matched, the agent would be ranking cases using ground truth it has
-// no way of knowing, and every measured number would be worthless. The gap
-// between this table and reality is the thing the holdout arm exists to expose.
+// This is what the agent BELIEVES before it acts, and it runs BEFORE diagnosis
+// — so it is keyed on the error code, which is all that is known at that point.
+// It is deliberately NOT the table the simulator scores with
+// (src/sim/outcomes.ts, keyed on `_true_cause`). If the two matched, the agent
+// would be ranking cases using ground truth it has no way of knowing and every
+// measured number would be worthless.
 //
-// These numbers are hand-authored, not learned. They are shaped by how Indian
-// subscription rails behave — a scheduled retry aimed at a salary cycle beats an
-// immediate one; an expired card cannot be retried into working; downtime is
-// transient and mostly resolves — but the specific values are judgement, not
-// measurement. Stated plainly here and in the README.
+// Note what happens for an ambiguous code: the prior is the MEAN over every
+// cause that code can carry. That is the honest thing to do — at ranking time
+// the agent genuinely does not know whether `credit_failed` is a downtime blip
+// (usually recoverable) or the customer picking the wrong account (usually
+// not), so it prices in both.
+//
+// The per-cause numbers are hand-authored, not learned. They sit a little below
+// the simulator's best-action probabilities, because an estimate made before
+// diagnosis should be less confident than the outcome it is estimating.
 import type { Case } from '../engine/case'
+import { ERROR_CATALOGUE, type Cause } from './razorpay-errors'
 
 type Method = Case['method']
 
-/** Probability the case is recovered IF the agent works it with the best
- *  action available for that reason. Not a base rate — a worked-case rate. */
-export type RecoveryPrior = Record<Method, number>
-
-/**
- * Every reason the generator can emit, including the vague ones in the
- * ambiguous slice that `rules.ts` is not meant to resolve.
- *
- * All three methods are listed explicitly even where the value is identical,
- * so the table can be read and argued with rather than reverse-engineered from
- * a base rate and a multiplier.
- */
-export const RECOVERY_PRIORS: Record<string, RecoveryPrior> = {
-  // Money wasn't there. Timing is everything, and UPI Autopay debits retry
-  // slightly better because they can be aimed at a credit event same-day.
-  insufficient_funds: { card: 0.42, upi: 0.48, emandate: 0.40 },
-
-  // The instrument is dead. No retry fixes this; only the customer can.
-  card_expired: { card: 0.28, upi: 0.28, emandate: 0.26 },
-  bank_blocked_card: { card: 0.22, upi: 0.22, emandate: 0.20 },
-
-  // Transient. Most of these recover on their own or on the next attempt,
-  // which is exactly why acting on them looks impressive and proves little —
-  // the holdout arm will claw most of this back.
-  issuer_unavailable: { card: 0.75, upi: 0.78, emandate: 0.72 },
-  gateway_error: { card: 0.82, upi: 0.85, emandate: 0.80 },
-
-  // Terminal. The customer revoked consent. Nothing is recoverable and any
-  // contact is a compliance violation, so this must be exactly zero — it also
-  // guarantees these cases sink to the bottom of the priority queue.
-  mandate_revoked: { card: 0.0, upi: 0.0, emandate: 0.0 },
-
-  // Only the customer can resume a paused mandate, but they can still pay a
-  // one-off link, so this is not zero.
-  mandate_paused: { card: 0.30, upi: 0.32, emandate: 0.30 },
-
-  // A merchant configuration problem. Low, and what recovery exists comes from
-  // a human fixing the mandate, not from anything the agent can do.
-  amount_limit_exceeded: { card: 0.15, upi: 0.15, emandate: 0.15 },
-
-  // Authorisation may still land. High prior — but see the simulator: the
-  // recovery here mostly happens by NOT acting.
-  authorization_pending: { card: 0.70, upi: 0.68, emandate: 0.65 },
-
-  // The ambiguous slice. Vague reasons the rules table is not meant to resolve;
-  // these are the ~10% that reach the model.
-  payment_failed: { card: 0.22, upi: 0.24, emandate: 0.20 },
-  transaction_declined: { card: 0.20, upi: 0.22, emandate: 0.18 },
-  processing_error: { card: 0.24, upi: 0.26, emandate: 0.22 },
+/** Probability the case is recovered IF worked with the best available action. */
+const CAUSE_PRIOR: Record<Cause, number> = {
+  insufficient_funds: 0.45,
+  limit_exceeded: 0.35,
+  card_expired: 0.3,
+  instrument_blocked: 0.25,
+  instrument_inactive: 0.28,
+  issuer_downtime: 0.75,
+  gateway_downtime: 0.8,
+  psp_downtime: 0.68,
+  // Terminal. Exactly zero, which also sinks these to the bottom of the queue —
+  // so the priority ranking is a second line of defence behind the compliance
+  // gate rather than the only one.
+  mandate_cancelled_by_customer: 0.0,
+  mandate_paused_by_customer: 0.32,
+  mandate_not_authorised: 0.35,
+  amount_exceeds_mandate_max: 0.5,
+  wrong_account_selected: 0.4,
+  customer_abandoned: 0.45,
+  merchant_config_error: 0.55,
+  risk_declined: 0.45,
+  late_auth_pending: 0.65,
+  unknown: 0.25,
 }
 
-/** Used when a reason is not in the table at all. Deliberately pessimistic:
- *  an unrecognised failure should not outrank a known-recoverable one. */
-export const UNKNOWN_REASON_PRIOR = 0.15
+/** Rails differ a little: UPI retries land same-day, eMandate presentments don't. */
+const METHOD_FACTOR: Record<Method, number> = { card: 1.0, upi: 1.06, emandate: 0.95 }
 
-export function recoveryPrior(reason: string, method: Method): number {
-  return RECOVERY_PRIORS[reason]?.[method] ?? UNKNOWN_REASON_PRIOR
+/** `source|code` → mean prior across every cause that pair can carry. */
+const CODE_PRIOR = new Map<string, number>()
+for (const entry of ERROR_CATALOGUE) {
+  const k = `${entry.source}|${entry.code}`
+  const matching = ERROR_CATALOGUE.filter((e) => `${e.source}|${e.code}` === k)
+  const mean = matching.reduce((s, e) => s + CAUSE_PRIOR[e.cause], 0) / matching.length
+  CODE_PRIOR.set(k, mean)
+}
+
+/** Used when a code is not in the catalogue at all. Deliberately pessimistic:
+ *  an unrecognised failure should not outrank a known-recoverable one. */
+export const UNKNOWN_CODE_PRIOR = 0.15
+
+export function recoveryPrior(source: string, code: string, method: Method): number {
+  const base = CODE_PRIOR.get(`${source}|${code}`) ?? UNKNOWN_CODE_PRIOR
+  return Math.min(1, base * METHOD_FACTOR[method])
+}
+
+/** Exposed so the audit line can say what the agent believed and why. */
+export function priorDetail(source: string, code: string): { mean: number; causes: Cause[] } {
+  const k = `${source}|${code}`
+  const causes = ERROR_CATALOGUE.filter((e) => `${e.source}|${e.code}` === k).map((e) => e.cause)
+  return { mean: CODE_PRIOR.get(k) ?? UNKNOWN_CODE_PRIOR, causes }
 }
 
 /**
@@ -83,8 +82,8 @@ export function recoveryPrior(reason: string, method: Method): number {
  *
  * Retries are effectively free except that RBI requires a pre-debit
  * notification at least 24h ahead, which is one real SMS. Escalation is priced
- * as human minutes — it is by far the most expensive thing the agent can do,
- * which is what stops it escalating everything to look safe.
+ * as human minutes — by far the most expensive thing the agent can do, which is
+ * what stops it escalating everything to look safe.
  */
 export const ACTION_COST_INR = {
   retryNow: 0,

@@ -42,7 +42,7 @@ function printQueue(top: Scored[]): void {
   top.forEach((s, i) => {
     console.log(
       `  ${pad(i + 1, 3)}${pad(s.kase.id, 10)}${padL(inr(s.kase.amount_inr), 8)}  ` +
-        `${pad(s.kase.method, 9)}${pad(s.kase.error.reason, 23)}` +
+        `${pad(s.kase.method, 9)}${pad(s.kase.error.code, 26)}` +
         `${padL(s.hours_to_halt.toFixed(0), 7)}${padL(s.priority.toFixed(2), 10)}`,
     )
   })
@@ -327,7 +327,7 @@ async function main(): Promise<void> {
       id: s.kase.id,
       amount_inr: s.kase.amount_inr,
       method: s.kase.method,
-      reason: s.kase.error.reason,
+      reason: s.kase.error.code,
       cause: d?.cause ?? 'unknown',
       arm: s.holdout ? 'holdout' : 'treated',
       decision: s.holdout ? 'HOLDOUT' : s.halted ? 'HALTED' : (t?.outcome ?? null),

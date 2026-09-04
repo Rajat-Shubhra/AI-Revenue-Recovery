@@ -131,30 +131,86 @@ export function decideFromCause(kase: Case, cause: Cause, now: Date): Decision {
         via: 'table',
       }
 
+    case 'merchant_config_error':
+      return {
+        outcome: 'ESCALATE',
+        tool: 'escalate',
+        params: { reason: `${kase.error.source}/${kase.error.code} — the account or mandate is misconfigured for this method` },
+        because: 'the merchant account is not set up to take this payment; no customer action can fix that',
+        rejected: [
+          { tool: 'retryScheduled', because: 'the configuration is wrong, so every retry fails the same way' },
+          { tool: 'sendPaymentLink', because: 'the customer did nothing wrong; billing them for a merchant misconfiguration is the wrong ask' },
+        ],
+        via: 'table',
+      }
+
+    case 'risk_declined':
+      return {
+        outcome: 'ESCALATE',
+        tool: 'escalate',
+        params: { reason: 'declined by risk checks — needs a human to look before anything is re-presented' },
+        because: 'a risk decline is a judgement someone made about this payment; retrying around it automatically is exactly the wrong response',
+        rejected: [
+          { tool: 'retryNow', because: 'retrying a risk-declined payment without review is how an agent launders a decline into a chargeback' },
+          { tool: 'sendPaymentLink', because: 'routing a flagged payment to a different channel does not address why it was flagged' },
+        ],
+        via: 'table',
+      }
+
     case 'card_expired':
-    case 'bank_blocked_card':
-    case 'upi_mandate_paused_by_customer': {
-      const why =
-        cause === 'card_expired'
-          ? 'the stored card has expired — only the customer can supply a new one'
-          : cause === 'bank_blocked_card'
-            ? 'the issuing bank has blocked this card — only the customer can resolve it with them'
-            : 'the customer paused this mandate, and only they can resume it'
+    case 'instrument_blocked':
+    case 'instrument_inactive':
+    case 'limit_exceeded':
+    case 'wrong_account_selected':
+    case 'customer_abandoned':
+    case 'mandate_not_authorised':
+    case 'mandate_paused_by_customer': {
+      const why: Record<string, string> = {
+        card_expired: 'the stored card has expired — only the customer can supply a new one',
+        instrument_blocked: 'the instrument is blocked — only the customer can resolve that with their bank',
+        instrument_inactive: 'the instrument is inactive and has to be reactivated by the customer',
+        limit_exceeded: 'a limit on the instrument was hit — the customer has to raise it or pay another way',
+        wrong_account_selected: 'the debit was presented against a different account than the one registered — only the customer can select the right one',
+        customer_abandoned: 'the customer did not complete the authorisation in time; the mandate is fine, they just need to finish',
+        mandate_not_authorised: 'the mandate is not in a state the bank will debit — the customer has to re-authorise it',
+        mandate_paused_by_customer: 'the customer paused this mandate, and only they can resume it',
+      }
       rejected.push({
         tool: 'retryScheduled',
         because:
-          cause === 'upi_mandate_paused_by_customer'
-            ? 'a paused mandate rejects debits until the customer resumes it; the merchant cannot'
-            : 'the instrument itself is broken — no retry date fixes an expired or blocked card',
+          cause === 'limit_exceeded'
+            ? 'the limit resets on the bank’s cycle, not ours; a blind retry is a coin flip against an unknown reset date'
+            : cause === 'customer_abandoned'
+              ? 'nothing failed mechanically — re-presenting the same debit does not get the customer back to finish it'
+              : 'the instrument or mandate itself is unusable — no retry date changes that',
       })
       return {
         outcome: 'CUSTOMER_ACTION',
         tool: 'sendPaymentLink',
         params: { channel: 'sms' },
-        because: why,
+        because: why[cause] ?? 'only the customer can resolve this one',
         rejected,
         via: 'table',
       }
+    }
+
+    case 'psp_downtime': {
+      // The one cause where leaving the rail beats waiting on it: the simulator
+      // puts switchRail at 0.75 against a scheduled retry's 0.70. A broken PSP
+      // stays broken; a different one may not be.
+      if (kase.method === 'upi') {
+        return {
+          outcome: 'AUTO',
+          tool: 'switchRail',
+          params: { to: 'emandate' },
+          because: "the customer's UPI app is the thing that is down — moving the mandate to another rail beats waiting for it to come back",
+          rejected: [
+            { tool: 'retryScheduled', because: 'a retry goes back through the same PSP that just failed' },
+          ],
+          via: 'table',
+        }
+      }
+      return decideFromCause(kase, 'gateway_downtime', now)
     }
 
     case 'issuer_downtime':

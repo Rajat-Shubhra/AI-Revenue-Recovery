@@ -1,5 +1,10 @@
-// BLUEPRINT §3. Lives in engine/ because prompt.ts builds the model's user
-// message from it; the pipeline task may want to move it to src/pipeline/.
+// BLUEPRINT §3, corrected against Razorpay's real error API.
+//
+// `error.source` and `error.step` now carry the values Razorpay actually emits.
+// An earlier version used `internal` and `issuer_bank` as sources, which the
+// API never returns — see src/pipeline/razorpay-errors.ts.
+import type { ErrorSource, ErrorStep } from '../pipeline/razorpay-errors'
+
 export type Case = {
   id: string
   subscription_id: string
@@ -14,13 +19,20 @@ export type Case = {
     paused_by_customer: boolean
   }
   error: {
-    source: 'customer' | 'business' | 'internal' | 'gateway' | 'issuer_bank'
-    step: string
-    reason: string
+    source: ErrorSource
+    step: ErrorStep
+    /**
+     * Razorpay's machine-readable error code — `insufficient_funds`,
+     * `payment_declined`, and so on. Note this is the CODE, not the cause: the
+     * same code legitimately carries different meanings, which is the whole
+     * reason the diagnose stage is not just a lookup.
+     */
+    code: string
+    /** The issuer or gateway's advice text. Often carries what the code does not. */
     description: string
   }
   failed_at: string
-  /** Prior retries already made. */
+  /** Prior retries already made, including Razorpay's own automatic ones. */
   attempts: number
   /** Deadline: when Razorpay moves the subscription to halted. */
   halts_at: string

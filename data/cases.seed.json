@@ -1,610 +1,10 @@
 [
   {
     "id": "case_001",
-    "subscription_id": "sub_38025843",
+    "subscription_id": "sub_18532533",
     "customer": {
-      "id": "cust_666728",
-      "phone_masked": "+91XXXXXX5463",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 2999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 14995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T22:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-10T23:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_002",
-    "subscription_id": "sub_68846383",
-    "customer": {
-      "id": "cust_354407",
-      "phone_masked": "+91XXXXXX6954",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1499,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2998,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T03:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-11T02:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_003",
-    "subscription_id": "sub_24351592",
-    "customer": {
-      "id": "cust_808009",
-      "phone_masked": "+91XXXXXX4477",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 24995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-02T17:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-09T23:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_004",
-    "subscription_id": "sub_99000146",
-    "customer": {
-      "id": "cust_183382",
-      "phone_masked": "+91XXXXXX2692",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 299,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1495,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T22:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-08T09:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_005",
-    "subscription_id": "sub_48109718",
-    "customer": {
-      "id": "cust_591285",
-      "phone_masked": "+91XXXXXX4970",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1499,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 7495,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T18:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-08T13:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_006",
-    "subscription_id": "sub_34665895",
-    "customer": {
-      "id": "cust_136696",
-      "phone_masked": "+91XXXXXX1404",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 14999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-02T22:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-13T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_007",
-    "subscription_id": "sub_77208925",
-    "customer": {
-      "id": "cust_125282",
-      "phone_masked": "+91XXXXXX9391",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 299,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T22:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-10T11:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_008",
-    "subscription_id": "sub_86379684",
-    "customer": {
-      "id": "cust_250926",
-      "phone_masked": "+91XXXXXX8219",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1598,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T03:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-08T05:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_009",
-    "subscription_id": "sub_93196221",
-    "customer": {
-      "id": "cust_792856",
-      "phone_masked": "+91XXXXXX6566",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 999,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2997,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T19:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-04T19:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_010",
-    "subscription_id": "sub_57834345",
-    "customer": {
-      "id": "cust_483367",
-      "phone_masked": "+91XXXXXX1010",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 999,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2997,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-02T13:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-05T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_011",
-    "subscription_id": "sub_10849165",
-    "customer": {
-      "id": "cust_979257",
-      "phone_masked": "+91XXXXXX7682",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1197,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-05T06:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-13T22:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_012",
-    "subscription_id": "sub_70062658",
-    "customer": {
-      "id": "cust_461462",
-      "phone_masked": "+91XXXXXX3487",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 298,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T13:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-06T15:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_013",
-    "subscription_id": "sub_86834401",
-    "customer": {
-      "id": "cust_938598",
-      "phone_masked": "+91XXXXXX2162",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 398,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T23:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-08T21:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_014",
-    "subscription_id": "sub_78368025",
-    "customer": {
-      "id": "cust_321530",
-      "phone_masked": "+91XXXXXX7551",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 29997,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T04:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-10T22:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_015",
-    "subscription_id": "sub_54007678",
-    "customer": {
-      "id": "cust_482024",
-      "phone_masked": "+91XXXXXX3854",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 299,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-05T07:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-06T11:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_016",
-    "subscription_id": "sub_46644007",
-    "customer": {
-      "id": "cust_652211",
-      "phone_masked": "+91XXXXXX2800",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1197,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-02T18:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-13T16:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_017",
-    "subscription_id": "sub_13331550",
-    "customer": {
-      "id": "cust_872536",
-      "phone_masked": "+91XXXXXX5779",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1499,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 2998,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T02:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-06T19:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_018",
-    "subscription_id": "sub_81826229",
-    "customer": {
-      "id": "cust_706260",
-      "phone_masked": "+91XXXXXX7118",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T21:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-10T08:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_019",
-    "subscription_id": "sub_30439902",
-    "customer": {
-      "id": "cust_184532",
-      "phone_masked": "+91XXXXXX8502",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 14999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T22:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-09T05:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_020",
-    "subscription_id": "sub_74251847",
-    "customer": {
-      "id": "cust_281517",
-      "phone_masked": "+91XXXXXX9537",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 299,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 897,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T22:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-12T01:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_021",
-    "subscription_id": "sub_78839848",
-    "customer": {
-      "id": "cust_195543",
-      "phone_masked": "+91XXXXXX5887",
+      "id": "cust_774340",
+      "phone_masked": "+91XXXXXX3589",
       "dnd": false,
       "opted_out": false
     },
@@ -619,418 +19,88 @@
     "error": {
       "source": "customer",
       "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
     },
-    "failed_at": "2026-09-04T18:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-12T07:00:00.000Z",
+    "failed_at": "2026-09-03T09:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-11T18:00:00.000Z",
     "late_auth_pending": false,
     "_true_cause": "insufficient_funds",
     "_will_self_heal": false
   },
   {
-    "id": "case_022",
-    "subscription_id": "sub_74266929",
+    "id": "case_002",
+    "subscription_id": "sub_23203154",
     "customer": {
-      "id": "cust_298628",
-      "phone_masked": "+91XXXXXX3177",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 24995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-04T17:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-14T23:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_023",
-    "subscription_id": "sub_29177240",
-    "customer": {
-      "id": "cust_398468",
-      "phone_masked": "+91XXXXXX7160",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-05T04:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-12T07:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_024",
-    "subscription_id": "sub_75971131",
-    "customer": {
-      "id": "cust_207977",
-      "phone_masked": "+91XXXXXX1342",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 2999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 4499,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authorization",
-      "reason": "insufficient_funds",
-      "description": "Payment failed because the account had insufficient balance."
-    },
-    "failed_at": "2026-09-03T21:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-09T17:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_025",
-    "subscription_id": "sub_39185053",
-    "customer": {
-      "id": "cust_315784",
-      "phone_masked": "+91XXXXXX2780",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1499,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 2249,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-05T07:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-16T02:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_026",
-    "subscription_id": "sub_45694649",
-    "customer": {
-      "id": "cust_191079",
-      "phone_masked": "+91XXXXXX1724",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 49995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-03T12:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-05T16:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_027",
-    "subscription_id": "sub_95802032",
-    "customer": {
-      "id": "cust_991987",
-      "phone_masked": "+91XXXXXX5795",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 9995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-04T09:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-07T07:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_028",
-    "subscription_id": "sub_69631799",
-    "customer": {
-      "id": "cust_109218",
-      "phone_masked": "+91XXXXXX7202",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1598,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-02T22:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-10T14:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_029",
-    "subscription_id": "sub_54658460",
-    "customer": {
-      "id": "cust_505375",
-      "phone_masked": "+91XXXXXX9073",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 599,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-04T01:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-06T23:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_030",
-    "subscription_id": "sub_80099453",
-    "customer": {
-      "id": "cust_115967",
-      "phone_masked": "+91XXXXXX3996",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1245,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-04T23:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-10T01:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_031",
-    "subscription_id": "sub_41174506",
-    "customer": {
-      "id": "cust_946705",
-      "phone_masked": "+91XXXXXX2003",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 2999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 4499,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-04T11:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-09T06:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_032",
-    "subscription_id": "sub_78224566",
-    "customer": {
-      "id": "cust_246313",
-      "phone_masked": "+91XXXXXX3966",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 29997,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-03T01:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-04T15:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_033",
-    "subscription_id": "sub_91408248",
-    "customer": {
-      "id": "cust_308530",
-      "phone_masked": "+91XXXXXX3880",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 599,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 2995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-02T21:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-06T15:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_034",
-    "subscription_id": "sub_49014803",
-    "customer": {
-      "id": "cust_212461",
-      "phone_masked": "+91XXXXXX2506",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 499,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 749,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-02T18:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-06T03:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_035",
-    "subscription_id": "sub_72456769",
-    "customer": {
-      "id": "cust_348566",
-      "phone_masked": "+91XXXXXX3459",
+      "id": "cust_511886",
+      "phone_masked": "+91XXXXXX8182",
       "dnd": false,
       "opted_out": false
     },
     "amount_inr": 299,
-    "method": "card",
-    "is_domestic_card": true,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 897,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_initiation",
+      "code": "gateway_technical_error",
+      "description": "The transaction could not be completed because of a technical fault in the payment gateway itself."
+    },
+    "failed_at": "2026-09-02T20:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-11T21:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "gateway_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_003",
+    "subscription_id": "sub_30439902",
+    "customer": {
+      "id": "cust_184532",
+      "phone_masked": "+91XXXXXX8502",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 2397,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-02T11:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-04T07:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_004",
+    "subscription_id": "sub_28151743",
+    "customer": {
+      "id": "cust_953730",
+      "phone_masked": "+91XXXXXX7146",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 299,
+    "method": "emandate",
+    "is_domestic_card": false,
     "mandate": {
       "max_amount_inr": 1495,
       "cancelled_by_customer": false,
@@ -1038,23 +108,323 @@
     },
     "error": {
       "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
     },
-    "failed_at": "2026-09-02T21:00:00.000Z",
+    "failed_at": "2026-09-03T03:00:00.000Z",
     "attempts": 0,
-    "halts_at": "2026-09-08T13:00:00.000Z",
+    "halts_at": "2026-09-08T17:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_005",
+    "subscription_id": "sub_19449660",
+    "customer": {
+      "id": "cust_188103",
+      "phone_masked": "+91XXXXXX8825",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1245,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-03T09:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-11T23:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_006",
+    "subscription_id": "sub_46087051",
+    "customer": {
+      "id": "cust_746261",
+      "phone_masked": "+91XXXXXX4554",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1499,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 4497,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "credit_limit_exceeded",
+      "description": "The customer's available credit limit has been exceeded."
+    },
+    "failed_at": "2026-09-04T16:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-07T21:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "limit_exceeded",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_007",
+    "subscription_id": "sub_53824818",
+    "customer": {
+      "id": "cust_546345",
+      "phone_masked": "+91XXXXXX7597",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the instrument is restricted for recurring debits."
+    },
+    "failed_at": "2026-09-02T22:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-07T22:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_blocked",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_008",
+    "subscription_id": "sub_31578428",
+    "customer": {
+      "id": "cust_278029",
+      "phone_masked": "+91XXXXXX6988",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 4999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 7499,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-03T06:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-04T00:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_009",
+    "subscription_id": "sub_54164832",
+    "customer": {
+      "id": "cust_815496",
+      "phone_masked": "+91XXXXXX1579",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1499,
+      "cancelled_by_customer": true,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "mandate_revoked",
+      "description": "The customer has revoked this mandate with their bank."
+    },
+    "failed_at": "2026-09-04T22:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-09T17:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "mandate_cancelled_by_customer",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_010",
+    "subscription_id": "sub_15517381",
+    "customer": {
+      "id": "cust_833609",
+      "phone_masked": "+91XXXXXX5560",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 9999,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 29997,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the instrument is restricted for recurring debits."
+    },
+    "failed_at": "2026-09-02T09:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-08T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_blocked",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_011",
+    "subscription_id": "sub_40329237",
+    "customer": {
+      "id": "cust_480401",
+      "phone_masked": "+91XXXXXX2905",
+      "dnd": true,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 5998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "debit_instrument_inactive",
+      "description": "The debit instrument is inactive and cannot be charged."
+    },
+    "failed_at": "2026-09-04T11:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-09T13:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_inactive",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_012",
+    "subscription_id": "sub_48052136",
+    "customer": {
+      "id": "cust_800994",
+      "phone_masked": "+91XXXXXX1159",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "card_declined",
+      "description": "The card was declined by the issuer. The advice code indicates the stored credential is past its validity date."
+    },
+    "failed_at": "2026-09-03T21:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-05T21:00:00.000Z",
     "late_auth_pending": false,
     "_true_cause": "card_expired",
     "_will_self_heal": false
   },
   {
-    "id": "case_036",
-    "subscription_id": "sub_29059216",
+    "id": "case_013",
+    "subscription_id": "sub_20033903",
     "customer": {
-      "id": "cust_861992",
-      "phone_masked": "+91XXXXXX2605",
+      "id": "cust_371399",
+      "phone_masked": "+91XXXXXX1174",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 8997,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_initiation",
+      "code": "server_error",
+      "description": "A technical error occurred while the request was being processed."
+    },
+    "failed_at": "2026-09-04T11:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-09T06:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_014",
+    "subscription_id": "sub_60427609",
+    "customer": {
+      "id": "cust_727085",
+      "phone_masked": "+91XXXXXX6385",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 199,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "issuer_technical_error",
+      "description": "A technical error occurred at the card issuer."
+    },
+    "failed_at": "2026-09-03T02:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-05T12:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_015",
+    "subscription_id": "sub_44403232",
+    "customer": {
+      "id": "cust_879464",
+      "phone_masked": "+91XXXXXX3329",
       "dnd": false,
       "opted_out": false
     },
@@ -1062,29 +432,59 @@
     "method": "card",
     "is_domestic_card": true,
     "mandate": {
-      "max_amount_inr": 798,
+      "max_amount_inr": 599,
       "cancelled_by_customer": false,
       "paused_by_customer": false
     },
     "error": {
-      "source": "issuer_bank",
+      "source": "gateway",
       "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
+      "code": "payment_pending",
+      "description": "The payment is pending and has not yet completed. Confirmation may take more than 24 hours."
     },
-    "failed_at": "2026-09-02T21:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-12T16:00:00.000Z",
+    "failed_at": "2026-09-05T04:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-13T18:00:00.000Z",
+    "late_auth_pending": true,
+    "_true_cause": "late_auth_pending",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_016",
+    "subscription_id": "sub_53053316",
+    "customer": {
+      "id": "cust_724567",
+      "phone_masked": "+91XXXXXX3485",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 199,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 398,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-04T06:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-09T06:00:00.000Z",
     "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
+    "_true_cause": "insufficient_funds",
     "_will_self_heal": false
   },
   {
-    "id": "case_037",
-    "subscription_id": "sub_26656940",
+    "id": "case_017",
+    "subscription_id": "sub_86199296",
     "customer": {
-      "id": "cust_736409",
-      "phone_masked": "+91XXXXXX6764",
+      "id": "cust_260547",
+      "phone_masked": "+91XXXXXX4097",
       "dnd": false,
       "opted_out": false
     },
@@ -1097,24 +497,654 @@
       "paused_by_customer": false
     },
     "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "card_declined",
+      "description": "The card was declined by the issuer. The advice code indicates the stored credential is past its validity date."
     },
-    "failed_at": "2026-09-04T22:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-13T07:00:00.000Z",
+    "failed_at": "2026-09-04T08:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-13T14:00:00.000Z",
     "late_auth_pending": false,
     "_true_cause": "card_expired",
     "_will_self_heal": false
   },
   {
-    "id": "case_038",
-    "subscription_id": "sub_96800706",
+    "id": "case_018",
+    "subscription_id": "sub_79141515",
     "customer": {
-      "id": "cust_572632",
-      "phone_masked": "+91XXXXXX6989",
+      "id": "cust_510366",
+      "phone_masked": "+91XXXXXX5423",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 3998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_initiation",
+      "code": "server_error",
+      "description": "A technical error occurred while the request was being processed."
+    },
+    "failed_at": "2026-09-04T18:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-12T18:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_019",
+    "subscription_id": "sub_76283486",
+    "customer": {
+      "id": "cust_678499",
+      "phone_masked": "+91XXXXXX4520",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1499,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 2249,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-03T06:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-08T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_020",
+    "subscription_id": "sub_38594045",
+    "customer": {
+      "id": "cust_934948",
+      "phone_masked": "+91XXXXXX7325",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 8997,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_failed",
+      "description": "The payment failed. The customer's issuing bank did not respond within the authorisation window and the request was abandoned."
+    },
+    "failed_at": "2026-09-04T07:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-12T05:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_021",
+    "subscription_id": "sub_73579373",
+    "customer": {
+      "id": "cust_106701",
+      "phone_masked": "+91XXXXXX8811",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 199,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 597,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-04T13:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-13T23:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_022",
+    "subscription_id": "sub_70632593",
+    "customer": {
+      "id": "cust_815991",
+      "phone_masked": "+91XXXXXX4753",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 2495,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "bank_not_available",
+      "description": "The customer's bank was unavailable due to downtime when the debit was presented."
+    },
+    "failed_at": "2026-09-04T20:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-10T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_023",
+    "subscription_id": "sub_16668883",
+    "customer": {
+      "id": "cust_904861",
+      "phone_masked": "+91XXXXXX2143",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 149,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 447,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-02T15:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-06T22:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_024",
+    "subscription_id": "sub_83414440",
+    "customer": {
+      "id": "cust_691047",
+      "phone_masked": "+91XXXXXX3573",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 1497,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-02T21:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-07T22:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_025",
+    "subscription_id": "sub_32295990",
+    "customer": {
+      "id": "cust_403799",
+      "phone_masked": "+91XXXXXX1292",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 4499,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-03T18:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-05T09:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_026",
+    "subscription_id": "sub_53716185",
+    "customer": {
+      "id": "cust_787751",
+      "phone_masked": "+91XXXXXX9281",
+      "dnd": true,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 2495,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "debit_instrument_blocked",
+      "description": "The issuing bank has blocked this card for recurring online debits."
+    },
+    "failed_at": "2026-09-05T06:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-10T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_blocked",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_027",
+    "subscription_id": "sub_29013092",
+    "customer": {
+      "id": "cust_197326",
+      "phone_masked": "+91XXXXXX2694",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 4999,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 7499,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_timed_out",
+      "description": "The request timed out waiting on the partner bank, which was not responding."
+    },
+    "failed_at": "2026-09-04T07:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-08T02:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_028",
+    "subscription_id": "sub_67148363",
+    "customer": {
+      "id": "cust_235290",
+      "phone_masked": "+91XXXXXX7765",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 4999,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 9998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "card_declined",
+      "description": "The card was declined by the issuer. The advice code indicates the stored credential is past its validity date."
+    },
+    "failed_at": "2026-09-04T07:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-10T04:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_029",
+    "subscription_id": "sub_68319377",
+    "customer": {
+      "id": "cust_687135",
+      "phone_masked": "+91XXXXXX1056",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited from the account. The issuer returned no further advice."
+    },
+    "failed_at": "2026-09-02T11:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-03T06:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_030",
+    "subscription_id": "sub_24137961",
+    "customer": {
+      "id": "cust_832938",
+      "phone_masked": "+91XXXXXX1094",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 299,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 897,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-04T15:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-10T11:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_031",
+    "subscription_id": "sub_13599191",
+    "customer": {
+      "id": "cust_819373",
+      "phone_masked": "+91XXXXXX9468",
+      "dnd": true,
+      "opted_out": false
+    },
+    "amount_inr": 399,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 798,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "transaction_daily_limit_exceeded",
+      "description": "The daily transaction limit on this card has already been exhausted."
+    },
+    "failed_at": "2026-09-04T18:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-10T19:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "limit_exceeded",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_032",
+    "subscription_id": "sub_46701709",
+    "customer": {
+      "id": "cust_108093",
+      "phone_masked": "+91XXXXXX5951",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 1199,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "payment_timed_out",
+      "description": "The customer did not complete the authorisation within the permitted time."
+    },
+    "failed_at": "2026-09-04T04:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-13T03:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "customer_abandoned",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_033",
+    "subscription_id": "sub_54484560",
+    "customer": {
+      "id": "cust_926049",
+      "phone_masked": "+91XXXXXX1299",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 747,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-02T09:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-03T06:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_034",
+    "subscription_id": "sub_53101748",
+    "customer": {
+      "id": "cust_870829",
+      "phone_masked": "+91XXXXXX4051",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1245,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_failed",
+      "description": "The payment failed. The customer's issuing bank did not respond within the authorisation window and the request was abandoned."
+    },
+    "failed_at": "2026-09-03T00:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-09T23:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_035",
+    "subscription_id": "sub_60836123",
+    "customer": {
+      "id": "cust_199897",
+      "phone_masked": "+91XXXXXX7291",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 4999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 24995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-05T02:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-08T18:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_036",
+    "subscription_id": "sub_29267520",
+    "customer": {
+      "id": "cust_860665",
+      "phone_masked": "+91XXXXXX3117",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 149,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 89,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "business",
+      "step": "payment_authorization",
+      "code": "mcc_amount_limit_exceeded",
+      "description": "The amount presented exceeds the limit configured for this merchant category code."
+    },
+    "failed_at": "2026-09-05T01:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-07T03:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "amount_exceeds_mandate_max",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_037",
+    "subscription_id": "sub_87553355",
+    "customer": {
+      "id": "cust_607943",
+      "phone_masked": "+91XXXXXX2941",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 399,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 599,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "bank_technical_error",
+      "description": "The bank's Core Banking System encountered a technical error while processing the debit."
+    },
+    "failed_at": "2026-09-03T17:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-10T20:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_038",
+    "subscription_id": "sub_41594028",
+    "customer": {
+      "id": "cust_702577",
+      "phone_masked": "+91XXXXXX3163",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 749,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-02T23:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-08T11:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_039",
+    "subscription_id": "sub_91454724",
+    "customer": {
+      "id": "cust_599216",
+      "phone_masked": "+91XXXXXX3546",
       "dnd": false,
       "opted_out": false
     },
@@ -1122,29 +1152,1019 @@
     "method": "card",
     "is_domestic_card": true,
     "mandate": {
-      "max_amount_inr": 398,
+      "max_amount_inr": 597,
       "cancelled_by_customer": false,
       "paused_by_customer": false
     },
     "error": {
-      "source": "issuer_bank",
+      "source": "gateway",
       "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
+      "code": "payment_failed",
+      "description": "The payment failed. The customer's issuing bank did not respond within the authorisation window and the request was abandoned."
     },
-    "failed_at": "2026-09-04T08:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-07T22:00:00.000Z",
+    "failed_at": "2026-09-04T17:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-05T11:00:00.000Z",
     "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
+    "_true_cause": "issuer_downtime",
     "_will_self_heal": false
   },
   {
-    "id": "case_039",
-    "subscription_id": "sub_31934610",
+    "id": "case_040",
+    "subscription_id": "sub_95952310",
     "customer": {
-      "id": "cust_522804",
-      "phone_masked": "+91XXXXXX5605",
+      "id": "cust_993615",
+      "phone_masked": "+91XXXXXX9618",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "credit_limit_exceeded",
+      "description": "The customer's available credit limit has been exceeded."
+    },
+    "failed_at": "2026-09-02T11:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-12T06:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "limit_exceeded",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_041",
+    "subscription_id": "sub_32228691",
+    "customer": {
+      "id": "cust_117597",
+      "phone_masked": "+91XXXXXX7147",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 2397,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "debit_instrument_blocked",
+      "description": "The issuing bank has blocked this card for recurring online debits."
+    },
+    "failed_at": "2026-09-03T11:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-13T12:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_blocked",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_042",
+    "subscription_id": "sub_55683444",
+    "customer": {
+      "id": "cust_679956",
+      "phone_masked": "+91XXXXXX9014",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 299,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 598,
+      "cancelled_by_customer": true,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "mandate_revoked",
+      "description": "The customer has revoked this mandate with their bank."
+    },
+    "failed_at": "2026-09-03T14:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-10T15:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "mandate_cancelled_by_customer",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_043",
+    "subscription_id": "sub_61122299",
+    "customer": {
+      "id": "cust_612418",
+      "phone_masked": "+91XXXXXX2578",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 199,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "international_transaction_not_allowed",
+      "description": "International transactions are not permitted on this instrument."
+    },
+    "failed_at": "2026-09-03T19:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-14T15:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "merchant_config_error",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_044",
+    "subscription_id": "sub_23992392",
+    "customer": {
+      "id": "cust_549456",
+      "phone_masked": "+91XXXXXX2165",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 599,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 899,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-02T15:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-04T21:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_045",
+    "subscription_id": "sub_66021255",
+    "customer": {
+      "id": "cust_888125",
+      "phone_masked": "+91XXXXXX7489",
+      "dnd": false,
+      "opted_out": true
+    },
+    "amount_inr": 9999,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 14999,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_failed",
+      "description": "The payment failed. The customer's issuing bank did not respond within the authorisation window and the request was abandoned."
+    },
+    "failed_at": "2026-09-02T16:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-11T11:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_046",
+    "subscription_id": "sub_68398875",
+    "customer": {
+      "id": "cust_835379",
+      "phone_masked": "+91XXXXXX3774",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1245,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-03T21:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-05T18:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_047",
+    "subscription_id": "sub_80148925",
+    "customer": {
+      "id": "cust_279154",
+      "phone_masked": "+91XXXXXX6659",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 4499,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_initiation",
+      "code": "server_error",
+      "description": "A technical error occurred while the request was being processed."
+    },
+    "failed_at": "2026-09-05T01:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-15T20:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_048",
+    "subscription_id": "sub_46048367",
+    "customer": {
+      "id": "cust_136546",
+      "phone_masked": "+91XXXXXX2593",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1799,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "business",
+      "step": "payment_authorization",
+      "code": "mcc_amount_limit_exceeded",
+      "description": "The amount presented exceeds the limit configured for this merchant category code."
+    },
+    "failed_at": "2026-09-02T09:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-08T21:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "amount_exceeds_mandate_max",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_049",
+    "subscription_id": "sub_42912177",
+    "customer": {
+      "id": "cust_778239",
+      "phone_masked": "+91XXXXXX3122",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 199,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 299,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "transaction_daily_limit_exceeded",
+      "description": "The daily transaction limit on this card has already been exhausted."
+    },
+    "failed_at": "2026-09-03T09:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-08T19:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "limit_exceeded",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_050",
+    "subscription_id": "sub_54942837",
+    "customer": {
+      "id": "cust_597037",
+      "phone_masked": "+91XXXXXX2538",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1199,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-02T09:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-07T08:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_051",
+    "subscription_id": "sub_24007210",
+    "customer": {
+      "id": "cust_853662",
+      "phone_masked": "+91XXXXXX4475",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-04T02:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-14T05:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_052",
+    "subscription_id": "sub_81449951",
+    "customer": {
+      "id": "cust_631716",
+      "phone_masked": "+91XXXXXX3877",
+      "dnd": false,
+      "opted_out": true
+    },
+    "amount_inr": 4999,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 24995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-03T01:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-05T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_053",
+    "subscription_id": "sub_80374616",
+    "customer": {
+      "id": "cust_682027",
+      "phone_masked": "+91XXXXXX4011",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1999,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 5997,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_authorization",
+      "code": "verification_failed",
+      "description": "Verification of the payment via a status check did not complete. This is usually temporary."
+    },
+    "failed_at": "2026-09-03T12:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-04T16:00:00.000Z",
+    "late_auth_pending": true,
+    "_true_cause": "late_auth_pending",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_054",
+    "subscription_id": "sub_16575936",
+    "customer": {
+      "id": "cust_820572",
+      "phone_masked": "+91XXXXXX5029",
+      "dnd": true,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 3995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "debit_instrument_blocked",
+      "description": "The card has been blocked. This may have been done by the issuing bank or by the customer themselves."
+    },
+    "failed_at": "2026-09-04T20:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-08T11:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "instrument_blocked",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_055",
+    "subscription_id": "sub_37485604",
+    "customer": {
+      "id": "cust_316135",
+      "phone_masked": "+91XXXXXX5964",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 499,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-05T07:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-09T02:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_056",
+    "subscription_id": "sub_44891243",
+    "customer": {
+      "id": "cust_102119",
+      "phone_masked": "+91XXXXXX9664",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 299,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 179,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "business",
+      "step": "payment_authorization",
+      "code": "mcc_amount_limit_exceeded",
+      "description": "The amount presented exceeds the limit configured for this merchant category code."
+    },
+    "failed_at": "2026-09-04T02:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-13T10:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "amount_exceeds_mandate_max",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_057",
+    "subscription_id": "sub_60902662",
+    "customer": {
+      "id": "cust_596123",
+      "phone_masked": "+91XXXXXX2109",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 8997,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
+    },
+    "failed_at": "2026-09-04T06:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-05T00:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_058",
+    "subscription_id": "sub_52630735",
+    "customer": {
+      "id": "cust_701853",
+      "phone_masked": "+91XXXXXX5517",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 3995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_declined",
+      "description": "Funds could not be debited from the account. The issuer returned no further advice."
+    },
+    "failed_at": "2026-09-03T21:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-05T17:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_059",
+    "subscription_id": "sub_17737650",
+    "customer": {
+      "id": "cust_786045",
+      "phone_masked": "+91XXXXXX9963",
+      "dnd": false,
+      "opted_out": true
+    },
+    "amount_inr": 499,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_initiation",
+      "code": "gateway_technical_error",
+      "description": "The request could not be placed because the customer's UPI application is currently unreachable."
+    },
+    "failed_at": "2026-09-03T08:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-05T17:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "psp_downtime",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_060",
+    "subscription_id": "sub_94500681",
+    "customer": {
+      "id": "cust_221933",
+      "phone_masked": "+91XXXXXX3212",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 599,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1198,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-04T18:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-08T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_061",
+    "subscription_id": "sub_76724622",
+    "customer": {
+      "id": "cust_988440",
+      "phone_masked": "+91XXXXXX1182",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 1245,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "card_declined",
+      "description": "The card was declined by the issuer. The advice code indicates the stored credential is past its validity date."
+    },
+    "failed_at": "2026-09-03T03:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-13T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_062",
+    "subscription_id": "sub_79872816",
+    "customer": {
+      "id": "cust_109807",
+      "phone_masked": "+91XXXXXX6876",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 1199,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-03T04:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-04T15:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_063",
+    "subscription_id": "sub_29625850",
+    "customer": {
+      "id": "cust_569201",
+      "phone_masked": "+91XXXXXX6721",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1245,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_pending",
+      "description": "The payment is pending and has not yet completed. Confirmation may take more than 24 hours."
+    },
+    "failed_at": "2026-09-03T14:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-14T09:00:00.000Z",
+    "late_auth_pending": true,
+    "_true_cause": "late_auth_pending",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_064",
+    "subscription_id": "sub_97954607",
+    "customer": {
+      "id": "cust_979395",
+      "phone_masked": "+91XXXXXX9349",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "payment_failed",
+      "description": "The payment failed. The customer's issuing bank did not respond within the authorisation window and the request was abandoned."
+    },
+    "failed_at": "2026-09-05T00:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-14T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_065",
+    "subscription_id": "sub_43811025",
+    "customer": {
+      "id": "cust_758483",
+      "phone_masked": "+91XXXXXX6131",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 2999,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 5998,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-04T03:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-10T09:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_066",
+    "subscription_id": "sub_90124683",
+    "customer": {
+      "id": "cust_992749",
+      "phone_masked": "+91XXXXXX4910",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 999,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 4995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-03T02:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-06T17:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_067",
+    "subscription_id": "sub_33802597",
+    "customer": {
+      "id": "cust_960943",
+      "phone_masked": "+91XXXXXX2908",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 374,
+      "cancelled_by_customer": true,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "mandate_revoked",
+      "description": "The customer has revoked this mandate with their bank."
+    },
+    "failed_at": "2026-09-05T04:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-08T18:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "mandate_cancelled_by_customer",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_068",
+    "subscription_id": "sub_70572794",
+    "customer": {
+      "id": "cust_230846",
+      "phone_masked": "+91XXXXXX5286",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1598,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authentication",
+      "code": "card_expired",
+      "description": "The card stored against this mandate has expired."
+    },
+    "failed_at": "2026-09-04T18:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-08T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "card_expired",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_069",
+    "subscription_id": "sub_35856148",
+    "customer": {
+      "id": "cust_487625",
+      "phone_masked": "+91XXXXXX2347",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 399,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-05T01:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-15T14:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_070",
+    "subscription_id": "sub_14142214",
+    "customer": {
+      "id": "cust_763519",
+      "phone_masked": "+91XXXXXX2952",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1999,
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 9995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": true
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "mandate_paused",
+      "description": "The mandate has been paused by the customer and cannot be debited until they resume it."
+    },
+    "failed_at": "2026-09-02T20:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-12T12:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "mandate_paused_by_customer",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_071",
+    "subscription_id": "sub_29497830",
+    "customer": {
+      "id": "cust_913693",
+      "phone_masked": "+91XXXXXX6254",
+      "dnd": false,
+      "opted_out": true
+    },
+    "amount_inr": 399,
+    "method": "card",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "gateway",
+      "step": "payment_authorization",
+      "code": "bank_technical_error",
+      "description": "The bank's Core Banking System encountered a technical error while processing the debit."
+    },
+    "failed_at": "2026-09-04T08:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-08T06:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "issuer_downtime",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_072",
+    "subscription_id": "sub_27863786",
+    "customer": {
+      "id": "cust_887964",
+      "phone_masked": "+91XXXXXX4978",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 1499,
+    "method": "upi",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 4497,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_initiation",
+      "code": "server_error",
+      "description": "A technical error occurred while the request was being processed."
+    },
+    "failed_at": "2026-09-04T04:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-05T20:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_073",
+    "subscription_id": "sub_89622101",
+    "customer": {
+      "id": "cust_141379",
+      "phone_masked": "+91XXXXXX3350",
       "dnd": false,
       "opted_out": false
     },
@@ -1158,1078 +2178,88 @@
     },
     "error": {
       "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-03T10:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-08T04:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_040",
-    "subscription_id": "sub_93494821",
-    "customer": {
-      "id": "cust_732598",
-      "phone_masked": "+91XXXXXX1769",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 798,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
       "step": "payment_authorization",
-      "reason": "bank_blocked_card",
-      "description": "The issuing bank has blocked this card for online debits."
-    },
-    "failed_at": "2026-09-02T18:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-06T18:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_041",
-    "subscription_id": "sub_19660101",
-    "customer": {
-      "id": "cust_735793",
-      "phone_masked": "+91XXXXXX1067",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 597,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
-    },
-    "failed_at": "2026-09-02T20:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-11T15:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_042",
-    "subscription_id": "sub_17264969",
-    "customer": {
-      "id": "cust_704869",
-      "phone_masked": "+91XXXXXX7063",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 599,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-04T20:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-10T14:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_043",
-    "subscription_id": "sub_91349647",
-    "customer": {
-      "id": "cust_410538",
-      "phone_masked": "+91XXXXXX3193",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 798,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
     },
     "failed_at": "2026-09-04T13:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-05T19:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_044",
-    "subscription_id": "sub_62616815",
-    "customer": {
-      "id": "cust_586085",
-      "phone_masked": "+91XXXXXX4800",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 995,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-03T14:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-13T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_045",
-    "subscription_id": "sub_40712679",
-    "customer": {
-      "id": "cust_618999",
-      "phone_masked": "+91XXXXXX9978",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 745,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
-    },
-    "failed_at": "2026-09-03T09:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-07T01:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_046",
-    "subscription_id": "sub_32295990",
-    "customer": {
-      "id": "cust_403799",
-      "phone_masked": "+91XXXXXX1292",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1199,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-03T14:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-13T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_047",
-    "subscription_id": "sub_14761497",
-    "customer": {
-      "id": "cust_537161",
-      "phone_masked": "+91XXXXXX7877",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 745,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
-    },
-    "failed_at": "2026-09-05T06:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-10T14:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_048",
-    "subscription_id": "sub_41170922",
-    "customer": {
-      "id": "cust_367814",
-      "phone_masked": "+91XXXXXX7265",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 1999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 3998,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-04T08:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-14T04:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_049",
-    "subscription_id": "sub_85687330",
-    "customer": {
-      "id": "cust_888243",
-      "phone_masked": "+91XXXXXX4108",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1245,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
-    },
-    "failed_at": "2026-09-03T05:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-04T00:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_050",
-    "subscription_id": "sub_19462549",
-    "customer": {
-      "id": "cust_973699",
-      "phone_masked": "+91XXXXXX5828",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 374,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-02T11:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-07T02:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_051",
-    "subscription_id": "sub_10568000",
-    "customer": {
-      "id": "cust_268630",
-      "phone_masked": "+91XXXXXX7359",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 599,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1198,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "issuer_unavailable",
-      "description": "The issuing bank was unavailable when the debit was attempted."
-    },
-    "failed_at": "2026-09-03T09:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-10T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_052",
-    "subscription_id": "sub_24137961",
-    "customer": {
-      "id": "cust_832938",
-      "phone_masked": "+91XXXXXX1094",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 299,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 897,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "gateway",
-      "step": "payment_initiation",
-      "reason": "gateway_error",
-      "description": "The payment gateway returned a transient processing error."
-    },
-    "failed_at": "2026-09-03T10:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-09T00:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "gateway_downtime",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_053",
-    "subscription_id": "sub_15093599",
-    "customer": {
-      "id": "cust_135991",
-      "phone_masked": "+91XXXXXX8193",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "card",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 9998,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-04T18:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-10T19:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_054",
-    "subscription_id": "sub_16858574",
-    "customer": {
-      "id": "cust_826676",
-      "phone_masked": "+91XXXXXX4670",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 2999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 4499,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-04T04:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-13T03:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_055",
-    "subscription_id": "sub_23840744",
-    "customer": {
-      "id": "cust_997164",
-      "phone_masked": "+91XXXXXX1138",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 745,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-02T14:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-11T07:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_056",
-    "subscription_id": "sub_55586532",
-    "customer": {
-      "id": "cust_243516",
-      "phone_masked": "+91XXXXXX8037",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 447,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-04T12:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-11T04:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_057",
-    "subscription_id": "sub_42866528",
-    "customer": {
-      "id": "cust_595573",
-      "phone_masked": "+91XXXXXX2676",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 599,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2995,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-04T07:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-14T10:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_058",
-    "subscription_id": "sub_72913765",
-    "customer": {
-      "id": "cust_584615",
-      "phone_masked": "+91XXXXXX7884",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1598,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-03T15:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-05T12:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_059",
-    "subscription_id": "sub_29267520",
-    "customer": {
-      "id": "cust_860665",
-      "phone_masked": "+91XXXXXX3117",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 199,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 597,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-02T14:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-08T22:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_060",
-    "subscription_id": "sub_87553355",
-    "customer": {
-      "id": "cust_607943",
-      "phone_masked": "+91XXXXXX2941",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1598,
-      "cancelled_by_customer": true,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "mandate_debit",
-      "reason": "mandate_revoked",
-      "description": "The customer cancelled this mandate with their bank."
-    },
-    "failed_at": "2026-09-03T21:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-08T12:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "mandate_cancelled_by_customer",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_061",
-    "subscription_id": "sub_51793099",
-    "customer": {
-      "id": "cust_299698",
-      "phone_masked": "+91XXXXXX6645",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 498,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "authorization_pending",
-      "description": "Authorisation has not yet been confirmed by the bank."
-    },
-    "failed_at": "2026-09-04T04:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-13T01:00:00.000Z",
-    "late_auth_pending": true,
-    "_true_cause": "late_auth_pending",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_062",
-    "subscription_id": "sub_22071870",
-    "customer": {
-      "id": "cust_284568",
-      "phone_masked": "+91XXXXXX1007",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 374,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "authorization_pending",
-      "description": "Authorisation has not yet been confirmed by the bank."
-    },
-    "failed_at": "2026-09-02T17:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-05T14:00:00.000Z",
-    "late_auth_pending": true,
-    "_true_cause": "late_auth_pending",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_063",
-    "subscription_id": "sub_92647238",
-    "customer": {
-      "id": "cust_958097",
-      "phone_masked": "+91XXXXXX2632",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 299,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1495,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "authorization_pending",
-      "description": "Authorisation has not yet been confirmed by the bank."
-    },
-    "failed_at": "2026-09-03T12:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-10T19:00:00.000Z",
-    "late_auth_pending": true,
-    "_true_cause": "late_auth_pending",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_064",
-    "subscription_id": "sub_14285883",
-    "customer": {
-      "id": "cust_184408",
-      "phone_masked": "+91XXXXXX4651",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 399,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 599,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "authorization_pending",
-      "description": "Authorisation has not yet been confirmed by the bank."
-    },
-    "failed_at": "2026-09-02T09:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-12T23:00:00.000Z",
-    "late_auth_pending": true,
-    "_true_cause": "late_auth_pending",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_065",
-    "subscription_id": "sub_32228691",
-    "customer": {
-      "id": "cust_117597",
-      "phone_masked": "+91XXXXXX7147",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "business",
-      "step": "mandate_debit",
-      "reason": "amount_limit_exceeded",
-      "description": "Debit amount exceeds the maximum authorised by the mandate."
-    },
-    "failed_at": "2026-09-03T09:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-12T01:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "amount_exceeds_mandate_max",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_066",
-    "subscription_id": "sub_62301038",
-    "customer": {
-      "id": "cust_650217",
-      "phone_masked": "+91XXXXXX3468",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 2999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 1799,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "business",
-      "step": "mandate_debit",
-      "reason": "amount_limit_exceeded",
-      "description": "Debit amount exceeds the maximum authorised by the mandate."
-    },
-    "failed_at": "2026-09-03T09:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-06T09:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "amount_exceeds_mandate_max",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_067",
-    "subscription_id": "sub_70086863",
-    "customer": {
-      "id": "cust_267900",
-      "phone_masked": "+91XXXXXX1888",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "business",
-      "step": "mandate_debit",
-      "reason": "amount_limit_exceeded",
-      "description": "Debit amount exceeds the maximum authorised by the mandate."
-    },
-    "failed_at": "2026-09-04T02:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-13T17:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "amount_exceeds_mandate_max",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_068",
-    "subscription_id": "sub_25787795",
-    "customer": {
-      "id": "cust_288752",
-      "phone_masked": "+91XXXXXX8045",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 4999,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 2999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "business",
-      "step": "mandate_debit",
-      "reason": "amount_limit_exceeded",
-      "description": "Debit amount exceeds the maximum authorised by the mandate."
-    },
-    "failed_at": "2026-09-03T15:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-10T05:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "amount_exceeds_mandate_max",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_069",
-    "subscription_id": "sub_23464497",
-    "customer": {
-      "id": "cust_672358",
-      "phone_masked": "+91XXXXXX3144",
-      "dnd": true,
-      "opted_out": false
-    },
-    "amount_inr": 799,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1598,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-03T20:00:00.000Z",
-    "attempts": 0,
-    "halts_at": "2026-09-13T22:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_070",
-    "subscription_id": "sub_96527205",
-    "customer": {
-      "id": "cust_905543",
-      "phone_masked": "+91XXXXXX8064",
-      "dnd": true,
-      "opted_out": false
-    },
-    "amount_inr": 299,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 449,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-04T01:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-10T06:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_071",
-    "subscription_id": "sub_75642695",
-    "customer": {
-      "id": "cust_322275",
-      "phone_masked": "+91XXXXXX2649",
-      "dnd": false,
-      "opted_out": true
-    },
-    "amount_inr": 1999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 2999,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-05T04:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-08T03:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_072",
-    "subscription_id": "sub_97548186",
-    "customer": {
-      "id": "cust_869796",
-      "phone_masked": "+91XXXXXX1467",
-      "dnd": false,
-      "opted_out": true
-    },
-    "amount_inr": 1499,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 2249,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "customer",
-      "step": "payment_authentication",
-      "reason": "card_expired",
-      "description": "The card used for this mandate has expired."
-    },
-    "failed_at": "2026-09-02T21:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-06T19:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "card_expired",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_073",
-    "subscription_id": "sub_27915450",
-    "customer": {
-      "id": "cust_665901",
-      "phone_masked": "+91XXXXXX6596",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 9999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 19998,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "payment_failed",
-      "description": "Issuer response: the balance in the linked account was below the debit amount at the time of presentment."
-    },
-    "failed_at": "2026-09-03T06:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-12T00:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-09T20:00:00.000Z",
     "late_auth_pending": false,
     "_true_cause": "insufficient_funds",
-    "_will_self_heal": false
+    "_will_self_heal": true
   },
   {
     "id": "case_074",
-    "subscription_id": "sub_92161311",
+    "subscription_id": "sub_97873252",
     "customer": {
-      "id": "cust_460483",
-      "phone_masked": "+91XXXXXX1365",
+      "id": "cust_919826",
+      "phone_masked": "+91XXXXXX6197",
       "dnd": false,
       "opted_out": false
     },
-    "amount_inr": 2999,
-    "method": "emandate",
-    "is_domestic_card": false,
+    "amount_inr": 499,
+    "method": "card",
+    "is_domestic_card": true,
     "mandate": {
-      "max_amount_inr": 4499,
+      "max_amount_inr": 1497,
       "cancelled_by_customer": false,
       "paused_by_customer": false
     },
     "error": {
-      "source": "issuer_bank",
+      "source": "gateway",
       "step": "payment_authorization",
-      "reason": "transaction_declined",
-      "description": "Declined by the customer's bank. The advice code indicates the account could not cover the amount presented."
+      "code": "payment_declined",
+      "description": "Funds could not be debited: the issuer reported the balance available was below the amount presented."
     },
-    "failed_at": "2026-09-03T16:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-05T01:00:00.000Z",
+    "failed_at": "2026-09-03T14:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-06T06:00:00.000Z",
     "late_auth_pending": false,
     "_true_cause": "insufficient_funds",
     "_will_self_heal": false
   },
   {
     "id": "case_075",
-    "subscription_id": "sub_87741575",
+    "subscription_id": "sub_84343001",
     "customer": {
-      "id": "cust_809180",
-      "phone_masked": "+91XXXXXX4291",
+      "id": "cust_482279",
+      "phone_masked": "+91XXXXXX2361",
       "dnd": false,
       "opted_out": false
     },
     "amount_inr": 399,
-    "method": "card",
+    "method": "emandate",
+    "is_domestic_card": false,
+    "mandate": {
+      "max_amount_inr": 1995,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "razorpay",
+      "step": "payment_initiation",
+      "code": "server_error",
+      "description": "A technical error occurred while the request was being processed."
+    },
+    "failed_at": "2026-09-04T07:00:00.000Z",
+    "attempts": 1,
+    "halts_at": "2026-09-09T20:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "unknown",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_076",
+    "subscription_id": "sub_32465542",
+    "customer": {
+      "id": "cust_892693",
+      "phone_masked": "+91XXXXXX9177",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 399,
+    "method": "emandate",
     "is_domestic_card": false,
     "mandate": {
       "max_amount_inr": 599,
@@ -2239,82 +2269,22 @@
     "error": {
       "source": "gateway",
       "step": "payment_authorization",
-      "reason": "processing_error",
-      "description": "The debit was returned unpaid by the sponsor bank; cleared funds were not available on the presentment date."
+      "code": "reqauth_mandate_not_acknowledged",
+      "description": "The pre-debit notification for this mandate was not acknowledged before the debit was presented."
     },
-    "failed_at": "2026-09-03T09:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-08T19:00:00.000Z",
+    "failed_at": "2026-09-02T15:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-03T23:00:00.000Z",
     "late_auth_pending": false,
-    "_true_cause": "insufficient_funds",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_076",
-    "subscription_id": "sub_99730558",
-    "customer": {
-      "id": "cust_471255",
-      "phone_masked": "+91XXXXXX7782",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 149,
-    "method": "upi",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 298,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "payment_failed",
-      "description": "The issuer refused the credential. The instrument has been restricted by the bank and is not permitted for online debits."
-    },
-    "failed_at": "2026-09-05T00:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-11T09:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
+    "_true_cause": "mandate_not_authorised",
     "_will_self_heal": false
   },
   {
     "id": "case_077",
-    "subscription_id": "sub_61684595",
+    "subscription_id": "sub_71280574",
     "customer": {
-      "id": "cust_829721",
-      "phone_masked": "+91XXXXXX4291",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 249,
-    "method": "emandate",
-    "is_domestic_card": false,
-    "mandate": {
-      "max_amount_inr": 498,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "issuer_bank",
-      "step": "payment_authorization",
-      "reason": "transaction_declined",
-      "description": "Declined by the customer's bank with a restriction on the instrument itself. The account is otherwise in good standing."
-    },
-    "failed_at": "2026-09-05T06:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-10T20:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "bank_blocked_card",
-    "_will_self_heal": false
-  },
-  {
-    "id": "case_078",
-    "subscription_id": "sub_49381575",
-    "customer": {
-      "id": "cust_177708",
-      "phone_masked": "+91XXXXXX3805",
+      "id": "cust_730872",
+      "phone_masked": "+91XXXXXX2075",
       "dnd": false,
       "opted_out": false
     },
@@ -2322,81 +2292,111 @@
     "method": "card",
     "is_domestic_card": true,
     "mandate": {
-      "max_amount_inr": 1495,
+      "max_amount_inr": 598,
       "cancelled_by_customer": false,
       "paused_by_customer": false
     },
     "error": {
-      "source": "gateway",
+      "source": "customer",
       "step": "payment_authorization",
-      "reason": "processing_error",
-      "description": "No response was received from the customer's bank inside the timeout window; the authorisation host was unreachable."
+      "code": "debit_instrument_blocked",
+      "description": "The card has been blocked. This may have been done by the issuing bank or by the customer themselves."
     },
-    "failed_at": "2026-09-02T20:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-07T13:00:00.000Z",
+    "failed_at": "2026-09-04T10:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-13T21:00:00.000Z",
     "late_auth_pending": false,
-    "_true_cause": "issuer_downtime",
-    "_will_self_heal": true
-  },
-  {
-    "id": "case_079",
-    "subscription_id": "sub_38777405",
-    "customer": {
-      "id": "cust_868126",
-      "phone_masked": "+91XXXXXX7120",
-      "dnd": false,
-      "opted_out": false
-    },
-    "amount_inr": 999,
-    "method": "card",
-    "is_domestic_card": true,
-    "mandate": {
-      "max_amount_inr": 1998,
-      "cancelled_by_customer": false,
-      "paused_by_customer": false
-    },
-    "error": {
-      "source": "internal",
-      "step": "payment_authorization",
-      "reason": "payment_failed",
-      "description": "The payment could not be completed. No additional detail was provided upstream."
-    },
-    "failed_at": "2026-09-02T23:00:00.000Z",
-    "attempts": 2,
-    "halts_at": "2026-09-09T18:00:00.000Z",
-    "late_auth_pending": false,
-    "_true_cause": "unknown",
+    "_true_cause": "instrument_blocked",
     "_will_self_heal": false
   },
   {
-    "id": "case_080",
-    "subscription_id": "sub_68202760",
+    "id": "case_078",
+    "subscription_id": "sub_34706036",
     "customer": {
-      "id": "cust_401152",
-      "phone_masked": "+91XXXXXX6093",
+      "id": "cust_968559",
+      "phone_masked": "+91XXXXXX8208",
       "dnd": false,
       "opted_out": false
     },
-    "amount_inr": 149,
-    "method": "card",
+    "amount_inr": 799,
+    "method": "upi",
     "is_domestic_card": false,
     "mandate": {
-      "max_amount_inr": 224,
+      "max_amount_inr": 1598,
       "cancelled_by_customer": false,
       "paused_by_customer": false
     },
     "error": {
-      "source": "issuer_bank",
+      "source": "customer",
       "step": "payment_authorization",
-      "reason": "transaction_declined",
-      "description": "The transaction was declined. The issuer returned no advice code."
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
     },
-    "failed_at": "2026-09-03T15:00:00.000Z",
-    "attempts": 1,
-    "halts_at": "2026-09-12T10:00:00.000Z",
+    "failed_at": "2026-09-03T12:00:00.000Z",
+    "attempts": 3,
+    "halts_at": "2026-09-05T13:00:00.000Z",
     "late_auth_pending": false,
-    "_true_cause": "unknown",
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": false
+  },
+  {
+    "id": "case_079",
+    "subscription_id": "sub_38101764",
+    "customer": {
+      "id": "cust_860146",
+      "phone_masked": "+91XXXXXX5912",
+      "dnd": false,
+      "opted_out": true
+    },
+    "amount_inr": 799,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 1598,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-02T13:00:00.000Z",
+    "attempts": 2,
+    "halts_at": "2026-09-09T05:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
+    "_will_self_heal": true
+  },
+  {
+    "id": "case_080",
+    "subscription_id": "sub_33058382",
+    "customer": {
+      "id": "cust_133467",
+      "phone_masked": "+91XXXXXX6759",
+      "dnd": false,
+      "opted_out": false
+    },
+    "amount_inr": 249,
+    "method": "card",
+    "is_domestic_card": true,
+    "mandate": {
+      "max_amount_inr": 498,
+      "cancelled_by_customer": false,
+      "paused_by_customer": false
+    },
+    "error": {
+      "source": "customer",
+      "step": "payment_authorization",
+      "code": "insufficient_funds",
+      "description": "The customer's bank account did not have enough funds to cover the amount presented."
+    },
+    "failed_at": "2026-09-05T01:00:00.000Z",
+    "attempts": 0,
+    "halts_at": "2026-09-15T11:00:00.000Z",
+    "late_auth_pending": false,
+    "_true_cause": "insufficient_funds",
     "_will_self_heal": false
   }
 ]

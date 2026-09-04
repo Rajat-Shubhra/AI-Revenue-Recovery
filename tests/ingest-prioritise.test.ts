@@ -51,15 +51,32 @@ describe('holdout', () => {
     expect([...assignHoldout(cases, 1)].sort()).not.toEqual([...assignHoldout(cases, 2)].sort())
   })
 
-  it('is not correlated with the generator slice order', () => {
-    // Taking "every fifth case" would silently bias the control arm toward
-    // whichever slices happen to sit on that stride. Assert the picks are
-    // spread across the batch rather than clustered.
+  it('is not correlated with the generator order', () => {
     const picked = [...assignHoldout(cases)]
       .map((id) => Number(id.replace('case_', '')))
       .sort((a, b) => a - b)
     const gaps = new Set(picked.slice(1).map((n, i) => n - picked[i]!))
     expect(gaps.size).toBeGreaterThan(1)
+  })
+
+  it('holds a proportional share of the MONEY, not just of the cases', () => {
+    // The bug this pins: a plain random 20% handed the control arm 42% of the
+    // value, because amounts are heavy-tailed and n is 16. Every per-rupee rate
+    // computed off that was noise. Stratifying by amount fixes it.
+    const holdout = assignHoldout(cases)
+    const total = cases.reduce((s, c) => s + c.amount_inr, 0)
+    const held = cases.filter((c) => holdout.has(c.id)).reduce((s, c) => s + c.amount_inr, 0)
+    const share = held / total
+    expect(share).toBeGreaterThan(HOLDOUT_SHARE * 0.75)
+    expect(share).toBeLessThan(HOLDOUT_SHARE * 1.25)
+  })
+
+  it('draws one control from every amount stratum', () => {
+    // Both arms must see the whole value range, or the arms are not comparable.
+    const holdout = cases.filter((c) => assignHoldout(cases).has(c.id))
+    const amounts = holdout.map((c) => c.amount_inr)
+    expect(Math.max(...amounts)).toBeGreaterThan(1000)
+    expect(Math.min(...amounts)).toBeLessThan(500)
   })
 
   it('never enters the priority queue', async () => {
@@ -140,7 +157,7 @@ describe('scoring', () => {
   })
 
   it('prices a domestic card as a payment link, never a retry', () => {
-    const domestic = cases.find((c) => c.is_domestic_card && c.error.reason === 'insufficient_funds')
+    const domestic = cases.find((c) => c.is_domestic_card && c.error.code === 'insufficient_funds')
     if (domestic) expect(likelyAction(domestic)).toBe('sendPaymentLink')
   })
 

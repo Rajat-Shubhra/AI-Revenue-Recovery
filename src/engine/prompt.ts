@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import type { Case } from './case'
+import { ALL_CAUSES } from '../pipeline/razorpay-errors'
 
 const promptPath = fileURLToPath(new URL('./classifier-prompt.md', import.meta.url))
 
@@ -15,30 +16,27 @@ const TASK_DOMAIN =
  * else; `parseDiagnosis` rejects anything outside it and escalates. Keep this
  * in step with `rules.ts` when the pipeline lands.
  */
-export const ALLOWED_CAUSES = [
-  'insufficient_funds',
-  'card_expired',
-  'bank_blocked_card',
-  'issuer_downtime',
-  'gateway_downtime',
-  'mandate_cancelled_by_customer',
-  'upi_mandate_paused_by_customer',
-  'amount_exceeds_mandate_max',
-  'late_auth_pending',
-  'unknown',
-] as const
+export const ALLOWED_CAUSES = ALL_CAUSES
 
 const CAUSE_DESCRIPTIONS = [
-  '- insufficient_funds: the account had no money at the moment of the debit.',
+  '- insufficient_funds: the balance did not cover the amount presented.',
+  '- limit_exceeded: a per-transaction, daily or credit limit on the instrument was hit.',
   '- card_expired: the stored card is past its expiry date.',
-  '- bank_blocked_card: the issuer refused the card itself, not the balance.',
-  '- issuer_downtime: the customer’s bank was unavailable.',
-  '- gateway_downtime: the payment gateway was unavailable.',
+  '- instrument_blocked: the card or account is blocked, by the issuer or by the customer.',
+  '- instrument_inactive: the instrument exists but is not active for debits.',
+  '- issuer_downtime: the customer’s bank was unavailable or did not respond in time.',
+  '- gateway_downtime: the payment gateway or partner bank was unavailable.',
+  '- psp_downtime: the customer’s UPI app or PSP was unavailable.',
   '- mandate_cancelled_by_customer: the customer revoked the mandate. Terminal.',
-  '- upi_mandate_paused_by_customer: paused by the customer; only they can resume it.',
-  '- amount_exceeds_mandate_max: the debit was above the mandate’s max_amount.',
+  '- mandate_paused_by_customer: paused by the customer; only they can resume it.',
+  '- mandate_not_authorised: the mandate is not in a state the bank will debit — not acknowledged, not found, or unsupported on this app.',
+  '- amount_exceeds_mandate_max: the debit was above the authorised ceiling.',
+  '- wrong_account_selected: the debit was presented against an account other than the one registered.',
+  '- customer_abandoned: nothing failed mechanically; the customer did not finish in time.',
+  '- merchant_config_error: the merchant account or method is not set up to take this payment.',
+  '- risk_declined: the payment was declined by risk checks.',
   '- late_auth_pending: authorisation may still land; the case may resolve itself.',
-  '- unknown: the evidence does not support any of the above.',
+  '- unknown: the evidence genuinely does not support any of the above.',
 ].join('\n')
 
 /**
@@ -158,7 +156,7 @@ export function buildUserMessage(
     '',
     `Error source: ${kase.error.source}`,
     `Error step: ${kase.error.step}`,
-    `Error reason: ${kase.error.reason}`,
+    `Error code: ${kase.error.code}`,
     `Error description: ${kase.error.description}`,
     '',
     `Failed at: ${kase.failed_at}`,

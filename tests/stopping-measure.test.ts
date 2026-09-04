@@ -72,14 +72,17 @@ describe('stopping rules', () => {
 
   it('drops a case worth less than the floor', () => {
     const s = scoredOf(cases[0]!.id)
-    const tiny = { ...s, expected_value: 5 }
+    // attempts pinned: the cap is checked before the value floor, and the
+    // generator now hands out 0-3 prior attempts.
+    const tiny = { ...s, kase: { ...s.kase, attempts: 0 }, expected_value: 5 }
     const check = stopCheck(tiny, anyDecision, 'insufficient_funds', config, now)
     expect(check.stopped).toBe(true)
     expect(check.rule).toBe('drop_if_expected_value_below_inr')
   })
 
   it('never drops an escalation on value — a small misconfiguration still needs fixing', () => {
-    const s = { ...scoredOf(cases[0]!.id), expected_value: 5 }
+    const base = scoredOf(cases[0]!.id)
+    const s = { ...base, kase: { ...base.kase, attempts: 0 }, expected_value: 5 }
     const escalation = decideFromCause(cases[0]!, 'amount_exceeds_mandate_max', now)
     expect(stopCheck(s, escalation, 'amount_exceeds_mandate_max', config, now).stopped).toBe(false)
   })
