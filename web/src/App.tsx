@@ -274,8 +274,12 @@ export default function App() {
           {d.calls > 0 && (
             <div className="note">
               <b>Model.</b> {d.calls} calls, on the {pct((d.total - d.by_rules) / d.total)} of cases the rules could not
-              settle. {d.accuracy.length - wrong.length}/{d.accuracy.length} of its diagnoses matched the true cause;{' '}
-              {d.escalated_uncertain} escalated as genuinely undeterminable.
+              settle — not because those errors are vague, but because Razorpay's own docs publish that{' '}
+              <span className="mono">(source, code)</span> pair with more than one meaning.{' '}
+              <span className="mono">gateway/credit_failed</span> is either the customer picking the wrong account or a
+              partner-bank outage: opposite remedies, one code. A lookup table would be wrong and confident; the issuer's
+              advice text settles it. {d.accuracy.length - wrong.length}/{d.accuracy.length} of the model's diagnoses
+              matched the true cause; {d.escalated_uncertain} escalated as genuinely undeterminable.
               {wrong.length > 0 && (
                 <>
                   {' '}
@@ -306,6 +310,7 @@ export default function App() {
                 <th>case</th>
                 <th className="num">amount</th>
                 <th>method</th>
+                <th>code</th>
                 <th>cause</th>
                 <th>decision</th>
                 <th>tool</th>
@@ -323,6 +328,7 @@ export default function App() {
                   <td className="mono">{c.id}</td>
                   <td className="num">{inr(c.amount_inr)}</td>
                   <td>{c.method}</td>
+                  <td className="mono">{c.reason}</td>
                   <td>{c.cause}</td>
                   <td>{c.decision && <span className={`pill ${c.decision}`}>{c.decision}</span>}</td>
                   <td className="mono">{c.tool ?? <span className="no">—</span>}</td>

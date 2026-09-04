@@ -107,8 +107,12 @@ type Case = {
   is_domestic_card: boolean          // manual charge unsupported
   mandate: { max_amount_inr: number; cancelled_by_customer: boolean; paused_by_customer: boolean }
   error: {
-    source: 'customer' | 'business' | 'internal' | 'gateway' | 'issuer_bank'
-    step: string; reason: string; description: string
+    // The four values Razorpay actually emits. An earlier draft of this spec
+    // said `internal` and `issuer_bank`; the API returns neither.
+    source: 'customer' | 'business' | 'gateway' | 'razorpay'
+    step: 'payment_initiation' | 'payment_authentication' | 'payment_authorization' | 'payment_capture'
+    code: string        // the machine-readable error code — NOT the cause
+    description: string // the issuer's advice text — often carries what the code does not
   }
   failed_at: string                  // ISO
   attempts: number                   // prior retries already made
@@ -120,18 +124,43 @@ type Case = {
 }
 ```
 
-### Synthetic distribution (~80 cases, seeded and reproducible)
+### The error catalogue
 
-| Slice | Share | Purpose |
-|---|---|---|
-| insufficient_funds, salary-cycle timing | 30% | AUTO → retryScheduled; shows sequencer logic |
-| card_expired / bank_blocked_card | 20% | CUSTOMER_ACTION → sendPaymentLink |
-| issuer / gateway downtime | 15% | AUTO → switchRail or retry after downtime |
-| mandate cancelled_by_customer | 10% | **STOP** — any contact is a violation |
-| late_auth_pending (self-heals) | 5% | **HOLD** — acting here double-charges |
-| charge > mandate.max_amount | 5% | ESCALATE — merchant config, not the customer's fault |
-| customer dnd / opted_out | 5% | compliance gate blocks contact |
-| unknown / ambiguous reason | 10% | the LLM tail — where AI Judgment is demonstrated |
+`src/pipeline/razorpay-errors.ts` transcribes Razorpay's published taxonomy:
+**41 entries, 32 distinct codes, 18 causes**, from
+[the error list](https://razorpay.com/docs/errors/payments/list/) and
+[the UPI page](https://razorpay.com/docs/errors/payments/upi/).
+
+The design point is that **the code is not the cause**. Five `(source, code)`
+pairs are published with more than one meaning:
+
+| pair | can mean |
+|---|---|
+| `gateway/credit_failed` | `wrong_account_selected` · `gateway_downtime` |
+| `gateway/payment_declined` | `insufficient_funds` · `instrument_blocked` · `unknown` |
+| `gateway/payment_failed` | `issuer_downtime` · `mandate_not_authorised` · `unknown` |
+| `gateway/card_declined` | `card_expired` · `unknown` |
+| `gateway/gateway_technical_error` | `gateway_downtime` · `psp_downtime` |
+
+That set is **derived from the catalogue, not hand-flagged**, so it cannot drift
+from the data. `rules.ts` resolves everything else and refuses these, which is
+what the model is for. Opposite remedies behind one code is a documented fact,
+not a convenient assumption.
+
+### Synthetic distribution (80 cases, seeded and reproducible)
+
+Cases are drawn from the catalogue rather than from a hand-written slice table.
+**~30% carry an ambiguous pair** (the model's share); the rest are
+rules-resolvable. Within each group the draw is weighted by how often the
+underlying *cause* plausibly occurs — weighting by code instead gave 15 downtime
+cases against 3 insufficient-funds, purely because downtime has four documented
+codes, which is an artefact of naming rather than of how payments fail.
+
+Roughly, per 80: insufficient_funds ~27 · card_expired ~10 · issuer_downtime ~10
+· unknown ~7 · instrument_blocked ~6 · limit_exceeded ~4 · mandate cancelled ~3 ·
+late_auth ~3 · over-ceiling ~3, with a long tail of the rest. DND and opted-out
+are sampled independently of the failure, so the compliance gate bites on cases
+that would otherwise be straightforward contact.
 
 ---
 
@@ -144,7 +173,9 @@ the agent or into any prompt.
 
 ### 4.2 Prioritise
 ```
-expected_value = amount_inr × P(recover | error.reason, method)   // lookup table
+expected_value = amount_inr × P(recover | error.source, error.code, method)
+// For an ambiguous pair the prior is the MEAN over every cause that pair can
+// carry — at ranking time the agent genuinely does not yet know which it is.
 urgency        = 1 / max(hours_until(halts_at), 1)
 cost           = action_cost[likely_action]   // link+SMS ≈ ₹2, retry ≈ ₹0, escalate ≈ ₹50
 priority       = (expected_value − cost) × urgency
@@ -153,16 +184,27 @@ Max-heap, pop top N (N=20) per tick. **Log the priority and why it ranked there*
 judges will ask "why this one first".
 
 ### 4.3 Diagnose — deterministic first
-`rules.ts`: a table from `(source, reason)` → `cause`, covering every reason in
-the synthetic set except the ambiguous slice.
+`rules.ts` resolves `(source, code)` → `cause` for every catalogue entry the
+pair determines, plus four state rules that run **before** the code: a cancelled
+mandate, a debit above the ceiling, a pending authorisation and a paused mandate
+are facts about the case, true whatever the gateway said. That ordering stops a
+mislabelled or generic error smuggling a terminal case into the recoverable pile.
 
-Only cases with no rule hit go to the LLM. The prompt gets the error object,
-method, attempts, mandate state, and the closed list of allowed causes. Output:
+Everything else goes to the model, with the error object, method, attempts,
+mandate state and the closed cause list. Output:
 `{ cause, confidence: 0..1, evidence: string[] }`. **Confidence below 0.7 is
-rejected and escalated.** Already implemented in `schema.ts`.
+rejected and escalated**, and a confident `"unknown"` counts as an escalation
+rather than a resolution — otherwise the AI-judgment number inflates with cases
+the model explicitly declined to call.
 
-Dashboard line: *"80 cases · 68 by rules · 12 via LLM · 3 LLM-uncertain →
-escalated."*
+A wrong diagnosis is already punished implicitly: the agent acts on its mistaken
+theory and the simulator scores that action against the **true** cause. But
+`checkDiagnoses` in `src/sim/` also reports accuracy explicitly, because
+"resolved by the model" and "correct" are different claims and reporting the
+first as the second would overstate what the model contributed.
+
+Dashboard line: *"80 cases · 56 by rules · 24 by the model · 0 uncertain →
+escalated · 21/24 matched the true cause."*
 
 ### 4.4 Decide — lookup first, classifier only on the tail
 
@@ -170,12 +212,17 @@ Once the cause is known the bucket is forced by the domain, so this is a table:
 
 | cause | outcome | tool |
 |---|---|---|
-| insufficient_funds | AUTO | retryScheduled (next salary-cycle date) |
-| issuer_downtime / gateway_downtime | AUTO | retryScheduled after downtime, or switchRail |
-| card_expired / bank_blocked_card | CUSTOMER_ACTION | sendPaymentLink |
-| domestic card, any retry-shaped fix | CUSTOMER_ACTION | sendPaymentLink |
-| upi_mandate_paused_by_customer | CUSTOMER_ACTION | sendPaymentLink |
-| amount_exceeds_mandate_max | ESCALATE | escalate (merchant config) |
+| insufficient_funds | AUTO | retryScheduled — next salary-cycle date (1st/3rd/7th) |
+| issuer_downtime / gateway_downtime | AUTO | retryScheduled at the earliest compliant date; switchRail after 2 failed attempts |
+| **psp_downtime** | AUTO | **switchRail** — the one cause where leaving the rail (0.75) beats waiting on it (0.70) |
+| card_expired / instrument_blocked / instrument_inactive | CUSTOMER_ACTION | sendPaymentLink |
+| limit_exceeded | CUSTOMER_ACTION | sendPaymentLink — the limit resets on the bank's cycle, not ours |
+| wrong_account_selected / customer_abandoned | CUSTOMER_ACTION | sendPaymentLink |
+| mandate_not_authorised / mandate_paused_by_customer | CUSTOMER_ACTION | sendPaymentLink — only the customer can re-authorise |
+| domestic card, any retry-shaped fix | CUSTOMER_ACTION | sendPaymentLink — manual charge unsupported |
+| amount_exceeds_mandate_max / merchant_config_error | ESCALATE | escalate — the merchant's problem, not the customer's |
+| **risk_declined** | ESCALATE | escalate — retrying around a risk decline automatically is exactly the wrong response |
+| unknown | ESCALATE | escalate — acting on an unestablished cause is a guess with someone else's money |
 | mandate_cancelled_by_customer | **STOP** | none — never contacted |
 | late_auth_pending | **HOLD** | none until the hold window expires |
 
@@ -185,8 +232,8 @@ chance to talk itself out of either. The classifier enum stays three values:
 `AUTO | CUSTOMER_ACTION | ESCALATE`.
 
 The **classifier runs only** on cases diagnose could not resolve confidently —
-the ~10% ambiguous slice. Output: bucket + proposed tool + params, schema
-validated. Validation failure → ESCALATE, never a silent retry.
+the ~30% carrying an ambiguous `(source, code)`. Output: bucket + proposed tool
++ params, schema validated. Validation failure → ESCALATE, never a silent retry.
 
 ### 4.5 Compliance gate — runs before every action
 All deterministic, all logged when they fire:

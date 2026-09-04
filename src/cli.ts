@@ -36,7 +36,7 @@ const rule = (n = 78) => console.log('  ' + '─'.repeat(n))
 function printQueue(top: Scored[]): void {
   console.log(`\nTop ${top.length} by priority\n`)
   console.log(
-    `  ${pad('#', 3)}${pad('case', 10)}${padL('amount', 8)}  ${pad('method', 9)}${pad('reason', 23)}${padL('h/halt', 7)}${padL('priority', 10)}`,
+    `  ${pad('#', 3)}${pad('case', 10)}${padL('amount', 8)}  ${pad('method', 9)}${pad('error code', 26)}${padL('h/halt', 7)}${padL('priority', 10)}`,
   )
   rule(70)
   top.forEach((s, i) => {

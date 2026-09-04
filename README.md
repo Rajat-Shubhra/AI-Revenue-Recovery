@@ -30,9 +30,9 @@ if something says pending, it is genuinely not built.
 
 | Clause | Where | State |
 |---|---|---|
-| **Measured money recovered** | 20% holdout the agent never touches. Latest run: **₹51,671 recovered treated vs ₹848 holdout, ₹47,736 net lift, ₹47,198 after action cost** | ✅ |
-| **Across a batch** | 80 seeded synthetic cases, byte-identical between runs; max-heap priority queue works the top 20 per tick, each with the arithmetic that ranked it | ✅ |
-| **Compliant escalation** | Six deterministic checks before every action, logged whether they pass or fire. DND/opted-out customers escalate rather than being silently dropped | ✅ |
+| **Measured money recovered** | 20% holdout the agent never touches, stratified by amount so both arms see the same value range. Latest run: **₹20,781 recovered treated vs ₹499 holdout · ₹19,361 net lift · ₹18,633 after ₹728 of action cost** | ✅ |
+| **Across a batch** | 80 seeded cases, byte-identical between runs. A max-heap works the top 20 per tick and each case carries the arithmetic that ranked it into the audit trail | ✅ |
+| **Compliant escalation** | Six deterministic checks before every action, logged whether they pass or fire. DND and opted-out customers escalate rather than being silently dropped — and a debit is still permitted, because consent to be contacted is not authorisation to charge | ✅ |
 | **Stopping rules** | `config/stopping.json` — attempt caps, expected-value floor, terminal states, and a systemic rule raising one escalation instead of N when a single cause exceeds 40% of a batch | ✅ |
 | **Audit trail** | Append-only `audit.jsonl`, one line per stage per case, including the `rejected` array of alternatives declined and why. A sample run is committed — readable in the diff without running anything | ✅ |
 
@@ -40,8 +40,8 @@ Plus the judged criterion that sits underneath all of them:
 
 | Criterion | Where | State |
 |---|---|---|
-| **AI Judgment** — deterministic where AI is unnecessary | **72 of 80 cases resolved by rules, 8 model calls, 6 resolved, 2 escalated as undeterminable.** 90% deterministic, and the model's diagnoses are scored against ground truth so "resolved" is never reported as "correct" | ✅ |
-| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — eleven failures with symptom, root cause, dead ends, fix, time cost and lesson. Unverified items marked as such | ✅ |
+| **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth (**21/24** last run) so "resolved" is never reported as "correct" | ✅ |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fourteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last three are things that worked, passed their tests, and were wrong anyway | ✅ |
 
 ---
 
@@ -73,8 +73,20 @@ cases.seed.json → INGEST → PRIORITISE → DIAGNOSE → DECIDE
 as the subscription approaches being halted. The queue logs *why* each case
 ranked where it did.
 
-**Diagnose.** A deterministic `(source, reason) → cause` table first. Only cases
-no rule matches reach the model, and its answer is rejected below 0.7 confidence.
+**Diagnose.** A deterministic `(source, code) → cause` table over Razorpay's
+published error taxonomy — 41 catalogue entries, 32 codes, 18 causes. Only what
+the code cannot settle reaches the model, and its answer is rejected below 0.7
+confidence.
+
+That boundary is the interesting part, and it is not "vague errors go to the
+AI". **The error code is not the cause.** Razorpay's own docs publish
+`credit_failed` as both *"the customer selected a different bank account"* and
+*"partner bank downtime"* — opposite remedies behind one code — and publish
+several codes under two sources with different meanings. Five `(source, code)`
+pairs in the catalogue carry more than one cause. A lookup table on the code
+would be wrong on those and confident about it; reading the issuer's advice text
+resolves them. That set is derived from the catalogue, not hand-maintained, so
+it cannot drift.
 
 **Decide.** Once the cause is known the outcome is mostly forced by the domain,
 so it is a table, not a model call. Two outcomes — **STOP** (the customer
@@ -178,24 +190,37 @@ Vite through its JS API instead and works fine. This is documented in
   port is stubbed.
 - **Recovery probabilities are authored, not learned.** There is no training
   data behind them.
+- **The error taxonomy is a reconstruction from public documentation.** Codes,
+  sources and descriptions come from Razorpay's published error pages. A
+  Razorpay engineer would have the live error stream, the internal code-to-cause
+  mapping we inferred, and the ability to act inside the payment session rather
+  than after it. What is portable here is the pipeline shape and the discipline
+  around it, not the taxonomy — that is our best outside-in approximation.
+- **The `(source, code)` collisions are real, but the case mix is ours.** The
+  ambiguity the model resolves is documented; the decision that 30% of a batch
+  should carry it is a choice we made, weighted by how often each cause plausibly
+  occurs. A real book of failed payments would have its own shape.
 - **One direction only.** The pipeline shape would generalise to other recovery
   problems; nothing else has been built.
 - **No real contact channels.** "Sending" a payment link writes to the audit log.
   Nothing reaches a real customer.
 - **The batch is synthetic**, generated from a seed so it is reproducible.
 - **The model is not deterministic, even at temperature 0.** Across repeated
-  runs it will occasionally change its mind about a genuinely borderline case —
-  in testing, one case in eighty flipped between `issuer_downtime`,
-  `gateway_downtime` and `unknown`. Temperature is set to 0 to minimise this,
-  but no hosted provider is bit-reproducible.
+  runs it changes its mind about genuinely borderline cases. Temperature is set
+  to 0 to minimise it, but no hosted provider is bit-reproducible, and the model
+  is the one component of this pipeline that will not reproduce exactly.
 
-  The deterministic 90% of the pipeline is unaffected, and in practice the
-  headline number does not move: adjacent causes collapse to the same action in
-  the decide table, so the agent does the same thing either way and the
-  simulator scores it against the true cause regardless. Two runs that disagreed
-  about that case reported an identical ₹47,736 net lift. That is the
-  architecture doing its job rather than luck, but it is worth stating that the
-  model itself is the one component that will not reproduce exactly.
+  **The headline number is insulated from that, and there is direct evidence.**
+  Two runs of the same batch scored **14/24 and 21/24** on diagnosis accuracy —
+  a swing of seven cases — and both reported an identical **₹19,361 net lift**.
+  Adjacent causes collapse to the same branch of the decide table, so the agent
+  takes the same action either way, and the simulator scores that action against
+  the *true* cause rather than the diagnosed one. The 70% of the batch the rules
+  settle is untouched by any of it.
+
+  That is the architecture absorbing model variance rather than luck, and it is
+  a stronger claim than "the model is accurate": **the number does not depend on
+  the model behaving.**
 
 These are written down rather than hidden because a single cherry-picked result
 proves nothing, and the failure-recovery criterion rewards saying what didn't
