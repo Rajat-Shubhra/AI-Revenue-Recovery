@@ -30,10 +30,16 @@ const json = (res, status, body) => {
  * about the pipeline is special-cased for the UI.
  */
 function batchApi() {
-  return {
-    name: 'batch-api',
-    configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
+  /**
+   * The same handler is mounted on both the dev server and `vite preview`.
+   *
+   * It was dev-only at first, which meant the production build served its own
+   * index.html for `/api/report` — a 200 with HTML in it, so the page did not
+   * error, it just tried to JSON.parse a web page. A built dashboard that
+   * silently shows no data is worse than one that fails loudly, and worse still
+   * to discover while recording.
+   */
+  const middleware = () => async (req, res, next) => {
         if (!req.url?.startsWith('/api/')) return next()
 
         try {
@@ -95,8 +101,16 @@ function batchApi() {
           })
         }
 
-        return next()
-      })
+    return next()
+  }
+
+  return {
+    name: 'batch-api',
+    configureServer(server) {
+      server.middlewares.use(middleware())
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(middleware())
     },
   }
 }
