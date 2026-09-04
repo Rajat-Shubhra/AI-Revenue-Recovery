@@ -73,13 +73,19 @@ export function stopCheck(
   }
 
   // Hold window for authorisation that may still land.
+  //
+  // The 72h default is not arbitrary: Razorpay polls the bank for three days
+  // after a payment times out, and a payment that comes back successful in that
+  // window moves to `Authorized`. Re-presenting inside it risks a duplicate
+  // debit. Once the window has passed, the bank is not going to answer and the
+  // case is safe to work.
   if (cause === 'late_auth_pending') {
     const elapsed = (now.getTime() - Date.parse(kase.failed_at)) / 3_600_000
     if (elapsed < config.hold_if_late_auth_pending_hours) {
       return {
         stopped: true,
         rule: 'hold_if_late_auth_pending_hours',
-        because: `authorisation may still land — ${elapsed.toFixed(0)}h of the ${config.hold_if_late_auth_pending_hours}h hold window elapsed`,
+        because: `authorisation may still land — ${elapsed.toFixed(0)}h of the ${config.hold_if_late_auth_pending_hours}h hold window elapsed (Razorpay polls the bank for 3 days)`,
       }
     }
   }

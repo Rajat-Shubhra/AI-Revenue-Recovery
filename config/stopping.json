@@ -1,4 +1,13 @@
 {
+  "_doc": {
+    "purpose": "Stopping rules (BLUEPRINT §4.6). Kept in a file rather than in code so that 'when does this thing give up?' is answerable by reading one small document.",
+    "max_attempts_per_case": "Counted against attempts already made before the batch ran. The agent inherits a retry history it did not create and must respect it.",
+    "hold_if_late_auth_pending_hours": "72h = Razorpay's documented 3-day bank polling window. A payment marked Failed on timeout can still come back Authorized inside it, so re-presenting risks a duplicate debit. Razorpay's own retry engine waits for confirmation for the same reason. https://razorpay.com/docs/payments/payments/late-authorisation/handle/",
+    "drop_if_expected_value_below_inr": "Not worth the attempt. Escalations are exempt — a small merchant misconfiguration still needs fixing, and dropping it would hide a problem rather than decline a cost.",
+    "systemic_alert_if_same_cause_share_exceeds": "If one cause dominates a batch the problem is one issuer, not N customers. Raise a single escalation instead of working them individually.",
+    "stop_on": "Terminal states. Facts about the case, not judgements."
+  },
+
   "max_attempts_per_case": 3,
   "hold_if_late_auth_pending_hours": 72,
   "drop_if_expected_value_below_inr": 20,

@@ -258,11 +258,16 @@ describe('decide', () => {
     expect(d.rejected.some((r) => r.tool === 'retryScheduled')).toBe(true)
   })
 
-  it('holds a late-auth case rather than acting', () => {
+  it('holds a late-auth case rather than acting, and cites why', () => {
+    // Not caution for its own sake: Razorpay polls the bank for 3 days after a
+    // timeout, and its own retry engine waits for confirmation. The reasoning
+    // has to carry that, or a reviewer reads HOLD as the agent being timid.
     const d = decideFromCause(cases[0]!, 'late_auth_pending', now)
     expect(d.outcome).toBe('HOLD')
     expect(d.tool).toBeNull()
-    expect(d.rejected.some((r) => r.because.includes('double charge'))).toBe(true)
+    expect(d.because).toContain('3 days')
+    expect(d.rejected.some((r) => r.because.includes('duplicate debit'))).toBe(true)
+    expect(d.rejected.some((r) => r.tool === 'sendPaymentLink')).toBe(true)
   })
 
   it('gives every decision at least one rejected alternative with a real reason', async () => {

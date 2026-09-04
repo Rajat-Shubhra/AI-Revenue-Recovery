@@ -149,14 +149,44 @@ export function decideFromCause(kase: Case, cause: Cause, now: Date): Decision {
       }
 
     case 'late_auth_pending':
+      // Not caution for its own sake — this is Razorpay's documented behaviour.
+      //
+      // A payment with no bank response is marked Failed after 10 minutes, but
+      // Razorpay keeps polling the bank for THREE DAYS. If it comes back
+      // successful the payment moves to `Authorized` and fires a
+      // `payment.authorized` webhook. Roughly 0.5% of payments land this way.
+      //
+      // Razorpay's own subscription retry engine waits for exactly this: it
+      // "attempts to retry only when they get confirmation or rejection of the
+      // last payment, as it may take more than 24 hours." An agent that retried
+      // inside that window would be doing the thing the platform deliberately
+      // avoids.
+      //
+      // The duplicate would not stay charged — Razorpay refunds a late-authorised
+      // duplicate immediately, and auto-refunds uncaptured authorised payments
+      // within five days. So the cost is not lost revenue. It is a customer
+      // seeing two debits on their statement, a support contact, and a refund
+      // cycle nobody needed. Worth avoiding, and not worth overstating.
+      //
+      //   https://razorpay.com/docs/payments/payments/late-authorisation/handle/
+      //   https://razorpay.com/docs/payments/subscriptions/payment-retries/
       return {
         outcome: 'HOLD',
         tool: null,
         params: {},
-        because: 'authorisation has not landed yet and may still settle on its own — acting now risks charging the customer twice',
+        because:
+          'authorisation has not landed yet and may still settle on its own — Razorpay polls the bank for 3 days after a timeout, and its own retry engine waits for confirmation before re-presenting',
         rejected: [
-          { tool: 'retryNow', because: 'the original debit may still authorise; a retry here is a double charge, not a recovery' },
-          { tool: 'sendPaymentLink', because: 'asking for payment on a debit that may already be settling would collect it twice' },
+          {
+            tool: 'retryNow',
+            because:
+              'the original debit may still authorise inside Razorpay’s 3-day polling window; re-presenting now risks a duplicate debit that has to be refunded, not a recovery',
+          },
+          {
+            tool: 'sendPaymentLink',
+            because:
+              'asking the customer to pay a debit that may already be settling collects it twice — they see two debits and get a refund they should never have needed',
+          },
         ],
         via: 'table',
       }

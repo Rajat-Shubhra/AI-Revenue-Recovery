@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T09:54:43.157Z",
+  "generated_at": "2026-09-04T11:29:06.413Z",
   "clock": "2026-09-05T09:00:00.000Z",
   "seed": 20260905,
   "counts": {
@@ -144,7 +144,7 @@
       },
       {
         "case_id": "case_059",
-        "claimed": "gateway_downtime",
+        "claimed": "issuer_downtime",
         "actual": "psp_downtime",
         "correct": false
       },
@@ -271,14 +271,14 @@
           "rate_by_count": 1
         },
         "holdout": {
-          "cases": 1,
-          "pool_inr": 499,
-          "recovered_cases": 1,
-          "recovered_inr": 499,
-          "rate": 1,
-          "rate_by_count": 1
+          "cases": 0,
+          "pool_inr": 0,
+          "recovered_cases": 0,
+          "recovered_inr": 0,
+          "rate": 0,
+          "rate_by_count": 0
         },
-        "lift_inr": 0
+        "lift_inr": 299
       },
       {
         "cause": "instrument_blocked",
@@ -351,14 +351,14 @@
           "rate_by_count": 0.6666666666666666
         },
         "holdout": {
-          "cases": 1,
-          "pool_inr": 9999,
-          "recovered_cases": 0,
-          "recovered_inr": 0,
-          "rate": 0,
-          "rate_by_count": 0
+          "cases": 2,
+          "pool_inr": 10498,
+          "recovered_cases": 1,
+          "recovered_inr": 499,
+          "rate": 0.04753286340255287,
+          "rate_by_count": 0.5
         },
-        "lift_inr": 9144
+        "lift_inr": 8659.592589064583
       },
       {
         "cause": "late_auth_pending",
@@ -773,7 +773,7 @@
       "recovered": true,
       "cost_inr": 0,
       "halted": false,
-      "stopped_because": "hold_if_late_auth_pending_hours: authorisation may still land — 5h of the 72h hold window elapsed"
+      "stopped_because": "hold_if_late_auth_pending_hours: authorisation may still land — 5h of the 72h hold window elapsed (Razorpay polls the bank for 3 days)"
     },
     {
       "id": "case_016",
@@ -1468,7 +1468,7 @@
       "amount_inr": 499,
       "method": "emandate",
       "reason": "gateway_technical_error",
-      "cause": "gateway_downtime",
+      "cause": "issuer_downtime",
       "arm": "holdout",
       "decision": "HOLDOUT",
       "tool": null,
@@ -1541,7 +1541,7 @@
       "recovered": true,
       "cost_inr": 0,
       "halted": false,
-      "stopped_because": "hold_if_late_auth_pending_hours: authorisation may still land — 43h of the 72h hold window elapsed"
+      "stopped_because": "hold_if_late_auth_pending_hours: authorisation may still land — 43h of the 72h hold window elapsed (Razorpay polls the bank for 3 days)"
     },
     {
       "id": "case_064",
