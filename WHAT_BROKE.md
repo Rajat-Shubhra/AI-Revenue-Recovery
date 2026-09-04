@@ -10,6 +10,14 @@ code, not because they were re-proved.
 Time costs for today's entries are wall-clock estimates from this session.
 Quark-era costs are not known and are marked as such.
 
+Entries §1–§11 are environment and tooling failures — things that stopped the
+build. **§12–§14 are a different and more uncomfortable category: three things
+that worked, passed their tests, and were wrong anyway.** A queue that ranked
+nothing, a control group that held twice the money it should have, and an
+evaluation that blamed the model for the answer key. None of them produced an
+error message. Two were caught by a cross-check built for another reason, and
+one was caught because someone asked a direct question about it.
+
 The machine throughout: Windows 11, Node v22.20.0, npm 10.9.3, repo path
 `C:\Users\KIIT0001\Documents\AI Revenue Recovery` (note the space — it matters
 twice below).
@@ -457,3 +465,154 @@ tried for over an hour — the filename, the temp extension, the retry strategy,
 npm itself — was about the *program*. The one that was right was about *where
 the program was standing*, and a two-minute probe in a different folder would
 have found it before any code was written.
+
+---
+
+## 12. The priority queue that ranked nothing
+
+**Status:** reproduced. Found by being asked a direct question.
+
+**Symptom.** None. Everything worked, every test passed, and the batch printed a
+correctly ordered table of the top twenty cases by priority. There was no bug
+report because there was no visible defect.
+
+**Root cause.** The queue was a real max-heap with four passing tests. It was
+popped exactly once — to render that table. `take()` drains, so it was empty
+afterwards. The loop that actually decided and acted on cases iterated
+`treatedScored`, a filtered array in **generator order**.
+
+So the agent ranked 61 cases, printed the ranking, discarded it, and then worked
+through them in the order they happened to be created. BLUEPRINT §4.2 says "pop
+top N per tick"; that was never implemented. The ranking influenced nothing.
+
+**What we tried that didn't work.** Nothing — nobody was looking. The tests
+asserted the heap ordered correctly, which it did. They asserted the printed
+table was right, which it was. Not one of them asserted that the *work* followed
+the ranking, because the code and the tests were written from the same
+assumption.
+
+This was found because Rajat asked "are we using a priority queue or did you
+drop the idea?" — a question about whether a component existed, which turned out
+to have the answer "it exists and does nothing."
+
+**Fix.** Drain the queue into ticks of twenty and drive the work loop from those.
+Each case now records which tick worked it. Verified in the committed ledger:
+`decide` lines descend 476.85, 61.14, 49.08, 43.77, 41.12 rather than appearing
+in generator order.
+
+Net lift was unchanged — the same cases got the same treatment, just in a
+defensible order. **The number was never wrong; the claim that the queue drove
+anything was.**
+
+**Time cost.** ~20 minutes to fix. Unknown to find; it could have shipped.
+
+**Lesson.** A component can be fully built, fully tested, and completely
+disconnected. The tests covered the unit and the rendering — the two things
+written at the same time as the code, from the same belief — and the wiring
+between them was assumed by both. Test the *seam*, not just the parts: there is
+now a test asserting the drained ticks form one continuous descending sequence,
+which is the claim that actually matters.
+
+---
+
+## 13. The holdout arm was holding 42% of the money
+
+**Status:** reproduced.
+
+**Symptom.** After the error taxonomy was rebuilt, net lift read **₹2,227**
+while the table-implied cross-check said **₹11,886** — a five-fold disagreement
+between two estimates of the same quantity. Before the rebuild the same two
+numbers had been within 10% of each other.
+
+**Root cause.** The holdout was assigned by shuffling case ids and taking the
+first 20%. That balances the number of *cases*, and silently ignores the number
+of *rupees*. Subscription amounts in this batch run ₹149 to ₹9,999, and with
+only 16 control cases a few large ones landing in the control arm move it a very
+long way. They did:
+
+| arm | cases | pool |
+|---|---|---|
+| treated | 58 | ₹57,792 |
+| holdout | 16 | **₹41,884** |
+
+20% of the cases, 42% of the money. Every per-rupee rate computed off that arm
+was noise, and the net lift built on it — the single number this whole project
+exists to produce — was meaningless.
+
+**What we tried that didn't work.** Nothing, but only because the earlier
+cross-check caught it. That cross-check was added a day before for a different
+reason (the holdout being small), and it is the only thing that turned a bad
+number into a visible discrepancy rather than a plausible-looking result.
+
+**Fix.** Stratified assignment. Sort by amount, cut into strata of five, draw
+one control at random from each stratum. Still randomised, still reproducible
+under the seed, but both arms now see the whole value range:
+
+| arm | cases | pool |
+|---|---|---|
+| treated | 56 | ₹67,544 |
+| holdout | 16 | ₹23,734 |
+
+The two estimates closed to ₹19,361 against ₹13,212. Two tests now pin it: the
+holdout must hold a proportional share of the *value*, and it must contain both
+large and small cases.
+
+**Time cost.** ~25 minutes, almost all of it diagnosis rather than repair.
+
+**Lesson.** Randomising the wrong unit is not randomising. The split was correct
+by case count and wrong by every measure that mattered, and it looked fine —
+16 of 80 is exactly 20%.
+
+The transferable part: **build the second, independent estimate of your headline
+number before you need it.** The modelled cross-check existed for an unrelated
+worry and it is the only reason this was caught rather than reported.
+
+---
+
+## 14. The model looked 42% wrong. The labels were.
+
+**Status:** reproduced.
+
+**Symptom.** First live run against the new taxonomy: the model resolved 24
+ambiguous cases and **only 14 matched ground truth**. 58% accuracy on a task it
+had scored 6/6 on the day before.
+
+**Root cause.** Seven of the ten wrong answers were not wrong. The descriptions
+I had written could not distinguish between two of *my own* causes:
+
+| description | my label | model said |
+|---|---|---|
+| "The payment failed **at the gateway**. The upstream host did not respond…" | `issuer_downtime` | `gateway_downtime` |
+| "…the stored credential is no longer valid" | `card_expired` | `instrument_inactive` |
+| "technical issues at the partner bank" | `gateway_downtime` | `psp_downtime` |
+
+Read the first one honestly: the text says *gateway*, the source field says
+`gateway`, and the correct answer was supposed to be `issuer_downtime`. The
+model was arguably right and the ground truth was arbitrary. I had written
+descriptions that carried *some* signal without checking they carried *enough*
+to identify exactly one cause.
+
+**What we tried that didn't work.** Nothing yet — but the near miss is the
+point. The next step queued up was tuning the prompt and questioning whether an
+open-weight model was strong enough for the task. Both would have been work
+spent on a problem that did not exist, and either might have "improved" accuracy
+by teaching the model my idiosyncratic labels.
+
+**Fix.** Sharpened five descriptions so each names the thing it means — "the
+customer's **issuing bank** did not respond", "past its **validity date**", "the
+customer's **UPI application** is unreachable". Accuracy went from 14/24 to
+**21/24 without touching the model, the prompt, or the provider.**
+
+**Time cost.** ~15 minutes, once the errors were read individually instead of
+counted.
+
+**Lesson.** When a model scores badly, check the answer key before you check the
+model. An evaluation is a claim about two things — the system and the labels —
+and only one of them is usually under suspicion.
+
+The three remaining failures survived because they are real, and they are better
+material than a perfect score: twice, on a genuinely uninformative decline, the
+model answered `insufficient_funds` where the honest answer was `unknown`.
+Confidently wrong on empty input, at a confidence the 0.7 floor did not catch.
+That is exactly why the compliance gate and the stopping rules sit downstream of
+the model rather than trusting it.
