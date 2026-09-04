@@ -64,12 +64,35 @@ bank account.
 ## How it works
 
 ```
-cases.seed.json → INGEST → PRIORITISE → DIAGNOSE → DECIDE
-                                                     ↓
-                            AUDIT ← ACT ← STOPPING ← COMPLIANCE
-                              ↓
-                           MEASURE (treated vs holdout)
+  data/cases.seed.json
+          │
+          ▼
+     INGEST ──────────────► holdout arm — 20%, stratified by amount ──┐
+          │                  nothing downstream can reach it          │
+          ▼                                                           │
+     PRIORITISE   max-heap, drained into ticks of 20                  │
+          │                                                           │
+          ▼                                                           │
+     DIAGNOSE     rules first; the model only on the ambiguous tail   │
+          │                                                           │
+          ▼                                                           │
+     SYSTEMIC     one cause over 40% of the batch? then one           │
+       CHECK      escalation instead of N individual actions          │
+          │                                                           │
+          ▼       per case, highest priority first                    │
+     DECIDE ─► COMPLIANCE ─► STOPPING ─► ACT ─► RazorpayPort          │
+                                                                      │
+     every stage appends to data/audit.jsonl as it goes —             │
+     the decide line is written BEFORE the act line it authorised     │
+          │                                                           │
+          ▼                                                           ▼
+     MEASURE   treated vs holdout ─► data/report.json ─► dashboard
 ```
+
+The earlier version of this diagram had `AUDIT` sitting after `ACT`, as though
+the ledger were the last stage. It is not a stage at all — every stage writes to
+it while it runs, and the ordering *within* the act stage is load-bearing: the
+intent line is written before the rail is called, not after.
 
 **Prioritise.** `(expected_value − action_cost) × urgency`, where urgency rises
 as the subscription approaches being halted. The queue logs *why* each case
