@@ -73,8 +73,9 @@ idempotency guard.
 
 ### Stack
 - **Runtime:** Node + TypeScript, strict. Single package, `web` as a workspace.
-- **LLM:** Gemini, via the client carried from Quark. Structured JSON output,
-  schema-validated before it can drive any money action.
+- **LLM:** switchable via `LLM_PROVIDER` — Groq (default, `openai/gpt-oss-120b`)
+  or Gemini, both behind the `AgentProvider` interface carried from Quark.
+  Structured JSON output, schema-validated before it can drive any money action.
 - **Storage:** JSON files in `/data` plus append-only `audit.jsonl`. No database.
   A committed JSONL file is readable in the GitHub diff without running anything.
 - **UI:** React + Vite 8.2.2 + plugin-react 6.1.x. `npm run dev` works;
@@ -84,14 +85,16 @@ idempotency guard.
   `.bin` shim is broken here for ESM binaries.
 
 ### LLM budget and quota
-Roughly **12 diagnose calls plus 3–5 decide calls per 80-case batch**. Everything
-else is deterministic. That ratio is the AI Judgment criterion made countable —
-it goes on the dashboard and in the video.
+**~24 diagnose calls per 80-case batch** — one per case carrying an ambiguous
+`(source, code)`. Everything else is deterministic. That ratio is the AI Judgment
+criterion made countable; it goes on the dashboard and in the video.
 
-Calls are **live every run**; there is no response cache. The Gemini free tier is
-~20 requests/day, so a batch is roughly one run per day per key. Rotate the key
-when it runs out. **Every run that spends quota must be reported before it is
-run, and a quota failure must degrade to ESCALATE, never crash the batch.**
+Calls are **live every run**; there is no response cache. Groq's free tier is
+14,400/day at 30/min, so a full batch takes ~25s and can be re-run freely; its
+limits are per organisation, so a second key does not raise them. Gemini stays
+wired as a cross-check but its free tier is 20/day, which is one batch.
+**A quota failure must degrade to ESCALATE, never crash the batch** — which was
+proved for real when Gemini ran dry mid-run.
 
 ---
 
@@ -192,8 +195,9 @@ mislabelled or generic error smuggling a terminal case into the recoverable pile
 
 Everything else goes to the model, with the error object, method, attempts,
 mandate state and the closed cause list. Output:
-`{ cause, confidence: 0..1, evidence: string[] }`. **Confidence below 0.7 is
-rejected and escalated**, and a confident `"unknown"` counts as an escalation
+`{ cause, confidence: 0..1, evidence: string[] }`. **Confidence below 0.80 is
+rejected and escalated** — raised from the 0.7 this spec originally named, which
+measured against a live run caught nothing while three answers were wrong anyway, and a confident `"unknown"` counts as an escalation
 rather than a resolution — otherwise the AI-judgment number inflates with cases
 the model explicitly declined to call.
 

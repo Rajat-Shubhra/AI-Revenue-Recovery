@@ -20,6 +20,9 @@ import { OUTCOME_TABLE, bestAction } from '../src/sim/outcomes'
 import { ALLOWED_CAUSES } from '../src/engine/prompt'
 import { decideFromCause } from '../src/pipeline/decide'
 import { generateCases } from '../src/pipeline/generate'
+import { diagnoseCase } from '../src/pipeline/diagnose'
+import { DIAGNOSIS_CONFIDENCE_FLOOR } from '../src/engine/schema'
+import { DIAGNOSE_SYSTEM_PROMPT } from '../src/pipeline/llm-diagnose'
 
 const cases = generateCases()
 const now = new Date('2026-09-05T09:00:00.000Z')
@@ -119,6 +122,68 @@ describe('rules refuse what the code cannot determine', () => {
     const base = cases.find((c) => isAmbiguous(c.error.source, c.error.code))!
     const cancelled = { ...base, mandate: { ...base.mandate, cancelled_by_customer: true } }
     expect(applyRules(cancelled)?.cause).toBe('mandate_cancelled_by_customer')
+  })
+})
+
+describe('the confidence floor', () => {
+  // Must be a case the rules REFUSE, or the model stub is never reached and
+  // every assertion below passes vacuously.
+  const kase = cases.find(
+    (c) =>
+      isAmbiguous(c.error.source, c.error.code) &&
+      !c.mandate.cancelled_by_customer &&
+      !c.mandate.paused_by_customer &&
+      !c.late_auth_pending &&
+      c.amount_inr <= c.mandate.max_amount_inr,
+  )!
+
+  it('is testing a case the rules actually refuse', () => {
+    expect(kase).toBeDefined()
+    expect(applyRules(kase)).toBeNull()
+  })
+
+  it('sits at 0.80, derived from where the model actually goes wrong', async () => {
+    // Not an arbitrary constant. Over 24 live diagnoses every wrong answer came
+    // back at 0.78 and every answer at 0.80 or above was correct. The spec's
+    // original 0.7 caught none of them.
+    expect(DIAGNOSIS_CONFIDENCE_FLOOR).toBe(0.8)
+  })
+
+  it('escalates an answer just below the floor', async () => {
+    const d = await diagnoseCase(kase, async () => ({
+      cause: 'insufficient_funds',
+      confidence: 0.78,
+      evidence: ['looks like it'],
+    }))
+    expect(d.escalate).toBe(true)
+    expect(d.cause).toBe('unknown')
+    expect(d.because).toContain('below the 0.8 floor')
+  })
+
+  it('accepts an answer at the floor', async () => {
+    const d = await diagnoseCase(kase, async () => ({
+      cause: 'insufficient_funds',
+      confidence: 0.8,
+      evidence: ['the balance was short'],
+    }))
+    expect(d.escalate).toBe(false)
+    expect(d.cause).toBe('insufficient_funds')
+  })
+
+  it('escalates a confident "unknown" — declining to call it is not resolving it', async () => {
+    const d = await diagnoseCase(kase, async () => ({
+      cause: 'unknown',
+      confidence: 0.99,
+      evidence: ['no signal in the advice text'],
+    }))
+    expect(d.escalate).toBe(true)
+    expect(d.because).toContain('could not narrow')
+  })
+
+  it('tells the model the same threshold the code enforces', () => {
+    // A prompt that advertises a different bar than the code applies would
+    // teach the model to aim at the wrong number.
+    expect(DIAGNOSE_SYSTEM_PROMPT).toContain(`below ${DIAGNOSIS_CONFIDENCE_FLOOR}`)
   })
 })
 

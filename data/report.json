@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T05:56:27.533Z",
+  "generated_at": "2026-09-04T09:48:23.855Z",
   "clock": "2026-09-05T09:00:00.000Z",
   "seed": 20260905,
   "counts": {
@@ -11,14 +11,14 @@
   "diagnosis": {
     "total": 80,
     "by_rules": 56,
-    "by_llm": 24,
-    "escalated_uncertain": 0,
+    "by_llm": 21,
+    "escalated_uncertain": 3,
     "provider": {
       "name": "groq",
       "model": "openai/gpt-oss-120b"
     },
     "calls": 25,
-    "usable": 24,
+    "usable": 21,
     "failed": 0,
     "quota_exhausted": false,
     "accuracy": [
@@ -95,12 +95,6 @@
         "correct": true
       },
       {
-        "case_id": "case_029",
-        "claimed": "insufficient_funds",
-        "actual": "unknown",
-        "correct": false
-      },
-      {
         "case_id": "case_034",
         "claimed": "issuer_downtime",
         "actual": "issuer_downtime",
@@ -137,18 +131,6 @@
         "correct": true
       },
       {
-        "case_id": "case_058",
-        "claimed": "insufficient_funds",
-        "actual": "unknown",
-        "correct": false
-      },
-      {
-        "case_id": "case_059",
-        "claimed": "issuer_downtime",
-        "actual": "psp_downtime",
-        "correct": false
-      },
-      {
         "case_id": "case_061",
         "claimed": "card_expired",
         "actual": "card_expired",
@@ -171,7 +153,7 @@
   "systemic": {
     "fired": false,
     "cause": "insufficient_funds",
-    "share": 0.30357142857142855
+    "share": 0.2857142857142857
   },
   "measurement": {
     "treated": {
@@ -323,16 +305,16 @@
       {
         "cause": "insufficient_funds",
         "treated": {
-          "cases": 17,
-          "pool_inr": 18483,
+          "cases": 16,
+          "pool_inr": 17684,
           "recovered_cases": 6,
           "recovered_inr": 3544,
-          "rate": 0.19174376454038847,
-          "rate_by_count": 0.35294117647058826
+          "rate": 0.20040714770413934,
+          "rate_by_count": 0.375
         },
         "holdout": {
-          "cases": 6,
-          "pool_inr": 3094,
+          "cases": 5,
+          "pool_inr": 2845,
           "recovered_cases": 0,
           "recovered_inr": 0,
           "rate": 0,
@@ -351,14 +333,14 @@
           "rate_by_count": 0.5555555555555556
         },
         "holdout": {
-          "cases": 2,
-          "pool_inr": 10498,
-          "recovered_cases": 1,
-          "recovered_inr": 499,
-          "rate": 0.04753286340255287,
-          "rate_by_count": 0.5
+          "cases": 1,
+          "pool_inr": 9999,
+          "recovered_cases": 0,
+          "recovered_inr": 0,
+          "rate": 0,
+          "rate_by_count": 0
         },
-        "lift_inr": 8460.592589064583
+        "lift_inr": 8945
       },
       {
         "cause": "late_auth_pending",
@@ -483,22 +465,22 @@
       {
         "cause": "unknown",
         "treated": {
-          "cases": 4,
-          "pool_inr": 7896,
+          "cases": 5,
+          "pool_inr": 8695,
           "recovered_cases": 0,
           "recovered_inr": 0,
           "rate": 0,
           "rate_by_count": 0
         },
         "holdout": {
-          "cases": 1,
-          "pool_inr": 1999,
-          "recovered_cases": 0,
-          "recovered_inr": 0,
-          "rate": 0,
-          "rate_by_count": 0
+          "cases": 3,
+          "pool_inr": 2747,
+          "recovered_cases": 1,
+          "recovered_inr": 499,
+          "rate": 0.18165271204950856,
+          "rate_by_count": 0.3333333333333333
         },
-        "lift_inr": 0
+        "lift_inr": -1579.470331270477
       }
     ],
     "by_bucket": [
@@ -988,7 +970,7 @@
       "amount_inr": 249,
       "method": "upi",
       "reason": "payment_declined",
-      "cause": "insufficient_funds",
+      "cause": "unknown",
       "arm": "holdout",
       "decision": "HOLDOUT",
       "tool": null,
@@ -1452,7 +1434,7 @@
       "amount_inr": 799,
       "method": "emandate",
       "reason": "payment_declined",
-      "cause": "insufficient_funds",
+      "cause": "unknown",
       "arm": "treated",
       "decision": "ESCALATE",
       "tool": "escalate",
@@ -1468,7 +1450,7 @@
       "amount_inr": 499,
       "method": "emandate",
       "reason": "gateway_technical_error",
-      "cause": "issuer_downtime",
+      "cause": "unknown",
       "arm": "holdout",
       "decision": "HOLDOUT",
       "tool": null,

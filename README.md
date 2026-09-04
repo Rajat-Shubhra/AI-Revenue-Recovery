@@ -11,7 +11,7 @@ the problem" but **show measured money recovered across a batch, with compliant
 escalation, stopping rules, and an audit trail** — so those four things are what
 this repo is organised around.
 
-> **Status: complete.** All ten milestones done, 96 tests green. `npm run batch`
+> **Status: complete.** All ten milestones done, 120 tests green. `npm run batch`
 > runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
 > dashboard. A sample audit ledger and report are committed, so the trail can be
 > read straight from the diff. See [MILESTONES.md](MILESTONES.md) for how it was
@@ -40,7 +40,7 @@ Plus the judged criterion that sits underneath all of them:
 
 | Criterion | Where | State |
 |---|---|---|
-| **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth (**21/24** last run) so "resolved" is never reported as "correct" | ✅ |
+| **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model, 21 resolved and 3 escalated.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth so "resolved" is never reported as "correct" — last run **21 resolved, 21/21 correct, 3 escalated by the confidence floor** | ✅ |
 | **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fourteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last three are things that worked, passed their tests, and were wrong anyway | ✅ |
 
 ---
@@ -75,7 +75,7 @@ ranked where it did.
 
 **Diagnose.** A deterministic `(source, code) → cause` table over Razorpay's
 published error taxonomy — 41 catalogue entries, 32 codes, 18 causes. Only what
-the code cannot settle reaches the model, and its answer is rejected below 0.7
+the code cannot settle reaches the model, and its answer is rejected below 0.80
 confidence.
 
 That boundary is the interesting part, and it is not "vague errors go to the

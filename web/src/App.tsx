@@ -279,7 +279,7 @@ export default function App() {
               <span className="mono">gateway/credit_failed</span> is either the customer picking the wrong account or a
               partner-bank outage: opposite remedies, one code. A lookup table would be wrong and confident; the issuer's
               advice text settles it. {d.accuracy.length - wrong.length}/{d.accuracy.length} of the model's diagnoses
-              matched the true cause; {d.escalated_uncertain} escalated as genuinely undeterminable.
+              matched the true cause; {d.escalated_uncertain} were escalated instead — either below the confidence floor or answered {'"'}unknown{'"'}.
               {wrong.length > 0 && (
                 <>
                   {' '}

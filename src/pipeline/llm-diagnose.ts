@@ -35,7 +35,7 @@ Guidance:
 - "unknown" is a legitimate and often correct answer. Preferring it to a weak guess is the behaviour we want, because a wrong cause here sends a real debit at a real customer.
 - Weigh the mandate state, the method, the error source and step, and how many attempts have already been made.
 - A domestic card cannot be manually charged; that constrains what can be done, but it is not itself a cause.
-- confidence is your honest probability that the cause is right, from 0 to 1. Anything below 0.7 will be rejected and the case handed to a human, which is the correct outcome for a genuine guess. Do not inflate it.
+- confidence is your honest probability that the cause is right, from 0 to 1. Anything below 0.8 will be rejected and the case handed to a human, which is the correct outcome for a genuine guess. Do not inflate it, and do not round up to clear the bar - a case escalated is a case handled, not a case lost.
 - evidence is the specific facts from the case that led you there, quoted or paraphrased. Not reasoning about what you might do.
 
 Respond with only a single valid JSON object. No markdown, no code fences, no text before or after it:
