@@ -178,6 +178,23 @@ describe('priority queue', () => {
     expect(q.pop()).toBeUndefined()
   })
 
+  it('drains into ticks that stay in global priority order', async () => {
+    // The bug this pins: the queue was popped only to print a table while the
+    // action loop iterated an unsorted array, so the ranking was decorative.
+    // Draining into ticks must give one continuous descending sequence.
+    const { queue } = prioritise((await runIngest()).ingested)
+    const ticks: Scored[][] = []
+    while (queue.size > 0) ticks.push(queue.take(20))
+
+    expect(ticks.length).toBeGreaterThan(1)
+    expect(ticks[0]!.length).toBe(20)
+
+    const flat = ticks.flat().map((s) => s.priority)
+    for (let i = 1; i < flat.length; i += 1) {
+      expect(flat[i]!).toBeLessThanOrEqual(flat[i - 1]!)
+    }
+  })
+
   it('ranks the real batch the same way twice', async () => {
     const a = prioritise((await runIngest()).ingested).queue.take(20).map((s) => s.kase.id)
     const b = prioritise((await runIngest()).ingested).queue.take(20).map((s) => s.kase.id)

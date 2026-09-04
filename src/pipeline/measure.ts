@@ -40,6 +40,8 @@ export type CaseResult = {
   cause: Cause
   recovered: boolean
   cost_inr: number
+  /** Which batch tick worked this case. 1-based; absent for the holdout. */
+  tick?: number
 }
 
 function summarise(results: CaseResult[]): ArmResult {

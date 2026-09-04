@@ -76,7 +76,14 @@ async function main(): Promise<void> {
   console.log(`  holdout arm    ${padL(holdoutCases.length, 3)} cases  ${padL(inr(pool(holdoutCases)), 10)} at risk  (never touched)`)
   console.log(`  already halted ${padL(halted.length, 3)} cases  ${padL(inr(pool(halted)), 10)} written off before the batch ran`)
 
-  printQueue(queue.take(BATCH_TICK_SIZE))
+  // Drain the queue into ticks. This is what decides the order work happens in
+  // — the queue used to be popped only to print a table while the action loop
+  // iterated an unsorted array, which made the ranking decorative. Now the
+  // highest-priority case is genuinely the first one acted on.
+  const ticks: Scored[][] = []
+  while (queue.size > 0) ticks.push(queue.take(BATCH_TICK_SIZE))
+
+  printQueue(ticks[0] ?? [])
 
   // ─── DIAGNOSE ───────────────────────────────────────────────────────────
   // The model runs only on what the rules could not settle. `--no-llm` keeps a
@@ -160,7 +167,8 @@ async function main(): Promise<void> {
   const treatedResults: CaseResult[] = []
   let gateOverrides = 0
 
-  for (const s of treatedScored) {
+  for (const [tickIndex, tick] of ticks.entries()) {
+  for (const s of tick) {
     const d = results.get(s.kase.id)!
     const proposed = decide(s.kase, d, now)
     const gate = complianceGate(s.kase, proposed, clock)
@@ -229,8 +237,12 @@ async function main(): Promise<void> {
       cause: d.cause,
       recovered: port.recovered.get(s.kase.id) ?? false,
       cost_inr: cost,
+      tick: tickIndex + 1,
     })
   }
+  }
+
+  console.log(`\n  Worked ${ticks.length} tick(s) of up to ${BATCH_TICK_SIZE}, highest priority first.`)
 
   console.log('\nDecisions across the treated arm\n')
   for (const outcome of ['AUTO', 'CUSTOMER_ACTION', 'ESCALATE', 'STOP', 'HOLD'] as Outcome[]) {
