@@ -10,7 +10,8 @@
     "test": "node node_modules/vitest/vitest.mjs run --dir tests",
     "dev": "npm run dev -w web",
     "batch": "node --import tsx src/cli.ts",
-    "generate": "node --import tsx src/pipeline/generate.ts"
+    "generate": "node --import tsx src/pipeline/generate.ts",
+    "build": "npm run build -w web"
   },
   "dependencies": {
     "dotenv": "^17.4.2",

@@ -18,7 +18,8 @@ export const HOLDOUT_SHARE = 0.2
 
 export type IngestedCase = {
   kase: Case
-  /** Control arm. Nothing may act on these; `tests/holdout.test.ts` enforces it. */
+  /** Control arm. Nothing may act on these; INVARIANT 3 in
+   * `tests/stopping-measure.test.ts` enforces it. */
   holdout: boolean
   /**
    * The subscription has already been halted — the deadline passed before the

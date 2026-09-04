@@ -101,5 +101,3 @@ export function whyUnresolved(kase: Case): string {
     ? `${kase.error.source}/${kase.error.code} is published with more than one meaning — the code alone cannot decide`
     : `${kase.error.source}/${kase.error.code} is not in the catalogue`
 }
-
-export const RULE_COUNT = STATE_RULES.length + CODE_RULES.size

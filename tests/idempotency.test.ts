@@ -8,6 +8,12 @@ import { mkdtemp, rm, readFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { AuditLog, idempotencyKey, type AuditEntry } from '../src/engine/audit'
+import { executeActions } from '../src/engine/gate'
+import { registerTools } from '../src/pipeline/tools'
+import { MockRazorpayPort } from '../src/ports/mock'
+import { fixedClock } from '../src/engine/clock'
+import type { ToolContext } from '../src/engine/tool-types'
+import { loadCases } from '../src/pipeline/ingest'
 
 let dir: string
 let ledger: string
@@ -142,5 +148,73 @@ describe('idempotency guard', () => {
   it('refuses to answer before the ledger has been loaded', () => {
     const audit = new AuditLog(ledger)
     expect(() => audit.hasClaimed('anything')).toThrow(/load\(\) must be awaited/)
+  })
+})
+
+/**
+ * The confirmation gate, which for a long time was implemented and never
+ * called.
+ *
+ * `retryNow` debits immediately with no pre-debit notice and cannot be undone,
+ * so `tools.ts` declares it as always requiring a human. That declaration was
+ * true and inert: `executeActions` went straight to the rail without ever
+ * asking. Nothing reached it — the decide table never proposes `retryNow` — but
+ * "unreachable" is not the same safety property as "gated", and only one of
+ * them survives someone adding a new branch.
+ */
+describe('the confirmation gate is actually consulted', () => {
+  beforeEach(() => {
+    registerTools()
+  })
+
+  // A real case from the seed, so the port can score the ones that go through.
+  const kase = loadCases()[0]!
+
+  const ctxFor = (audit: AuditLog): ToolContext => ({
+    caseId: kase.id,
+    port: new MockRazorpayPort([kase]),
+    clock: fixedClock('2026-09-05T09:00:00.000Z'),
+    audit,
+  })
+
+  it('holds retryNow for a human instead of debiting', async () => {
+    const audit = new AuditLog(ledger)
+    await audit.load()
+
+    const [result] = await executeActions(
+      [{ tool: 'retryNow', input: {}, result: '' }],
+      ctxFor(audit),
+    )
+
+    expect(result?.ok).toBe(false)
+    expect(result?.result).toContain('Held for confirmation')
+    // And it says what it would have done, in words a person can act on.
+    expect(result?.result).toContain('cannot be undone')
+  })
+
+  it('claims no idempotency key for an action nobody approved', async () => {
+    const audit = new AuditLog(ledger)
+    await audit.load()
+
+    await executeActions([{ tool: 'retryNow', input: {}, result: '' }], ctxFor(audit))
+
+    // Claiming the key here would mean that when a human DOES approve the
+    // action, the replay guard refuses the very thing they authorised.
+    expect(audit.hasClaimed(idempotencyKey(kase.id, 'retryNow', null))).toBe(false)
+    expect(audit.unreconciled()).toEqual([])
+  })
+
+  it('lets the four unconfirmed tools straight through', async () => {
+    const audit = new AuditLog(ledger)
+    await audit.load()
+
+    const [result] = await executeActions(
+      [{ tool: 'escalate', input: { reason: 'test' }, result: '' }],
+      ctxFor(audit),
+    )
+
+    expect(result?.ok).toBe(true)
+    expect(result?.result).not.toContain('Held for confirmation')
+    expect(audit.hasClaimed(idempotencyKey(kase.id, 'escalate', null))).toBe(true)
   })
 })

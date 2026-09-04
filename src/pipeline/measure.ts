@@ -10,7 +10,8 @@
 //   net lift = treated_recovered − (holdout_rate × treated_pool)
 //
 // Both arms are scored by the same simulator table, and the holdout is never
-// touched by anything upstream — `tests/holdout.test.ts` enforces that.
+// touched by anything upstream — INVARIANT 3 in `tests/stopping-measure.test.ts`
+// enforces that.
 import type { Case } from '../engine/case'
 import type { Cause } from './rules'
 import type { Outcome } from './decide'

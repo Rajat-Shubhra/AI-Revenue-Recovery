@@ -126,8 +126,20 @@ function scheduledFor(input: unknown): string | null {
 }
 
 /**
- * Runs actions through the idempotency guard. Every call to the rail in this
- * codebase goes through here — there is no other path.
+ * Runs actions through the confirmation gate and then the idempotency guard.
+ * Every call to the rail in this codebase goes through here — there is no other
+ * path.
+ *
+ * The confirmation check is not decorative and it is not the model's to make.
+ * `tools.ts` says of `retryNow` that "if anything ever proposes it, it stops
+ * here for a person" — that sentence was false until this check existed: the
+ * tool's own `requiresConfirmation` was implemented, and nothing consulted it.
+ * A safety claim nobody calls is worse than no claim, because it reads as
+ * covered.
+ *
+ * Nothing in the pipeline currently proposes `retryNow` — the decide table
+ * never returns it and compliance check C5 reroutes around it — so this changes
+ * no measured number today. It is here for the day something does.
  */
 export async function executeActions(
   actions: AgentAction[],
@@ -139,6 +151,19 @@ export async function executeActions(
     const tool = TOOLS[action.tool]
     if (!tool) {
       executed.push({ tool: action.tool, input: action.input, result: 'No such tool.', ok: false })
+      continue
+    }
+
+    // Held for a human BEFORE the idempotency key is claimed. Claiming the key
+    // for an action nobody has approved would mean that when a person does
+    // approve it, the replay guard refuses the very action they authorised.
+    if (await tool.requiresConfirmation(action.input, ctx)) {
+      executed.push({
+        tool: action.tool,
+        input: action.input,
+        result: `Held for confirmation: ${await describeActions([action], ctx)}`,
+        ok: false,
+      })
       continue
     }
 

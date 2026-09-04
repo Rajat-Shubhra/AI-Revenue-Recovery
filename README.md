@@ -14,7 +14,7 @@ an audit trail** — so those four things are what this repo is organised around
 
 > **Status: complete.** Fourteen milestones done — the ten that were planned, plus
 > four that came out of auditing a loop that was already finished and green.
-> 121 tests passing. `npm run batch` runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
+> 124 tests passing. `npm run batch` runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
 > dashboard. A sample audit ledger and report are committed, so the trail can be
 > read straight from the diff. See [MILESTONES.md](MILESTONES.md) for how it was
 > built and what broke.
@@ -43,7 +43,7 @@ Plus the judged criterion that sits underneath all of them:
 | Criterion | Where | State |
 |---|---|---|
 | **AI Judgment** — deterministic where AI is unnecessary | **56 of 80 resolved by rules; 24 reach the model.** 70% deterministic. Critically, the 30% is not "cases with vague errors" — it is the `(source, code)` pairs Razorpay's own docs publish with more than one meaning, derived from the catalogue rather than asserted. The model's diagnoses are scored against ground truth and the scoring is published, right or wrong — last run **21 of 24 correct, 3 wrong, and the confidence floor caught none of the three** | ✅ |
-| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fifteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last four are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next | ✅ |
+| **Failure Recovery** | [WHAT_BROKE.md](WHAT_BROKE.md) — fifteen entries with symptom, root cause, dead ends, fix, time cost and lesson. The last four are things that worked, passed their tests, and were wrong anyway — including a safety mechanism that fitted one run and broke on the next, and a confirmation gate that was implemented, declared in a comment, and never actually called | ✅ |
 
 ---
 
@@ -154,7 +154,7 @@ adapted / extracted / new.
 
 | Taken | Why | State here |
 |---|---|---|
-| Classifier prompt | The decide step, unchanged in shape | Buckets renamed `AUTO / CUSTOMER_ACTION / ESCALATE`, subject reframed from task to case, allowed-causes list added |
+| Classifier prompt | Was to have driven the decide step | **Superseded, and left in the repo saying so.** Decide became a lookup table at M4, so the carried prompt drives nothing; `classifier-prompt.md` and `SYSTEM_PROMPT` are dead. What the model actually gets is `DIAGNOSE_SYSTEM_PROMPT` in `llm-diagnose.ts` — new, and pointed at the cause rather than the action |
 | `schema.ts` — JSON contract validation | Every model output must be validated before it drives money | Renamed enum; `proposed_action` split from `actions_taken`; diagnosis schema with the confidence floor added |
 | Confirmation gate (from `runner.ts`) | Becomes the ESCALATE path | Extracted into `gate.ts`; rejections now carry real reasons |
 | **`resolveRun`'s double-resolve guard** | **Idempotency** | Rewritten against `audit.jsonl` — see below |
@@ -195,6 +195,7 @@ npm run typecheck     # tsc --noEmit, strict
 npm test              # invariants, including the idempotency guard
 npm run batch         # run a batch, print the report
 npm run dev           # dashboard at http://127.0.0.1:5173
+npm run build         # production bundle of the dashboard
 ```
 
 For the LLM tail, copy `.env.example` to `.env` and add a key. `LLM_PROVIDER`
