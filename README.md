@@ -251,10 +251,18 @@ Vite through its JS API instead and works fine. This is documented in
   a swing of seven cases — and both reported an **identical net lift** (₹19,361, on
   the build those two runs shared; the headline has since moved to ₹20,359 for
   reasons that have nothing to do with the model).
-  Adjacent causes collapse to the same branch of the decide table, so the agent
-  takes the same action either way, and the simulator scores that action against
-  the *true* cause rather than the diagnosed one. The 70% of the batch the rules
-  settle is untouched by any of it.
+  Adjacent causes **often** collapse to the same branch of the decide table —
+  `issuer_downtime` and `psp_downtime` both switch rails on an eMandate, so
+  confusing them costs nothing. Often is not always, and the honest version says
+  so: of the three wrong diagnoses in the current run, one routes identically and
+  two do not.
+
+  What holds in both cases is that the simulator scores the action the agent
+  actually took against the *true* cause, never the diagnosed one. So a
+  misdiagnosis that changes the action is paid for **inside** the headline number
+  rather than hidden from it — the agent sends a payment link where an escalation
+  was right, and collects at the payment-link rate for a cause it got wrong. And
+  the 70% of the batch the rules settle is untouched by any of it.
 
   That is the architecture absorbing model variance rather than luck, and it is
   a stronger claim than "the model is accurate": **the number does not depend on

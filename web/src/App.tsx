@@ -279,7 +279,14 @@ export default function App() {
               <span className="mono">gateway/credit_failed</span> is either the customer picking the wrong account or a
               partner-bank outage: opposite remedies, one code. A lookup table would be wrong and confident; the issuer's
               advice text settles it. {d.accuracy.length - wrong.length}/{d.accuracy.length} of the model's diagnoses
-              matched the true cause; {d.escalated_uncertain} were escalated instead — either below the confidence floor or answered {'"'}unknown{'"'}.
+              matched the true cause.
+              {d.escalated_uncertain > 0 && (
+                <>
+                  {' '}
+                  {d.escalated_uncertain} were escalated instead — either below the confidence floor or answered{' '}
+                  {'"'}unknown{'"'}.
+                </>
+              )}
               {wrong.length > 0 && (
                 <>
                   {' '}
@@ -289,7 +296,10 @@ export default function App() {
                       {w.case_id} said {w.claimed}, actually {w.actual}.{' '}
                     </span>
                   ))}
-                  Both map to the same action, so the recovered total is unchanged — which is the point.
+                  A wrong diagnosis is not free. The agent acts on its theory and the simulator scores that
+                  action against the <em>true</em> cause — so where adjacent causes collapse to the same branch of
+                  the decide table it costs nothing, and where they do not, the cost is already inside the numbers
+                  above rather than hidden from them.
                 </>
               )}
             </div>
