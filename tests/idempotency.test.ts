@@ -218,3 +218,58 @@ describe('the confirmation gate is actually consulted', () => {
     expect(audit.hasClaimed(idempotencyKey(kase.id, 'escalate', null))).toBe(true)
   })
 })
+
+/**
+ * A replay must report the same scoreboard as the run it replays.
+ *
+ * The guard refuses a duplicate action, so the rail is never called and the
+ * port never scores that case. Left there, the case falls through as "not
+ * recovered" — and the second run of an 80-case batch reported ₹1,227 of net
+ * lift against the first run's ₹20,359. The guard was right; the measurement
+ * built on top of it was not.
+ *
+ * Re-reading a ledger does not change what happened.
+ */
+describe('a replay scores the same as the run it replays', () => {
+  const cases = loadCases().slice(0, 25)
+
+  it('reproduces the rail outcome without calling the rail', async () => {
+    const live = new MockRazorpayPort(cases)
+    const replay = new MockRazorpayPort(cases)
+
+    for (const k of cases) {
+      const outcome = await live.retryScheduled(k.id, '2026-09-10T00:00:00.000Z')
+      replay.score(k.id, 'retryScheduled')
+
+      expect(replay.recovered.get(k.id)).toBe(live.recovered.get(k.id))
+      expect(replay.recovered.get(k.id)).toBe(outcome.ok)
+    }
+
+    // And it is scoring something, not returning false for everything.
+    expect([...live.recovered.values()].some(Boolean)).toBe(true)
+  })
+
+  it('never credits a replayed escalation as a recovery', async () => {
+    // The outcome table has a non-zero `escalate` column, because a human does
+    // often recover the case eventually. The rail refuses to count that, and
+    // the replay path has to refuse it identically — the first version of
+    // `score` read the table and reported MORE money on the second run than
+    // the first.
+    const live = new MockRazorpayPort(cases)
+    const replay = new MockRazorpayPort(cases)
+
+    for (const k of cases) {
+      await live.escalate(k.id, 'needs a human')
+      replay.score(k.id, 'escalate')
+
+      expect(live.recovered.get(k.id)).toBe(false)
+      expect(replay.recovered.get(k.id)).toBe(false)
+    }
+  })
+
+  it('scores restraint through the same path', () => {
+    const port = new MockRazorpayPort(cases)
+    const k = cases[0]!
+    expect(port.noAction(k.id)).toBe(port.score(k.id, 'none'))
+  })
+})

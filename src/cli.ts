@@ -221,7 +221,21 @@ async function main(): Promise<void> {
       })
       cost = ACTION_COST_INR[final.tool as ActionName] ?? 0
       simAction = final.tool as SimAction
-      if (executed && !executed.ok && executed.result.includes('confirmation')) simAction = 'none'
+      if (executed && !executed.ok && executed.result.includes('confirmation')) {
+        simAction = 'none'
+      } else if (executed?.skipped) {
+        // The guard refused this action as a duplicate, so the rail was never
+        // called and the port never scored the case. That is not the same as
+        // nothing having happened: the action ran in an earlier batch and the
+        // case is still in the state it left it. Scoring it here reproduces
+        // that outcome — the draw is seeded on case id and action — so a replay
+        // reports an identical scoreboard rather than collapsing to near zero.
+        //
+        // Without this, "run it twice and watch every action get refused" —
+        // the demo this project is proudest of — also silently rewrote net
+        // lift from ₹20,359 to ₹1,227.
+        port.score(s.kase.id, simAction)
+      }
     }
 
     // Cases the agent chose not to act on are scored by the simulator's `none`

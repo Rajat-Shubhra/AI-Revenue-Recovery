@@ -14,7 +14,7 @@ an audit trail** — so those four things are what this repo is organised around
 
 > **Status: complete.** Fourteen milestones done — the ten that were planned, plus
 > four that came out of auditing a loop that was already finished and green.
-> 124 tests passing. `npm run batch` runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
+> 127 tests passing. `npm run batch` runs the full loop over 80 cases in ~25 seconds and `npm run dev` serves the
 > dashboard. A sample audit ledger and report are committed, so the trail can be
 > read straight from the diff. See [MILESTONES.md](MILESTONES.md) for how it was
 > built and what broke.
