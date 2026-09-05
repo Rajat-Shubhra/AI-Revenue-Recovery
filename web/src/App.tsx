@@ -215,7 +215,7 @@ export default function App() {
   return (
     <div className="wrap">
       <header>
-        <h1>Failed-Subscription Recovery Agent</h1>
+        <h1>AI Revenue Recovery</h1>
         {report && (
           <span className="sub mono">
             seed {report.seed} · clock {report.clock.slice(0, 16).replace('T', ' ')}
